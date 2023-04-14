@@ -11,12 +11,11 @@ import {
   codeEditor,
 } from "./CodeEditor.css";
 
-const exampleCode = `(function someDemo() {
-  var test = "Hello World!";
-  console.log(test);
-})();
+const exampleCode = `def f():
+  while True:
+    print("Hello, world!")
 
-return () => <App />;`;
+f()`;
 
 type CodeHighlightProps = {
   code: string;
