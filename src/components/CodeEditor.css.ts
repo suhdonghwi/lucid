@@ -4,9 +4,11 @@ export const rootContainer = style({
   position: "relative",
   width: "30rem",
   height: "30rem",
+
+  fontFamily: "Ubuntu Mono, monospace",
 });
 
-const containerBase = style({
+const codeContainerBase = style({
   position: "absolute",
   top: 0,
   left: 0,
@@ -15,8 +17,34 @@ const containerBase = style({
   height: "100%",
 });
 
-export const codeEditorContainer = style([containerBase, {}]);
+const codeBase = style({
+  width: "100%",
+  height: "100%",
 
-export const codeViewerContainer = style([containerBase, {}]);
+  padding: 0,
+  margin: 0,
+  border: "none",
+  outline: "none",
 
-export const codeViewerPre = style({ margin: 0, height: "100%" });
+  wordWrap: "break-word",
+  whiteSpace: "pre-wrap",
+});
+
+export const codeEditorContainer = style([codeContainerBase, {}]);
+
+export const codeEditor = style([
+  codeBase,
+  {
+    resize: "none",
+    outline: "none",
+  },
+]);
+
+export const codeHighlightContainer = style([
+  codeContainerBase,
+  {
+    pointerEvents: "none",
+  },
+]);
+
+export const codeHighlight = style([codeBase, {}]);
