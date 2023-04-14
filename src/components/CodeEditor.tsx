@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 import Highlight, { defaultProps } from "prism-react-renderer";
+import lightTheme from "prism-react-renderer/themes/github";
 
 import {
   rootContainer,
@@ -23,7 +24,12 @@ type CodeHighlightProps = {
 
 function CodeHighlight({ code }: CodeHighlightProps) {
   return (
-    <Highlight {...defaultProps} code={code} language="jsx">
+    <Highlight
+      {...defaultProps}
+      theme={lightTheme}
+      code={code}
+      language="python"
+    >
       {({ className, style, tokens, getLineProps, getTokenProps }) => (
         <pre
           className={`${className} ${codeHighlight}`}
@@ -52,6 +58,7 @@ function CodeEditor() {
           className={codeEditor}
           value={code}
           onChange={(e) => setCode(e.target.value)}
+          style={lightTheme.plain}
         />
       </div>
       <div className={codeHighlightContainer}>
