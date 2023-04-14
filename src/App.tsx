@@ -1,10 +1,13 @@
 import React from "react";
+
 import { container } from "./App.css";
+
+import CodeEditor from "./components/CodeEditor";
 
 function App() {
   return (
-    <div className="App">
-      <div className={container}>Hello, world!</div>
+    <div className={container}>
+      <CodeEditor />
     </div>
   );
 }
