@@ -2,12 +2,12 @@ import React from "react";
 
 import { container } from "./App.css";
 
-import CodeEditor from "./components/CodeEditor";
+import CodeRunner from "./components/CodeRunner";
 
 function App() {
   return (
     <div className={container}>
-      <CodeEditor />
+      <CodeRunner />
     </div>
   );
 }
