@@ -3,7 +3,7 @@ import React from "react";
 import Highlight, { defaultProps } from "prism-react-renderer";
 import lightTheme from "prism-react-renderer/themes/github";
 
-import * as style from "./CodeEditor.css";
+import * as cls from "./CodeEditor.css";
 
 type CodeHighlightProps = {
   code: string;
@@ -19,7 +19,7 @@ function CodeHighlight({ code }: CodeHighlightProps) {
     >
       {({ className, style, tokens, getLineProps, getTokenProps }) => (
         <pre
-          className={`${className} ${style.codeHighlight}`}
+          className={`${className} ${cls.codeHighlight}`}
           style={{ ...style, background: "none" }}
         >
           {tokens.map((line, i) => (
@@ -42,16 +42,16 @@ type CodeEditorProps = {
 
 function CodeEditor({code, onCodeUpdate}: CodeEditorProps) {
   return (
-    <div className={style.rootContainer}>
-      <div className={style.codeEditorContainer}>
+    <div className={cls.rootContainer}>
+      <div className={cls.codeEditorContainer}>
         <textarea
-          className={style.codeEditor}
+          className={cls.codeEditor}
           value={code}
           onChange={(e) => onCodeUpdate(e.target.value)}
           style={lightTheme.plain}
         />
       </div>
-      <div className={style.codeHighlightContainer}>
+      <div className={cls.codeHighlightContainer}>
         <CodeHighlight code={code} />
       </div>
     </div>
