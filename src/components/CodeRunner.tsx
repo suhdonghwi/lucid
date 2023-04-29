@@ -13,8 +13,6 @@ function CodeRunner() {
   const [code, setCode] = useState(exampleCode);
 
   async function runCode() {
-    console.log(code);
-
     const result = await asyncRun(code, {});
     console.log(result);
   }
