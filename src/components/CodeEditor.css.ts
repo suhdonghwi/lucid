@@ -1,20 +1,16 @@
 import { style } from "@vanilla-extract/css";
 
 export const rootContainer = style({
-  position: "relative",
   width: "30rem",
   height: "30rem",
-
   fontFamily: "Ubuntu Mono, monospace",
+
+  overflow: "auto",
 });
 
-const codeContainerBase = style({
-  position: "absolute",
-  top: 0,
-  left: 0,
-
-  width: "100%",
-  height: "100%",
+export const editorContainer = style({
+  position: "relative",
+  minHeight: "100%",
 });
 
 const codeBase = style({
@@ -30,21 +26,22 @@ const codeBase = style({
   whiteSpace: "pre-wrap",
 });
 
-export const codeEditorContainer = style([codeContainerBase, {}]);
-
-export const codeEditor = style([
+export const codeTextArea = style([
   codeBase,
   {
     resize: "none",
     outline: "none",
+
+    position: "absolute",
+    top: 0,
+    left: 0,
   },
 ]);
 
-export const codeHighlightContainer = style([
-  codeContainerBase,
+export const codeHighlight = style([
+  codeBase,
   {
+    position: "relative",
     pointerEvents: "none",
   },
 ]);
-
-export const codeHighlight = style([codeBase, {}]);

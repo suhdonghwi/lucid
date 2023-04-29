@@ -36,22 +36,20 @@ function CodeHighlight({ code }: CodeHighlightProps) {
 }
 
 type CodeEditorProps = {
-  code: string,
-  onCodeUpdate: (code: string) => void
+  code: string;
+  onCodeUpdate: (code: string) => void;
 };
 
-function CodeEditor({code, onCodeUpdate}: CodeEditorProps) {
+function CodeEditor({ code, onCodeUpdate }: CodeEditorProps) {
   return (
     <div className={cls.rootContainer}>
-      <div className={cls.codeEditorContainer}>
+      <div className={cls.editorContainer}>
         <textarea
-          className={cls.codeEditor}
+          className={cls.codeTextArea}
           value={code}
           onChange={(e) => onCodeUpdate(e.target.value)}
           style={lightTheme.plain}
         />
-      </div>
-      <div className={cls.codeHighlightContainer}>
         <CodeHighlight code={code} />
       </div>
     </div>
