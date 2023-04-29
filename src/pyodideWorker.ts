@@ -12,18 +12,24 @@ declare global {
   }
 }
 
-async function loadPyodideAndPackages() {
+async function initializePyodide() {
   self.pyodide = await self.loadPyodide({ stdout: console.log });
+  console.log("[worker] pyodide load complete.");
+
+  for (const { name, code } of PYTHON_STARTERS) {
+    self.pyodide.FS.writeFile(name, code);
+  }
+
+  console.log("[worker] python starter files written.");
 }
 
-const pyodideReadyPromise = loadPyodideAndPackages();
+const pyodideReadyPromise = initializePyodide();
 
 self.onmessage = async (event) => {
   await pyodideReadyPromise;
   const { id, python, ...context } = event.data;
 
   try {
-    // await pyodide.loadPackagesFromImports(python);
     const result = await self.pyodide.runPythonAsync(python);
 
     self.postMessage({ result, id });
