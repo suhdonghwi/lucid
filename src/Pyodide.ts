@@ -1,5 +1,14 @@
 import type { PyodideInterface } from "pyodide";
 
-const pyodide: PyodideInterface = await window.loadPyodide();
+let pyodide: PyodideInterface | null = null;
 
-export default pyodide;
+export async function runPython(code: string): any {
+  if (pyodide === null) {
+    pyodide = await window.loadPyodide();
+    return runPython(code);
+  } else {
+    return pyodide.runPythonAsync(code);
+  }
+}  
+
+// await window.loadPyodide();
