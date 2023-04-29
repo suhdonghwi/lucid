@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { runPython } from "../Pyodide";
+import { asyncRun } from "../pyodide";
 
 import CodeEditor from "./CodeEditor";
 import * as cls from "./CodeRunner.css";
@@ -15,7 +15,7 @@ function CodeRunner() {
   async function runCode() {
     console.log(code);
 
-    const result = await runPython(code);
+    const result = await asyncRun(code, {});
     console.log(result);
   }
 
