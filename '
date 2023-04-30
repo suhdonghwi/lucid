@@ -1,0 +1,10 @@
+import React from "react";
+
+type EnhancedTextAreaProps = React.TextareaHTMLAttributes & {
+}
+
+function EnhancedTextArea({...props}: EnhancedTextAreaProps) {
+  return <textarea />;
+}
+
+export default EnhancedTextArea;

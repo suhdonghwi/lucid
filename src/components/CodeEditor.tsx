@@ -4,6 +4,7 @@ import Highlight, { defaultProps } from "prism-react-renderer";
 import lightTheme from "prism-react-renderer/themes/github";
 
 import * as cls from "./CodeEditor.css";
+import EnhancedTextArea from "./EnhancedTextArea";
 
 type CodeHighlightProps = {
   code: string;
@@ -44,7 +45,7 @@ function CodeEditor({ code, onCodeUpdate }: CodeEditorProps) {
   return (
     <div className={cls.rootContainer}>
       <div className={cls.editorContainer}>
-        <textarea
+        <EnhancedTextArea
           className={cls.codeTextArea}
           value={code}
           onChange={(e) => onCodeUpdate(e.target.value)}
