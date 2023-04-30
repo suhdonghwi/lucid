@@ -1,8 +1,8 @@
 import React from "react";
 
-type EnhancedTextAreaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement>;
+type CodeTextAreaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement>;
 
-function EnhancedTextArea({ ...props }: EnhancedTextAreaProps) {
+function CodeTextArea({ ...props }: CodeTextAreaProps) {
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Escape") {
       e.currentTarget.blur();
@@ -22,4 +22,4 @@ function EnhancedTextArea({ ...props }: EnhancedTextAreaProps) {
   );
 }
 
-export default EnhancedTextArea;
+export default CodeTextArea;
