@@ -47,9 +47,10 @@ function CodeEditor({ code, onCodeUpdate }: CodeEditorProps) {
       <div className={cls.editorContainer}>
         <CodeTextArea
           className={cls.codeTextArea}
-          value={code}
-          onChange={(e) => onCodeUpdate(e.target.value)}
           style={lightTheme.plain}
+          value={code}
+          onValueChange={onCodeUpdate}
+          tabSize={2}
         />
         <CodeHighlight code={code} />
       </div>
