@@ -1,4 +1,6 @@
 import type { PyodideInterface } from "pyodide";
+import type { PyodideResult } from "./pyodideHelper";
+
 importScripts("https://cdn.jsdelivr.net/pyodide/v0.23.1/full/pyodide.js");
 
 declare global {
@@ -31,9 +33,8 @@ self.onmessage = async (event) => {
 
   try {
     const result = await self.pyodide.runPythonAsync(python);
-
-    self.postMessage({ result, id });
+    self.postMessage({ type: "success", result, id } as PyodideResult);
   } catch (error) {
-    self.postMessage({ error, id });
+    self.postMessage({ type: "error", error, id } as PyodideResult);
   }
 };
