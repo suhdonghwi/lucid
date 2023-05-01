@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { asyncRun } from "../pyodideHelper";
+import { asyncRun } from "../PyodideHelper";
 
 import CodeEditor from "./CodeEditor";
 import * as cls from "./CodeRunner.css";

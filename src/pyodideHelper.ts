@@ -1,5 +1,5 @@
-const pyodideWorker = new Worker(
-  new URL("./pyodideWorker.ts", import.meta.url)
+const worker = new Worker(
+  new URL("./PyodideWorker.ts", import.meta.url)
 );
 
 export type PyodideResult =
@@ -16,7 +16,7 @@ export type PyodideResult =
 
 const callbacks: Record<number, (value: PyodideResult) => void> = {};
 
-pyodideWorker.onmessage = (event) => {
+worker.onmessage = (event) => {
   const data = event.data as PyodideResult;
   const onSuccess = callbacks[data.id];
   delete callbacks[data.id];
@@ -27,16 +27,16 @@ const asyncRun = (() => {
   let id = 0; // identify a Promise
   return (code: string, context: any) => {
     id = (id + 1) % Number.MAX_SAFE_INTEGER;
-    const modified_code = `
+    const modifiedCode = `
 import runner
 runner.run(${JSON.stringify(code)})
     `;
 
     return new Promise<PyodideResult>((onSuccess) => {
       callbacks[id] = onSuccess;
-      pyodideWorker.postMessage({
+      worker.postMessage({
         ...context,
-        python: modified_code,
+        python: modifiedCode,
         id,
       });
     });

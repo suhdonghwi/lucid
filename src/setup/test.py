@@ -1,7 +1,6 @@
 import ast
 from tracker_attacher import TrackerAttacher
 
-
 code = """
 def add(a: int, b: int):
     return a + b

@@ -1,5 +1,5 @@
 import type { PyodideInterface } from "pyodide";
-import type { PyodideResult } from "./pyodideHelper";
+import type { PyodideResult } from "./PyodideHelper";
 
 importScripts("https://cdn.jsdelivr.net/pyodide/v0.23.1/full/pyodide.js");
 
