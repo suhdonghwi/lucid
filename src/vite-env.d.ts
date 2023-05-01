@@ -1,3 +1,3 @@
 /// <reference types="vite/client" />
 
-declare const PYTHON_STARTERS: { name: string; code: string }[];
+declare const PYTHON_SETUP_FILES: { name: string; code: string }[];

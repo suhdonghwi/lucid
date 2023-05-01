@@ -18,7 +18,7 @@ async function initializePyodide() {
   self.pyodide = await self.loadPyodide({ stdout: console.log });
   console.log("[worker] pyodide load complete.");
 
-  for (const { name, code } of PYTHON_STARTERS) {
+  for (const { name, code } of PYTHON_SETUP_FILES) {
     self.pyodide.FS.writeFile(name, code);
   }
 

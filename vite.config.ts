@@ -6,19 +6,19 @@ import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin";
 import fs from "fs";
 import path from "path";
 
-const PYTHON_STARTERS = [];
-const starters_path = "./src/starters";
+const PYTHON_SETUP_FILES = [];
+const SETUP_PATH = "./src/setup";
 
-fs.readdir(starters_path, (err, files) => {
+fs.readdir(SETUP_PATH, (err, files) => {
   if (err) {
     console.log("Error reading directory:", err);
     return;
   }
 
   for (const file of files) {
-    const file_path = path.join(starters_path, file);
+    const file_path = path.join(SETUP_PATH, file);
     fs.readFile(file_path, "utf8", (_, data) => {
-      PYTHON_STARTERS.push({ name: file, code: data });
+      PYTHON_SETUP_FILES.push({ name: file, code: data });
     });
   }
 });
@@ -26,5 +26,5 @@ fs.readdir(starters_path, (err, files) => {
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), vanillaExtractPlugin()],
-  define: { PYTHON_STARTERS },
+  define: { PYTHON_SETUP_FILES },
 });
