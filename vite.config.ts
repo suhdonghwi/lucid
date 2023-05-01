@@ -11,7 +11,7 @@ const SETUP_PATH = "./src/setup";
 
 fs.readdir(SETUP_PATH, (err, files) => {
   if (err) {
-    console.log("Error reading directory:", err);
+    console.log("Error reading directory: ", err);
     return;
   }
 

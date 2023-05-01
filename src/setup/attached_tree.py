@@ -22,8 +22,8 @@ class AttachedTree:
             track_data = TrackData(frame, value, line_range, col_range)
             tracking_result.append(track_data)
 
-            track_data.dump()
-            print()
+            # track_data.dump()
+            # print()
 
             return value
 

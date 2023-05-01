@@ -4,15 +4,16 @@ const pyodideWorker = new Worker(
 
 export type PyodideResult =
   | {
-      type: "success";
-      result: any;
-      id: number;
-    }
+    type: "success";
+    result: any;
+    id: number;
+  }
   | {
-      type: "error";
-      error: any;
-      id: number;
-    };
+    type: "error";
+    error: any;
+    id: number;
+  };
+
 const callbacks: Record<number, (value: PyodideResult) => void> = {};
 
 pyodideWorker.onmessage = (event) => {
@@ -24,13 +25,18 @@ pyodideWorker.onmessage = (event) => {
 
 const asyncRun = (() => {
   let id = 0; // identify a Promise
-  return (script: string, context: any) => {
+  return (code: string, context: any) => {
     id = (id + 1) % Number.MAX_SAFE_INTEGER;
+    const modified_code = `
+import runner
+runner.run(${JSON.stringify(code)})
+    `;
+
     return new Promise<PyodideResult>((onSuccess) => {
       callbacks[id] = onSuccess;
       pyodideWorker.postMessage({
         ...context,
-        python: script,
+        python: modified_code,
         id,
       });
     });
