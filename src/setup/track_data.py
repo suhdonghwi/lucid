@@ -19,3 +19,11 @@ class TrackData:
         print(self.frame)
         print("Eval result:", self.value)
         print("Pos:", self.line_range, self.col_range)
+
+    def to_dict(self):
+        return {
+            "value": self.value,
+            "line": self.line_range,
+            "col": self.col_range,
+            "frame": self.frame.f_lineno,
+        }

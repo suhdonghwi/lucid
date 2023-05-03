@@ -1,4 +1,6 @@
 import type { PyodideInterface } from "pyodide";
+import type { PyBuffer } from "pyodide/ffi";
+import { PyCallable } from "pyodide/ffi";
 import type { PyodideResult } from "./PyodideHelper";
 
 importScripts("https://cdn.jsdelivr.net/pyodide/v0.23.1/full/pyodide.js");
@@ -32,8 +34,18 @@ self.onmessage = async (event) => {
   const { id, python, ...context } = event.data;
 
   try {
-    const result = await self.pyodide.runPythonAsync(python);
-    self.postMessage({ type: "success", result, id } as PyodideResult);
+    const pyResult: PyBuffer = await self.pyodide.runPythonAsync(python);
+    const jsResult = pyResult.toJs({
+      default_converter: (v) => {
+        return undefined;
+      },
+    });
+
+    self.postMessage({
+      type: "success",
+      result: jsResult,
+      id,
+    } as PyodideResult);
   } catch (error) {
     self.postMessage({ type: "error", error, id } as PyodideResult);
   }

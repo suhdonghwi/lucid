@@ -27,10 +27,7 @@ const asyncRun = (() => {
   let id = 0; // identify a Promise
   return (code: string, context: any) => {
     id = (id + 1) % Number.MAX_SAFE_INTEGER;
-    const modifiedCode = `
-import runner
-runner.run(${JSON.stringify(code)})
-    `;
+    const modifiedCode = `from runner import run\nrun(${JSON.stringify(code)})`;
 
     return new Promise<PyodideResult>((onSuccess) => {
       callbacks[id] = onSuccess;
