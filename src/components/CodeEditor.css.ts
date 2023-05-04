@@ -31,6 +31,7 @@ export const codeTextArea = style([
   {
     resize: "none",
     outline: "none",
+    "-webkit-text-fill-color": "transparent",
 
     position: "absolute",
     top: 0,
@@ -45,3 +46,5 @@ export const codeHighlight = style([
     pointerEvents: "none",
   },
 ]);
+
+export const errorLine = style({ backgroundColor: "#ffe3e3" });

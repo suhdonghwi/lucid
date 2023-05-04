@@ -38,25 +38,30 @@ self.onmessage = async (event) => {
   await pyodideReadyPromise;
   const { id, code, ...context } = event.data;
 
-  try {
-    const pyResult: PyBuffer = await self.pyodide.runPythonAsync(code);
-    if (pyResult.type === "RunnerError") {
-      console.log(pyResult.message);
-      console.log(pyResult.line, pyResult.end_line);
-      console.log(pyResult.offset, pyResult.end_offset);
-      return;
-    }
+  const pyResult: PyBuffer = await self.pyodide.runPythonAsync(code);
 
-    const jsResult = pyResult.toJs({
-      default_converter: proxyConverter,
-    });
-
+  if (pyResult.type === "RunError") {
     self.postMessage({
-      type: "success",
-      result: jsResult,
+      type: "error",
+      error: {
+        message: pyResult.message,
+        line: pyResult.line,
+        end_line: pyResult.end_line,
+        offset: pyResult.offset,
+        end_offset: pyResult.end_offset,
+      },
       id,
     } as PyodideResult);
-  } catch (error) {
-    self.postMessage({ type: "error", error, id } as PyodideResult);
+    return;
   }
+
+  const jsResult = pyResult.toJs({
+    default_converter: proxyConverter,
+  });
+
+  self.postMessage({
+    type: "success",
+    result: jsResult,
+    id,
+  } as PyodideResult);
 };

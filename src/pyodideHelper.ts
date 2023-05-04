@@ -1,18 +1,17 @@
-const worker = new Worker(
-  new URL("./PyodideWorker.ts", import.meta.url)
-);
+import type { RunError } from "./RunError";
 
+const worker = new Worker(new URL("./PyodideWorker.ts", import.meta.url));
 export type PyodideResult =
   | {
-    type: "success";
-    result: any;
-    id: number;
-  }
+      type: "success";
+      result: any;
+      id: number;
+    }
   | {
-    type: "error";
-    error: any;
-    id: number;
-  };
+      type: "error";
+      error: RunError;
+      id: number;
+    };
 
 const callbacks: Record<number, (value: PyodideResult) => void> = {};
 

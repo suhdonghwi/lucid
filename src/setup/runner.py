@@ -2,7 +2,7 @@ import ast
 from tracker_attacher import TrackerAttacher
 
 
-class RunnerError:
+class RunError:
     def __init__(
         self,
         message: str,
@@ -28,6 +28,6 @@ def run(code: str):
         attached_tree = attacher.attach(tree)
         exec_result = attached_tree.exec()
     except SyntaxError as e:
-        return RunnerError(e.msg, e.lineno, e.end_lineno, e.offset, e.end_offset)
+        return RunError(e.msg, e.lineno, e.end_lineno, e.offset, e.end_offset)
 
     return list(map(lambda x: x.to_dict(), exec_result))
