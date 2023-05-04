@@ -16,6 +16,8 @@ fs.readdir(SETUP_PATH, (err, files) => {
   }
 
   for (const file of files) {
+    if (!file.endsWith(".py")) continue;
+
     const file_path = path.join(SETUP_PATH, file);
     fs.readFile(file_path, "utf8", (_, data) => {
       PYTHON_SETUP_FILES.push({ name: file, code: data });

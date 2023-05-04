@@ -33,7 +33,7 @@ const asyncRun = (() => {
       callbacks[id] = onSuccess;
       worker.postMessage({
         ...context,
-        python: modifiedCode,
+        code: modifiedCode,
         id,
       });
     });

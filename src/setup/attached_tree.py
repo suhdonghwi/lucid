@@ -22,9 +22,6 @@ class AttachedTree:
             track_data = TrackData(frame, value, line_range, col_range)
             tracking_result.append(track_data)
 
-            # track_data.dump()
-            # print()
-
             return value
 
         compiled_code = compile(self.attached_tree, filename="<code>", mode="exec")
