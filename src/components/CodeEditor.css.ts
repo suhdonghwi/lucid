@@ -3,7 +3,7 @@ import { style } from "@vanilla-extract/css";
 export const rootContainer = style({
   width: "30rem",
   height: "30rem",
-  fontFamily: "Ubuntu Mono, monospace",
+  fontFamily: "Fira Mono, monospace",
 
   overflow: "auto",
 });
