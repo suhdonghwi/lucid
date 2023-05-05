@@ -1,4 +1,6 @@
 import ast
+import sys
+
 from tracker_attacher import TrackerAttacher
 
 
@@ -21,13 +23,28 @@ class RunError:
 
 
 def run(code: str):
+    file_name = "<code>"
+
     try:
         tree = ast.parse(code)
         attacher = TrackerAttacher("_track")
 
         attached_tree = attacher.attach(tree)
-        exec_result = attached_tree.exec()
+        exec_result = attached_tree.exec(file_name)
     except SyntaxError as e:
-        return RunError(e.msg, e.lineno, e.end_lineno, e.offset, e.end_offset)
+        return RunError(
+            "SyntaxError: " + e.msg, e.lineno, e.end_lineno, e.offset, e.end_offset
+        )
+    except Exception as e:
+        tb = e.__traceback__.tb_next.tb_next  # type: ignore
+        while (
+            tb is not None
+            and tb.tb_next is not None
+            and tb.tb_frame.f_code.co_filename == file_name
+        ):
+            tb = tb.tb_next
+
+        message = type(e).__name__ + ": " + str(e)
+        return RunError(message, tb.tb_lineno, tb.tb_lineno, None, None)  # type: ignore
 
     return list(map(lambda x: x.to_dict(), exec_result))

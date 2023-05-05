@@ -10,7 +10,7 @@ class AttachedTree:
         self.attached_tree = attached_tree
         self.tracker_identifer = tracker_identifier
 
-    def exec(self):
+    def exec(self, file_name: str):
         tracking_result: list[TrackData] = []
 
         def track_expression(
@@ -24,7 +24,7 @@ class AttachedTree:
 
             return value
 
-        compiled_code = compile(self.attached_tree, filename="<code>", mode="exec")
+        compiled_code = compile(self.attached_tree, filename=file_name, mode="exec")
         namespace = {
             self.tracker_identifer: track_expression,
         }

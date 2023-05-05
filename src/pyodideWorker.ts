@@ -1,6 +1,9 @@
 import type { PyodideInterface } from "pyodide";
-import type { PyBuffer, PyProxy, PythonError } from "pyodide/ffi";
+import type { PyBuffer, PyProxy } from "pyodide/ffi";
+
 import type { PyodideResult } from "./PyodideHelper";
+
+import type { RunError } from "./RunError";
 
 importScripts("https://cdn.jsdelivr.net/pyodide/v0.23.1/full/pyodide.js");
 
@@ -47,9 +50,9 @@ self.onmessage = async (event) => {
         message: pyResult.message,
         line: pyResult.line,
         end_line: pyResult.end_line,
-        offset: pyResult.offset,
-        end_offset: pyResult.end_offset,
-      },
+        offset: pyResult.offset ?? null,
+        end_offset: pyResult.end_offset ?? null,
+      } as RunError,
       id,
     } as PyodideResult);
     return;

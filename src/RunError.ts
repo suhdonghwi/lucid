@@ -4,6 +4,6 @@ export type RunError = {
   line: number;
   end_line: number;
 
-  offset: number;
-  end_offset: number;
+  offset: number | null;
+  end_offset: number | null;
 };
