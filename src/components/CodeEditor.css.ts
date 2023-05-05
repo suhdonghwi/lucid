@@ -6,12 +6,15 @@ export const rootContainer = style({
   fontFamily: "Fira Mono, monospace",
 
   overflow: "auto",
+
+  backgroundColor: "#f8f9fa",
+  padding: "0.7rem",
+  borderRadius: "10px"
 });
 
 export const editorContainer = style({
   position: "relative",
   minHeight: "100%",
-  backgroundColor: "#f8f9fa",
 });
 
 const codeBase = style({
