@@ -30,13 +30,16 @@ function CodeHighlight({ code, error }: CodeHighlightProps) {
             const lineNumber = i + 1;
             const isErrorLine =
               error && error.line <= lineNumber && lineNumber <= error.end_line;
+            const errorClassname = isErrorLine ? cls.errorLine : "";
             return (
               <React.Fragment key={i}>
-                <div className={cls.lineNumber}>{lineNumber}</div>
+                <div className={`${errorClassname} ${cls.lineNumber}`}>
+                  {lineNumber}
+                </div>
                 <div
                   {...getLineProps({
                     line,
-                    className: `${isErrorLine ? cls.errorLine : ""}`,
+                    className: errorClassname,
                   })}
                 >
                   {line.map((token, key) => (

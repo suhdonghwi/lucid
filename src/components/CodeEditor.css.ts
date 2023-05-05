@@ -38,7 +38,7 @@ export const codeTextArea = style([
   {
     resize: "none",
     outline: "none",
-    "-webkit-text-fill-color": "transparent",
+    WebkitTextFillColor: "transparent",
 
     position: "absolute",
     top: 0,
@@ -57,8 +57,10 @@ export const codeHighlight = style([
 ]);
 
 export const lineNumber = style({
-  justifySelf: "end",
-  marginRight: 12,
+  width: "100%",
+  textAlign: "right",
+  paddingRight: 12,
+
   color: "#adb5bd",
 
   wordBreak: "keep-all",
