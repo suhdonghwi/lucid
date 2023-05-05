@@ -33,8 +33,12 @@ class TrackerAttacher(ast.NodeTransformer):
     def __visit_only_expr(self, node: ast.AST):
         match node:
             case ast.FunctionDef():
-                for body_node in node.body:
-                    self.generic_visit(body_node)
+                for n in node.body:
+                    self.generic_visit(n)
+            case ast.For():
+                self.generic_visit(node.iter)
+                for n in node.body:
+                    self.generic_visit(n)
             case _:
                 self.generic_visit(node)
 

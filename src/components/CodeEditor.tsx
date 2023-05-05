@@ -27,20 +27,23 @@ function CodeHighlight({ code, error }: CodeHighlightProps) {
           style={{ ...style, backgroundColor: "transparent" }}
         >
           {tokens.map((line, i) => {
+            const lineNumber = i + 1;
             const isErrorLine =
-              error && error.line <= i + 1 && i + 1 <= error.end_line;
+              error && error.line <= lineNumber && lineNumber <= error.end_line;
             return (
-              <div
-                key={i}
-                {...getLineProps({
-                  line,
-                  className: isErrorLine ? cls.errorLine : "",
-                })}
-              >
-                {line.map((token, key) => (
-                  <span key={key} {...getTokenProps({ token })} />
-                ))}
-              </div>
+              <React.Fragment key={i}>
+                <div className={cls.lineNumber}>{lineNumber}</div>
+                <div
+                  {...getLineProps({
+                    line,
+                    className: `${isErrorLine ? cls.errorLine : ""}`,
+                  })}
+                >
+                  {line.map((token, key) => (
+                    <span key={key} {...getTokenProps({ token })} />
+                  ))}
+                </div>
+              </React.Fragment>
             );
           })}
         </pre>

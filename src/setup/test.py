@@ -5,7 +5,8 @@ code = """
 def add(a: int, b: int):
     return a + b
 
-print(add(10, 20))
+for i in range(10):
+    print(add(10, 20))
 """
 
 tree = ast.parse(code)
