@@ -11,6 +11,7 @@ export const rootContainer = style({
 export const editorContainer = style({
   position: "relative",
   minHeight: "100%",
+  backgroundColor: "#f8f9fa",
 });
 
 const codeBase = style({
@@ -42,7 +43,6 @@ export const codeTextArea = style([
 export const codeHighlight = style([
   codeBase,
   {
-    position: "relative",
     pointerEvents: "none",
   },
 ]);

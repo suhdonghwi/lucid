@@ -24,7 +24,7 @@ function CodeHighlight({ code, error }: CodeHighlightProps) {
       {({ className, style, tokens, getLineProps, getTokenProps }) => (
         <pre
           className={`${className} ${cls.codeHighlight}`}
-          style={{ ...style, background: "none" }}
+          style={{ ...style, backgroundColor: "transparent" }}
         >
           {tokens.map((line, i) => {
             const isErrorLine =
