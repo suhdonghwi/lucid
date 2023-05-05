@@ -2,11 +2,12 @@ import ast
 from tracker_attacher import TrackerAttacher
 
 code = """
-def add(a: int, b: int):
-    return a + b
+def f():
+  for i in rnage(10):
+    print("asdf")
 
-for i in range(10):
-    print(add(10, 20))
+
+f()
 """
 
 tree = ast.parse(code)

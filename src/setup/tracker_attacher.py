@@ -34,11 +34,11 @@ class TrackerAttacher(ast.NodeTransformer):
         match node:
             case ast.FunctionDef():
                 for n in node.body:
-                    self.generic_visit(n)
+                    self.visit(n)
             case ast.For():
-                self.generic_visit(node.iter)
+                self.visit(node.iter)
                 for n in node.body:
-                    self.generic_visit(n)
+                    self.visit(n)
             case _:
                 self.generic_visit(node)
 
