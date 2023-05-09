@@ -36,9 +36,11 @@ class TrackerAttacher(ast.NodeTransformer):
                 for n in node.body:
                     self.visit(n)
             case ast.For():
-                self.visit(node.iter)
+                node.iter = self.visit(node.iter)
                 for n in node.body:
                     self.visit(n)
+            case ast.Call():
+                node.args = [self.visit(arg) for arg in node.args]
             case _:
                 self.generic_visit(node)
 
@@ -46,7 +48,7 @@ class TrackerAttacher(ast.NodeTransformer):
         self.__visit_only_expr(node)
 
         if isinstance(node, ast.expr):
-            node = self.__add_tracker(node)
+            return self.__add_tracker(node)
 
         return node
 

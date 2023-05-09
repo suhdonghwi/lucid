@@ -27,5 +27,5 @@ print(attached_tree.unparse())
 print()
 print("[Exec result]")
 
-result = attached_tree.exec()
+result = attached_tree.exec("<code>")
 print(result)
