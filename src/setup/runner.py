@@ -1,5 +1,4 @@
 import ast
-import sys
 
 from tracker_attacher import TrackerAttacher
 
@@ -32,9 +31,8 @@ def run(code: str):
         attached_tree = attacher.attach(tree)
         exec_result = attached_tree.exec(file_name)
     except SyntaxError as e:
-        return RunError(
-            "SyntaxError: " + e.msg, e.lineno, e.end_lineno, e.offset, e.end_offset
-        )
+        message = "SyntaxError: " + e.msg
+        return RunError(message, e.lineno, e.end_lineno, e.offset, e.end_offset)
     except Exception as e:
         tb = e.__traceback__.tb_next.tb_next  # type: ignore
         while (
