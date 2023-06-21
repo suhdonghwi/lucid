@@ -13,7 +13,23 @@ def f():
 f()
 """
 
-tree = ast.parse(code)
+code2 = """
+import random
+
+def roll_dice():
+    return random.randint(1, 6)
+
+num_rolls = 5
+results = []
+
+for _ in range(num_rolls):
+    roll_result = roll_dice()
+    results.append(roll_result)
+
+print(f"The results of {num_rolls} dice rolls are: {results}")
+"""
+
+tree = ast.parse(code2)
 
 print("[AST Dump]")
 print(ast.dump(tree, indent=2))

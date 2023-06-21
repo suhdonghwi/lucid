@@ -34,6 +34,12 @@ class TrackerAttacher(ast.NodeTransformer):
         match node:
             case ast.Name(ctx=ast.Del()) | ast.Name(ctx=ast.Store()):
                 pass
+
+            case ast.JoinedStr():
+                for value in node.values:
+                    if isinstance(value, ast.FormattedValue):
+                        self.generic_visit(value)
+
             case ast.expr():
                 self.generic_visit(node)
                 return self.__add_tracker(node)
