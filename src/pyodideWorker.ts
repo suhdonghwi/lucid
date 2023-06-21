@@ -6,7 +6,7 @@ import type { PyodideResult } from "./PyodideHelper";
 import type { RunError } from "./RunError";
 import type { TrackData } from "./TrackData";
 
-importScripts("https://cdn.jsdelivr.net/pyodide/v0.23.1/full/pyodide.js");
+importScripts("https://cdn.jsdelivr.net/pyodide/v0.23.3/full/pyodide.js");
 
 declare global {
   interface Window {
