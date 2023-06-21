@@ -3,8 +3,6 @@ from tracker_attacher import TrackerAttacher
 
 code = """
 def f():
-    for i in range(10):
-        print("fruits")
     print("apple")
     print("banana")
     print("coconut")
@@ -29,7 +27,7 @@ for _ in range(num_rolls):
 print(f"The results of {num_rolls} dice rolls are: {results}")
 """
 
-tree = ast.parse(code2)
+tree = ast.parse(code)
 
 print("[AST Dump]")
 print(ast.dump(tree, indent=2))

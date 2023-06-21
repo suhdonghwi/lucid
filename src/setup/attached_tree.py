@@ -16,7 +16,7 @@ class AttachedTree:
             value: object, line: int, end_line: int, col: int, end_col: int
         ):
             frame = sys._getframe(1)
-            track_data = TrackData(frame, value, line, end_line, col, end_col)
+            track_data = TrackData(value, line, end_line, col, end_col, frame.f_code)
             tracking_result.append(track_data)
 
             return value
