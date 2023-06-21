@@ -1,9 +1,9 @@
 import React from "react";
 
-import { EditorView } from "codemirror";
+import { EditorView } from "@codemirror/view";
+import { python } from "@codemirror/lang-python";
 import CodeMirror from "@uiw/react-codemirror";
 import { githubLightInit } from "@uiw/codemirror-theme-github";
-import { python } from "@codemirror/lang-python";
 
 import * as cls from "./CodeEditor.css";
 
