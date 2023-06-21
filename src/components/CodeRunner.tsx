@@ -8,7 +8,9 @@ import * as cls from "./CodeRunner.css";
 import { RunError } from "../RunError";
 
 const exampleCode = `def f():
-    print("Hello, world!")
+    print("apple")
+    print("banana")
+    print("coconut")
 
 f()`;
 

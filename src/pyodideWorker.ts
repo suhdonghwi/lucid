@@ -4,6 +4,7 @@ import type { PyBuffer, PyProxy } from "pyodide/ffi";
 import type { PyodideResult } from "./PyodideHelper";
 
 import type { RunError } from "./RunError";
+import type { TrackData } from "./TrackData";
 
 importScripts("https://cdn.jsdelivr.net/pyodide/v0.23.1/full/pyodide.js");
 
@@ -58,13 +59,27 @@ self.onmessage = async (event) => {
     return;
   }
 
-  const jsResult = pyResult.toJs({
-    default_converter: proxyConverter,
-  });
+  const trackDataList: PyBuffer[] = pyResult.toJs({ depth: 1 });
+  const convertedTrackDataList: TrackData[] = [];
+
+  for (const trackData of trackDataList) {
+    convertedTrackDataList.push({
+      value:
+        trackData.value instanceof self.pyodide.ffi.PyProxy
+          ? trackData.value.toJs({ default_converter: proxyConverter })
+          : trackData.value,
+      line: trackData.line,
+      end_line: trackData.end_line,
+      col: trackData.col,
+      end_col: trackData.end_col,
+    });
+  }
+
+  console.log(convertedTrackDataList);
 
   self.postMessage({
     type: "success",
-    result: jsResult,
+    result: convertedTrackDataList,
     id,
   } as PyodideResult);
 };
