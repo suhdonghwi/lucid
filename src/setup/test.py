@@ -3,8 +3,11 @@ from tracker_attacher import TrackerAttacher
 
 code = """
 def f():
-  for i in rnage(10):
-    print("asdf")
+    for i in range(10):
+        print("fruits")
+    print("apple")
+    print("banana")
+    print("coconut")
 
 
 f()

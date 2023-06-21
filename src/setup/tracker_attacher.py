@@ -30,25 +30,19 @@ class TrackerAttacher(ast.NodeTransformer):
             keywords=[],
         )
 
-    def __visit_only_expr(self, node: ast.AST):
+    def visit(self, node: ast.AST) -> ast.AST:
         match node:
+            case ast.Name(ctx=ast.Del()) | ast.Name(ctx=ast.Store()):
+                pass
+            case ast.expr():
+                self.generic_visit(node)
+                return self.__add_tracker(node)
+
             case ast.FunctionDef():
                 for n in node.body:
-                    self.visit(n)
-            case ast.For():
-                node.iter = self.visit(node.iter)
-                for n in node.body:
-                    self.visit(n)
-            case ast.Call():
-                node.args = [self.visit(arg) for arg in node.args]
+                    self.generic_visit(n)
             case _:
                 self.generic_visit(node)
-
-    def visit(self, node: ast.AST) -> ast.AST:
-        self.__visit_only_expr(node)
-
-        if isinstance(node, ast.expr):
-            return self.__add_tracker(node)
 
         return node
 
