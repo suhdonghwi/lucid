@@ -73,7 +73,7 @@ self.onmessage = async (event) => {
       col: trackData.col,
       end_col: trackData.end_col,
 
-      code_obj_id: trackData.code_obj_id,
+      frame_id: trackData.frame_id,
       code_obj_line: trackData.code_obj_line,
       code_obj_end_line: trackData.code_obj_end_line,
     });

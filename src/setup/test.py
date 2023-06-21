@@ -27,7 +27,16 @@ for _ in range(num_rolls):
 print(f"The results of {num_rolls} dice rolls are: {results}")
 """
 
-tree = ast.parse(code)
+code3 = """
+def f(x):
+    if x == 0:
+        return 0
+    return f(x-1)
+
+print(f(5))
+"""
+
+tree = ast.parse(code3)
 
 print("[AST Dump]")
 print(ast.dump(tree, indent=2))

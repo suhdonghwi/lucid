@@ -1,4 +1,4 @@
-from types import CodeType
+from types import FrameType
 
 
 class TrackData:
@@ -9,7 +9,7 @@ class TrackData:
         end_line: int,
         col: int,
         end_col: int,
-        code_obj: CodeType,
+        frame: FrameType,
     ):
         self.value = value
 
@@ -19,8 +19,8 @@ class TrackData:
         self.col = col
         self.end_col = end_col
 
-        self.code_obj_id = id(code_obj)
-        first_line, *_, last_line = code_obj.co_lines()
+        self.frame_id = id(frame)
+        first_line, *_, last_line = frame.f_code.co_lines()
         self.code_obj_line = first_line[2]
         self.code_obj_end_line = last_line[2]
 
