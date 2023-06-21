@@ -8,25 +8,15 @@ class TrackerAttacher(ast.NodeTransformer):
         self.tracker_identifier = tracker_identifier
 
     def __add_tracker(self, node: ast.expr) -> ast.Call:
-        line_range = ast.Tuple(
-            elts=[
-                ast.Constant(value=node.lineno),
-                ast.Constant(value=node.end_lineno),
-            ],
-            ctx=ast.Load(),
-        )
+        line = ast.Constant(value=node.lineno)
+        end_line = ast.Constant(value=node.end_lineno)
 
-        col_range = ast.Tuple(
-            elts=[
-                ast.Constant(value=node.col_offset),
-                ast.Constant(value=node.end_col_offset),
-            ],
-            ctx=ast.Load(),
-        )
+        col = ast.Constant(value=node.col_offset)
+        end_col = ast.Constant(value=node.end_col_offset)
 
         return ast.Call(
             func=ast.Name(id=self.tracker_identifier, ctx=ast.Load()),
-            args=[node, line_range, col_range],
+            args=[node, line, end_line, col, end_col],
             keywords=[],
         )
 

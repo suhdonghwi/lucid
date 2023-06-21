@@ -45,4 +45,5 @@ def run(code: str):
         message = type(e).__name__ + ": " + str(e)
         return RunError(message, tb.tb_lineno, tb.tb_lineno, None, None)  # type: ignore
 
+    return list(exec_result)
     return list(map(lambda x: x.to_dict(), exec_result))

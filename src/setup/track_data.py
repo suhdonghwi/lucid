@@ -1,5 +1,4 @@
 from types import FrameType
-from typing import Tuple
 
 
 class TrackData:
@@ -7,23 +6,21 @@ class TrackData:
         self,
         frame: FrameType,
         value: object,
-        line_range: Tuple[int, int],
-        col_range: Tuple[int, int],
+        line: int,
+        end_line: int,
+        col: int,
+        end_col: int
     ):
         self.frame = frame
         self.value = value
-        self.line_range = line_range
-        self.col_range = col_range
+
+        self.line = line
+        self.end_line = end_line
+
+        self.col = col
+        self.end_col = end_col
 
     def dump(self):
         print(self.frame)
         print("Eval result:", self.value)
-        print("Pos:", self.line_range, self.col_range)
-
-    def to_dict(self):
-        return {
-            "value": self.value,
-            "line": self.line_range,
-            "col": self.col_range,
-            "frame": self.frame.f_lineno,
-        }
+        print("Pos:", self.line, self.end_line, self.col, self.end_col)

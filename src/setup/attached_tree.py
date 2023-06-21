@@ -1,6 +1,5 @@
 import ast
 import sys
-from typing import Tuple
 
 from track_data import TrackData
 
@@ -14,12 +13,10 @@ class AttachedTree:
         tracking_result: list[TrackData] = []
 
         def track_expression(
-            value: object,
-            line_range: Tuple[int, int],
-            col_range: Tuple[int, int],
+            value: object, line: int, end_line: int, col: int, end_col: int
         ):
             frame = sys._getframe(1)
-            track_data = TrackData(frame, value, line_range, col_range)
+            track_data = TrackData(frame, value, line, end_line, col, end_col)
             tracking_result.append(track_data)
 
             return value
