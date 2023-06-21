@@ -13,9 +13,6 @@ const theme = EditorView.theme({
   "&.cm-focused": {
     outline: "none",
   },
-  "& .cm-activeLine, & .cm-activeLineGutter": {
-    backgroundColor: "#f1f3f5",
-  },
 });
 
 type CodeEditorProps = {
@@ -32,7 +29,8 @@ function CodeEditor({ code, onCodeUpdate, error }: CodeEditorProps) {
         className={cls.editor}
         value={code}
         height="100%"
-        theme={githubLightInit({ theme: "light",
+        theme={githubLightInit({
+          theme: "light",
           settings: {
             background: "transparent",
             gutterBackground: "transparent",
@@ -42,6 +40,7 @@ function CodeEditor({ code, onCodeUpdate, error }: CodeEditorProps) {
         extensions={[theme, python()]}
         basicSetup={{
           foldGutter: false,
+          highlightSelectionMatches: false,
         }}
         onChange={onCodeUpdate}
       />
