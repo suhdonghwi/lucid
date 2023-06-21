@@ -4,7 +4,7 @@ export const rootContainer = style({
   width: "30rem",
   height: "30rem",
   fontFamily: "Fira Mono, monospace",
-  fontSize: "14px",
+  fontSize: "15px",
 
   overflow: "auto",
 
