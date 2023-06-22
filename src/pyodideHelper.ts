@@ -1,10 +1,11 @@
 import type { RunError } from "./RunError";
+import type { TrackData } from "./TrackData";
 
 const worker = new Worker(new URL("./PyodideWorker.ts", import.meta.url));
 export type PyodideResult =
   | {
       type: "success";
-      result: any;
+      data: TrackData[];
       id: number;
     }
   | {

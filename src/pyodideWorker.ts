@@ -68,10 +68,12 @@ self.onmessage = async (event) => {
         trackData.value instanceof self.pyodide.ffi.PyProxy
           ? trackData.value.toJs({ default_converter: proxyConverter })
           : trackData.value,
-      line: trackData.line,
-      end_line: trackData.end_line,
-      col: trackData.col,
-      end_col: trackData.end_col,
+      pos_range: {
+        line: trackData.line,
+        end_line: trackData.end_line,
+        col: trackData.col,
+        end_col: trackData.end_col,
+      },
 
       frame_id: trackData.frame_id,
       code_obj_line: trackData.code_obj_line,
@@ -83,7 +85,7 @@ self.onmessage = async (event) => {
 
   self.postMessage({
     type: "success",
-    result: convertedTrackDataList,
+    data: convertedTrackDataList,
     id,
   } as PyodideResult);
 };

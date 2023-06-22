@@ -6,6 +6,7 @@ import CodeEditor from "./CodeEditor";
 import * as cls from "./CodeRunner.css";
 
 import { RunError } from "../RunError";
+import { PosRange } from "../TrackData";
 
 const exampleCode = `def f():
     print("apple")
@@ -17,6 +18,7 @@ f()`;
 function CodeRunner() {
   const [code, setCode] = useState(exampleCode);
   const [error, setError] = useState<RunError | null>(null);
+  const [highlight, setHighlight] = useState<PosRange | null>(null);
 
   async function runCode() {
     const result = await asyncRun(code, {});
@@ -24,6 +26,8 @@ function CodeRunner() {
 
     if (result.type === "error") {
       setError(result.error);
+    } else {
+      setHighlight(result.data[0].pos_range);
     }
   }
 
@@ -37,6 +41,7 @@ function CodeRunner() {
       <CodeEditor
         code={code}
         onCodeUpdate={onCodeUpdate}
+        highlight={highlight}
       />
       <input
         type="button"
