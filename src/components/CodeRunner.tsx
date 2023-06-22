@@ -37,7 +37,6 @@ function CodeRunner() {
       <CodeEditor
         code={code}
         onCodeUpdate={onCodeUpdate}
-        error={error}
       />
       <input
         type="button"

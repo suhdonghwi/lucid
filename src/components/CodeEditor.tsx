@@ -7,8 +7,6 @@ import { githubLightInit } from "@uiw/codemirror-theme-github";
 
 import * as cls from "./CodeEditor.css";
 
-import { RunError } from "../RunError";
-
 const theme = EditorView.theme({
   "&.cm-focused": {
     outline: "none",
@@ -18,11 +16,9 @@ const theme = EditorView.theme({
 type CodeEditorProps = {
   code: string;
   onCodeUpdate: (code: string) => void;
-
-  error: RunError | null;
 };
 
-function CodeEditor({ code, onCodeUpdate, error }: CodeEditorProps) {
+function CodeEditor({ code, onCodeUpdate }: CodeEditorProps) {
   return (
     <div className={cls.rootContainer}>
       <CodeMirror
