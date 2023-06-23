@@ -2,20 +2,11 @@ import { useRef, useEffect } from "react";
 
 import { useAnimate } from "framer-motion";
 
-import {
-  EditorView,
-  layer,
-  RectangleMarker,
-  lineNumbers,
-  keymap,
-  drawSelection,
-  dropCursor,
-  highlightActiveLine,
-  highlightActiveLineGutter,
-} from "@codemirror/view";
-import { defaultKeymap, history } from "@codemirror/commands";
-import { indentOnInput, bracketMatching } from "@codemirror/language";
-import { closeBrackets } from "@codemirror/autocomplete";
+import * as View from "@codemirror/view";
+import * as Commands from "@codemirror/commands";
+import * as Language from "@codemirror/language";
+import * as Autocomplete from "@codemirror/autocomplete";
+
 import { python } from "@codemirror/lang-python";
 
 import { useCodeMirror } from "@uiw/react-codemirror";
@@ -27,7 +18,7 @@ import { PosRange } from "../TrackData";
 const evalHighlightLayerClassName = "eval-highlight-layer";
 const evalHighlightClassName = "eval-highlight";
 
-const cssStyle = EditorView.theme({
+const cssTheme = View.EditorView.theme({
   "&.cm-focused": {
     outline: "none",
   },
@@ -37,28 +28,28 @@ const cssStyle = EditorView.theme({
   },
 });
 
-const evalHighlightLayer = layer({
+const evalHighlightLayer = View.layer({
   class: evalHighlightLayerClassName,
   above: false,
   update: () => true,
   markers: () => {
-    return [new RectangleMarker(evalHighlightClassName, 0, 0, 0, 0)];
+    return [new View.RectangleMarker(evalHighlightClassName, 0, 0, 0, 0)];
   },
 });
 
 const extensions = [
-  keymap.of(defaultKeymap),
-  lineNumbers(),
-  history(),
-  drawSelection(),
-  dropCursor(),
-  indentOnInput(),
-  bracketMatching(),
-  closeBrackets(),
-  highlightActiveLine(),
-  highlightActiveLineGutter(),
-  cssStyle,
+  View.keymap.of(Commands.defaultKeymap),
+  View.lineNumbers(),
+  Commands.history(),
+  View.drawSelection(),
+  View.dropCursor(),
+  Language.indentOnInput(),
+  Language.bracketMatching(),
+  Autocomplete.closeBrackets(),
+  View.highlightActiveLine(),
+  View.highlightActiveLineGutter(),
   python(),
+  cssTheme,
   evalHighlightLayer,
 ];
 
