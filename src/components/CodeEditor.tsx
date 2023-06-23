@@ -2,8 +2,22 @@ import { useRef, useEffect } from "react";
 
 import { useAnimate } from "framer-motion";
 
-import { EditorView, layer, RectangleMarker } from "@codemirror/view";
+import {
+  EditorView,
+  layer,
+  RectangleMarker,
+  lineNumbers,
+  keymap,
+  drawSelection,
+  dropCursor,
+  highlightActiveLine,
+  highlightActiveLineGutter,
+} from "@codemirror/view";
+import { defaultKeymap, history } from "@codemirror/commands";
+import { indentOnInput, bracketMatching } from "@codemirror/language";
+import { closeBrackets } from "@codemirror/autocomplete";
 import { python } from "@codemirror/lang-python";
+
 import { useCodeMirror } from "@uiw/react-codemirror";
 import { githubLightInit } from "@uiw/codemirror-theme-github";
 
@@ -32,14 +46,28 @@ const evalHighlightLayer = layer({
   },
 });
 
-const extensions = [cssStyle, python(), evalHighlightLayer];
+const extensions = [
+  keymap.of(defaultKeymap),
+  lineNumbers(),
+  history(),
+  drawSelection(),
+  dropCursor(),
+  indentOnInput(),
+  bracketMatching(),
+  closeBrackets(),
+  highlightActiveLine(),
+  highlightActiveLineGutter(),
+  cssStyle,
+  python(),
+  evalHighlightLayer,
+];
 
 const theme = githubLightInit({
   theme: "light",
   settings: {
     background: "transparent",
     gutterBackground: "transparent",
-    fontFamily: "Fira Mono, monospace",
+    fontFamily: "JetBrains Mono, monospace",
   },
 });
 
@@ -62,15 +90,12 @@ function CodeEditor({ code, onCodeUpdate, highlight }: CodeEditorProps) {
     height: "100%",
     theme,
     extensions,
-    basicSetup: {
-      foldGutter: false,
-      highlightSelectionMatches: false,
-    },
+    basicSetup: false,
     onChange: onCodeUpdate,
     container: editor.current,
   });
 
-  const [scope, animate] = useAnimate();
+  const [animationScope, animate] = useAnimate();
 
   useEffect(() => {
     if (editor.current) setContainer(editor.current);
@@ -99,7 +124,7 @@ function CodeEditor({ code, onCodeUpdate, highlight }: CodeEditorProps) {
   }, [highlight]);
 
   return (
-    <div ref={scope} className={cls.rootContainer}>
+    <div ref={animationScope} className={cls.rootContainer}>
       <div ref={editor} />
     </div>
   );
