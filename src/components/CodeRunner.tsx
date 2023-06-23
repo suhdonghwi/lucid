@@ -27,7 +27,7 @@ function CodeRunner() {
     if (result.type === "error") {
       setError(result.error);
     } else {
-      setHighlight(result.data[0].pos_range);
+      setHighlight(result.data[0].posRange);
     }
   }
 

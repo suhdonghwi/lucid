@@ -50,9 +50,9 @@ self.onmessage = async (event) => {
       error: {
         message: pyResult.message,
         line: pyResult.line,
-        end_line: pyResult.end_line,
+        endLine: pyResult.end_line,
         offset: pyResult.offset ?? null,
-        end_offset: pyResult.end_offset ?? null,
+        endOffset: pyResult.end_offset ?? null,
       } as RunError,
       id,
     } as PyodideResult);
@@ -68,16 +68,16 @@ self.onmessage = async (event) => {
         trackData.value instanceof self.pyodide.ffi.PyProxy
           ? trackData.value.toJs({ default_converter: proxyConverter })
           : trackData.value,
-      pos_range: {
+      posRange: {
         line: trackData.line,
-        end_line: trackData.end_line,
+        endLine: trackData.end_line,
         col: trackData.col,
-        end_col: trackData.end_col,
+        endCol: trackData.end_col,
       },
 
-      frame_id: trackData.frame_id,
-      code_obj_line: trackData.code_obj_line,
-      code_obj_end_line: trackData.code_obj_end_line,
+      frameId: trackData.frame_id,
+      codeObjLine: trackData.code_obj_line,
+      codeObjEndLine: trackData.code_obj_end_line,
     });
   }
 

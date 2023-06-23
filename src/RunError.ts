@@ -2,8 +2,8 @@ export type RunError = {
   message: string;
 
   line: number;
-  end_line: number;
+  endLine: number;
 
   offset: number | null;
-  end_offset: number | null;
+  endOffset: number | null;
 };

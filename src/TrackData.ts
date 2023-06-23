@@ -1,17 +1,17 @@
 export type PosRange = {
   line: number;
-  end_line: number;
+  endLine: number;
 
   col: number;
-  end_col: number;
+  endCol: number;
 };
 
 export type TrackData = {
   value: any;
 
-  pos_range: PosRange;
+  posRange: PosRange;
 
-  frame_id: number;
-  code_obj_line: number;
-  code_obj_end_line: number;
+  frameId: number;
+  codeObjLine: number;
+  codeObjEndLine: number;
 };

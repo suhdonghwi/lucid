@@ -81,7 +81,7 @@ function CodeEditor({ code, onCodeUpdate, highlight }: CodeEditorProps) {
 
     const startPos = view.state.doc.line(highlight.line).from + highlight.col;
     const endPos =
-      view.state.doc.line(highlight.end_line).from + highlight.end_col;
+      view.state.doc.line(highlight.endLine).from + highlight.endCol;
 
     const startCoords = view.coordsAtPos(startPos);
     const endCoords = view.coordsAtPos(endPos);
