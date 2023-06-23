@@ -18,7 +18,8 @@ const cssStyle = EditorView.theme({
     outline: "none",
   },
   [`& .${evalHighlightClassName}`]: {
-    backgroundColor: "yellow",
+    backgroundColor: "#ffe066",
+    borderRadius: "3px",
   },
 });
 
