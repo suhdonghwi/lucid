@@ -29,4 +29,7 @@ fs.readdir(SETUP_PATH, (err, files) => {
 export default defineConfig({
   plugins: [react(), vanillaExtractPlugin()],
   define: { PYTHON_SETUP_FILES },
+  resolve: {
+    alias: [{ find: "@", replacement: path.resolve(__dirname, "src") }],
+  },
 });

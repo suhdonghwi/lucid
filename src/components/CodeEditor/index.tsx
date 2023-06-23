@@ -13,9 +13,9 @@ import { python } from "@codemirror/lang-python";
 import { useCodeMirror } from "@uiw/react-codemirror";
 import { githubLightInit } from "@uiw/codemirror-theme-github";
 
-import * as cls from "./CodeEditor.css";
-import { PosRange } from "../TrackData";
-import { RunError } from "../RunError";
+import * as cls from "./index.css";
+import { PosRange } from "@/TrackData";
+import { RunError } from "@/RunError";
 
 const evalHighlightLayerClassName = "eval-highlight-layer";
 const evalHighlightClassName = "eval-highlight";
