@@ -34,7 +34,7 @@ export function useEvalHighlight({
   editorElement: HTMLDivElement | null;
   editorView: EditorView | null;
 }) {
-  const [animationScope, animate] = useAnimate();
+  const [scope, animate] = useAnimate();
 
   useEffect(() => {
     if (!(range && editorView)) return;
@@ -55,7 +55,7 @@ export function useEvalHighlight({
         height: startCoords.bottom - startCoords.top,
       });
     }
-  }, [range]);
+  }, [range, editorElement, editorView, animate]);
 
-  return animationScope;
+  return scope;
 }

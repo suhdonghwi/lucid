@@ -76,7 +76,7 @@ function CodeEditor({ code, onCodeUpdate, highlight, error }: CodeEditorProps) {
 
   useEffect(() => {
     if (editor.current) setContainer(editor.current);
-  }, [editor.current]);
+  }, [setContainer]);
 
   const evalAnimationScope = useEvalHighlight({
     range: highlight,
