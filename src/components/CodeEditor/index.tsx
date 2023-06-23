@@ -1,7 +1,5 @@
 import { useRef, useEffect } from "react";
 
-import { useAnimate } from "framer-motion";
-
 import * as View from "@codemirror/view";
 import { EditorView } from "@codemirror/view";
 import * as Commands from "@codemirror/commands";
@@ -13,29 +11,15 @@ import { python } from "@codemirror/lang-python";
 import { useCodeMirror } from "@uiw/react-codemirror";
 import { githubLightInit } from "@uiw/codemirror-theme-github";
 
+import { useEvalHighlight, evalHighlighting } from "./evalHighlighting";
+
 import * as cls from "./index.css";
 import { PosRange } from "@/TrackData";
 import { RunError } from "@/RunError";
 
-const evalHighlightLayerClassName = "eval-highlight-layer";
-const evalHighlightClassName = "eval-highlight";
-
 const cssTheme = EditorView.theme({
   "&.cm-focused": {
     outline: "none",
-  },
-  [`& .${evalHighlightClassName}`]: {
-    backgroundColor: "#ffe066",
-    borderRadius: "3px",
-  },
-});
-
-const evalHighlightLayer = View.layer({
-  class: evalHighlightLayerClassName,
-  above: false,
-  update: () => true,
-  markers: () => {
-    return [new View.RectangleMarker(evalHighlightClassName, 0, 0, 0, 0)];
   },
 });
 
@@ -52,7 +36,7 @@ const extensions = [
   View.highlightActiveLineGutter(),
   python(),
   cssTheme,
-  evalHighlightLayer,
+  evalHighlighting,
 ];
 
 const theme = githubLightInit({
@@ -90,36 +74,18 @@ function CodeEditor({ code, onCodeUpdate, highlight, error }: CodeEditorProps) {
     container: editor.current,
   });
 
-  const [animationScope, animate] = useAnimate();
-
   useEffect(() => {
     if (editor.current) setContainer(editor.current);
   }, [editor.current]);
 
-  useEffect(() => {
-    if (!(highlight && view)) return;
-
-    const startPos = view.state.doc.line(highlight.line).from + highlight.col;
-    const endPos =
-      view.state.doc.line(highlight.endLine).from + highlight.endCol;
-
-    const startCoords = view.coordsAtPos(startPos);
-    const endCoords = view.coordsAtPos(endPos);
-
-    if (startCoords && endCoords && editor.current) {
-      const editorCoords = editor.current.getBoundingClientRect();
-
-      animate(`.${evalHighlightClassName}`, {
-        x: startCoords.left - editorCoords.left,
-        y: startCoords.top - editorCoords.top,
-        width: endCoords.left - startCoords.left,
-        height: startCoords.bottom - startCoords.top,
-      });
-    }
-  }, [highlight]);
+  const evalAnimationScope = useEvalHighlight({
+    range: highlight,
+    editorView: view ?? null,
+    editorElement: editor.current,
+  });
 
   return (
-    <div ref={animationScope} className={cls.rootContainer}>
+    <div ref={evalAnimationScope} className={cls.rootContainer}>
       <div ref={editor} />
     </div>
   );
