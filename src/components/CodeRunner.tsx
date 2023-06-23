@@ -42,6 +42,7 @@ function CodeRunner() {
         code={code}
         onCodeUpdate={onCodeUpdate}
         highlight={highlight}
+        error={error}
       />
       <input
         type="button"

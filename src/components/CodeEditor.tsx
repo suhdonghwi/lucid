@@ -3,6 +3,7 @@ import { useRef, useEffect } from "react";
 import { useAnimate } from "framer-motion";
 
 import * as View from "@codemirror/view";
+import { EditorView } from "@codemirror/view";
 import * as Commands from "@codemirror/commands";
 import * as Language from "@codemirror/language";
 import * as Autocomplete from "@codemirror/autocomplete";
@@ -14,11 +15,12 @@ import { githubLightInit } from "@uiw/codemirror-theme-github";
 
 import * as cls from "./CodeEditor.css";
 import { PosRange } from "../TrackData";
+import { RunError } from "../RunError";
 
 const evalHighlightLayerClassName = "eval-highlight-layer";
 const evalHighlightClassName = "eval-highlight";
 
-const cssTheme = View.EditorView.theme({
+const cssTheme = EditorView.theme({
   "&.cm-focused": {
     outline: "none",
   },
@@ -65,10 +67,12 @@ const theme = githubLightInit({
 type CodeEditorProps = {
   code: string;
   onCodeUpdate: (code: string) => void;
+
   highlight: PosRange | null;
+  error: RunError | null;
 };
 
-function CodeEditor({ code, onCodeUpdate, highlight }: CodeEditorProps) {
+function CodeEditor({ code, onCodeUpdate, highlight, error }: CodeEditorProps) {
   const editor = useRef<HTMLDivElement>(null);
   const { setContainer, view } = useCodeMirror({
     className: cls.editor,
