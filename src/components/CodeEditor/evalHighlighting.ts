@@ -4,7 +4,7 @@ import { layer, RectangleMarker, EditorView } from "@codemirror/view";
 
 import { useAnimate } from "framer-motion";
 
-import { PosRange } from "@/TrackData";
+import { EvalRange } from "@/TrackData";
 
 const HIGHLIGHT_LAYER_CLASS = "eval-highlight-layer";
 const HIGHLIGHT_CLASS = "eval-highlight";
@@ -30,7 +30,7 @@ export function useEvalHighlight({
   editorElement,
   editorView,
 }: {
-  range: PosRange | null;
+  range: EvalRange | null;
   editorElement: HTMLDivElement | null;
   editorView: EditorView | null;
 }) {

@@ -12,11 +12,11 @@ import { useCodeMirror } from "@uiw/react-codemirror";
 import { githubLightInit } from "@uiw/codemirror-theme-github";
 
 import { useEvalHighlight, evalHighlighting } from "./evalHighlighting";
-import errorDisplay, { clearErrorLine, setErrorLine } from "./errorDisplay";
+import errorDisplay, { clearError, setError } from "./errorDisplay";
 
 import * as cls from "./index.css";
-import { PosRange } from "@/TrackData";
-import { RunError } from "@/RunError";
+import { EvalRange } from "@/TrackData";
+import RunError from "@/RunError";
 
 const cssTheme = EditorView.theme({
   "&.cm-focused": {
@@ -55,7 +55,7 @@ type CodeEditorProps = {
   code: string;
   onCodeUpdate: (code: string) => void;
 
-  evalRange: PosRange | null;
+  evalRange: EvalRange | null;
   error: RunError | null;
 };
 
@@ -86,10 +86,9 @@ function CodeEditor({ code, onCodeUpdate, evalRange, error }: CodeEditorProps) {
     if (!view) return;
 
     if (error) {
-      const errorPos = view.state.doc.line(error.line).from;
-      view.dispatch({ effects: setErrorLine.of(errorPos) });
+      view.dispatch({ effects: setError.of(error) });
     } else {
-      view.dispatch({ effects: clearErrorLine.of(null) });
+      view.dispatch({ effects: clearError.of(null) });
     }
   }, [view, error]);
 

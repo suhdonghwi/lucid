@@ -1,9 +1,15 @@
-export type RunError = {
-  message: string;
-
+export type ErrorRange = {
   line: number;
   endLine: number;
 
-  offset: number | null;
-  endOffset: number | null;
+  col: number | null;
+  endCol: number | null;
+}
+
+type RunError = {
+  message: string;
+
+  range: ErrorRange;
 };
+
+export default RunError;

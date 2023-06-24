@@ -1,4 +1,4 @@
-export type PosRange = {
+export type EvalRange = {
   line: number;
   endLine: number;
 
@@ -9,7 +9,7 @@ export type PosRange = {
 export type TrackData = {
   value: any;
 
-  posRange: PosRange;
+  evalRange: EvalRange;
 
   frameId: number;
   codeObjLine: number;

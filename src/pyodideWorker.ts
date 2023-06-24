@@ -3,7 +3,7 @@ import type { PyBuffer, PyProxy } from "pyodide/ffi";
 
 import type { PyodideResult } from "./PyodideHelper";
 
-import type { RunError } from "./RunError";
+import type RunError from "./RunError";
 import type { TrackData } from "./TrackData";
 
 importScripts("https://cdn.jsdelivr.net/pyodide/v0.23.3/full/pyodide.js");
@@ -49,10 +49,12 @@ self.onmessage = async (event) => {
       type: "error",
       error: {
         message: pyResult.message,
-        line: pyResult.line,
-        endLine: pyResult.end_line,
-        offset: pyResult.offset ?? null,
-        endOffset: pyResult.end_offset ?? null,
+        range: {
+          line: pyResult.line,
+          endLine: pyResult.end_line,
+          col: pyResult.offset ?? null,
+          endCol: pyResult.end_offset ?? null,
+        },
       } as RunError,
       id,
     } as PyodideResult);
@@ -68,7 +70,7 @@ self.onmessage = async (event) => {
         trackData.value instanceof self.pyodide.ffi.PyProxy
           ? trackData.value.toJs({ default_converter: proxyConverter })
           : trackData.value,
-      posRange: {
+      evalRange: {
         line: trackData.line,
         endLine: trackData.end_line,
         col: trackData.col,

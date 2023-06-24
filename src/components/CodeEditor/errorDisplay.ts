@@ -6,17 +6,29 @@ import {
 } from "@codemirror/view";
 import { StateField, StateEffect, RangeSet, Range } from "@codemirror/state";
 
+import RunError from "@/RunError";
+
 const ERROR_LINE_CLASS = "error-line";
 const ERROR_LINE_GUTTER_CLASS = "error-line-gutter";
+const ERROR_OFFSET_RANGE_CLASS = "error-offset-range";
 
-export const setErrorLine = StateEffect.define<number>();
-export const clearErrorLine = StateEffect.define();
+export const setError = StateEffect.define<RunError>();
+export const clearError = StateEffect.define();
 
 const errorLineMark = Decoration.line({
   class: ERROR_LINE_CLASS,
 });
 
-const errorLineField = StateField.define({
+const errorOffsetRangeMark = Decoration.mark({
+  class: ERROR_OFFSET_RANGE_CLASS,
+});
+
+// Reference: https://github.com/python/cpython/blob/4849a80dd1cbbc5010e8749ba60eb91a541ae4e7/Python/traceback.c#L595C4-L595C4
+function isWhitespace(ch: string) {
+  return ch == " " || ch == "\t" || ch == "\f";
+}
+
+const errorField = StateField.define({
   create() {
     return Decoration.none;
   },
@@ -24,9 +36,42 @@ const errorLineField = StateField.define({
     errorLines = errorLines.map(tr.changes);
 
     for (const e of tr.effects) {
-      if (e.is(setErrorLine)) {
-        errorLines = RangeSet.of(errorLineMark.range(e.value));
-      } else if(e.is(clearErrorLine)) {
+      if (e.is(setError)) {
+        const range = e.value.range;
+        const marks = [];
+        console.log(e.value);
+
+        // If it is a multi-line expression, then we will highlight
+        // until the last non-whitespace character of the starting line.
+        // Reference: https://github.com/python/cpython/blob/4849a80dd1cbbc5010e8749ba60eb91a541ae4e7/Python/traceback.c#L853-L867
+        if (range.line !== range.endLine) {
+          range.endLine = range.line;
+
+          if (range.col && range.endCol) {
+            const lineText = tr.newDoc.line(range.line).text;
+            range.endCol = lineText.length + 1;
+
+            while (
+              range.endCol > 0 &&
+              isWhitespace(lineText[range.endCol - 1])
+            ) {
+              range.endCol--;
+            }
+
+            const from = tr.newDoc.line(range.line).from + range.col - 1;
+            const to = tr.newDoc.line(range.endLine).from + range.endCol - 1;
+            marks.push(errorOffsetRangeMark.range(from, to));
+          }
+        }
+
+        for (let l = range.line; l <= range.endLine; l++) {
+          const pos = tr.newDoc.line(l).from;
+          marks.push(errorLineMark.range(pos));
+        }
+
+        errorLines = RangeSet.of(marks, true);
+      } else if (e.is(clearError)) {
+        console.log("hello");
         errorLines = RangeSet.empty;
       }
     }
@@ -40,9 +85,9 @@ const errorLineGutterMark = new (class extends GutterMarker {
   elementClass = ERROR_LINE_GUTTER_CLASS;
 })();
 
-const errorLineGutter = gutterLineClass.compute([errorLineField], (state) => {
+const errorLineGutter = gutterLineClass.compute([errorField], (state) => {
   const marks: Range<GutterMarker>[] = [];
-  const errorLine = state.field(errorLineField);
+  const errorLine = state.field(errorField);
 
   errorLine.between(0, Number.MAX_VALUE, (p) => {
     marks.push(errorLineGutterMark.range(p));
@@ -51,10 +96,15 @@ const errorLineGutter = gutterLineClass.compute([errorLineField], (state) => {
   return RangeSet.of(marks);
 });
 
-const errorLineTheme = EditorView.theme({
+const errorDisplayTheme = EditorView.theme({
   [`& .${ERROR_LINE_CLASS}, & .${ERROR_LINE_GUTTER_CLASS}`]: {
-    backgroundColor: "#ffe3e3"
+    backgroundColor: "#ffe3e3",
+  },
+  [`& .${ERROR_OFFSET_RANGE_CLASS}`]: {
+    textDecorationLine: "underline",
+    textDecorationStyle: "wavy",
+    textDecorationColor: "red",
   },
 });
 
-export default [errorLineField, errorLineGutter, errorLineTheme];
+export default [errorField, errorLineGutter, errorDisplayTheme];
