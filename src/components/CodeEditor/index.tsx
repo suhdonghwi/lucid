@@ -15,7 +15,7 @@ import { useEvalHighlight, evalHighlighting } from "./evalHighlighting";
 import errorDisplay, { clearError, setError } from "./errorDisplay";
 
 import * as cls from "./index.css";
-import { EvalRange } from "@/TrackData";
+import { TrackData } from "@/TrackData";
 import RunError from "@/RunError";
 
 const cssTheme = EditorView.theme({
@@ -51,15 +51,18 @@ const theme = githubLightInit({
   },
 });
 
+export type CodeEditorMode =
+  | { type: "normal" }
+  | { type: "error"; error: RunError }
+  | { type: "eval"; trackData: TrackData[]; currentStep: number };
+
 type CodeEditorProps = {
   code: string;
   onCodeUpdate: (code: string) => void;
-
-  evalRange: EvalRange | null;
-  error: RunError | null;
+  mode: CodeEditorMode;
 };
 
-function CodeEditor({ code, onCodeUpdate, evalRange, error }: CodeEditorProps) {
+function CodeEditor({ code, onCodeUpdate, mode }: CodeEditorProps) {
   const editor = useRef<HTMLDivElement | null>(null);
 
   const { setContainer, view } = useCodeMirror({
@@ -85,15 +88,18 @@ function CodeEditor({ code, onCodeUpdate, evalRange, error }: CodeEditorProps) {
   useEffect(() => {
     if (!view) return;
 
-    if (error) {
-      view.dispatch({ effects: setError.of(error) });
-    } else {
-      view.dispatch({ effects: clearError.of(null) });
+    switch (mode.type) {
+      case "error":
+        view.dispatch({ effects: setError.of(mode.error) });
+        break;
+      default:
+        view.dispatch({ effects: clearError.of(null) });
     }
-  }, [view, error]);
+  }, [view, mode]);
 
   const highlightScope = useEvalHighlight({
-    range: evalRange,
+    range:
+      mode.type === "eval" ? mode.trackData[mode.currentStep].evalRange : null,
     editorView: view ?? null,
     editorElement: editor.current,
   });
