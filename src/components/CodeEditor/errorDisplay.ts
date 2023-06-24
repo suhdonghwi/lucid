@@ -39,7 +39,6 @@ const errorField = StateField.define({
       if (e.is(setError)) {
         const range = e.value.range;
         const marks = [];
-        console.log(e.value);
 
         // If it is a multi-line expression, then we will highlight
         // until the last non-whitespace character of the starting line.
@@ -47,21 +46,18 @@ const errorField = StateField.define({
         if (range.line !== range.endLine) {
           range.endLine = range.line;
 
-          if (range.col && range.endCol) {
-            const lineText = tr.newDoc.line(range.line).text;
-            range.endCol = lineText.length + 1;
+          const lineText = tr.newDoc.line(range.line).text;
+          range.endCol = lineText.length + 1;
 
-            while (
-              range.endCol > 0 &&
-              isWhitespace(lineText[range.endCol - 1])
-            ) {
-              range.endCol--;
-            }
-
-            const from = tr.newDoc.line(range.line).from + range.col - 1;
-            const to = tr.newDoc.line(range.endLine).from + range.endCol - 1;
-            marks.push(errorOffsetRangeMark.range(from, to));
+          while (range.endCol > 0 && isWhitespace(lineText[range.endCol - 1])) {
+            range.endCol--;
           }
+        }
+
+        if (range.col && range.endCol && range.col < range.endCol) {
+          const from = tr.newDoc.line(range.line).from + range.col - 1;
+          const to = tr.newDoc.line(range.endLine).from + range.endCol - 1;
+          marks.push(errorOffsetRangeMark.range(from, to));
         }
 
         for (let l = range.line; l <= range.endLine; l++) {
@@ -71,7 +67,6 @@ const errorField = StateField.define({
 
         errorLines = RangeSet.of(marks, true);
       } else if (e.is(clearError)) {
-        console.log("hello");
         errorLines = RangeSet.empty;
       }
     }
@@ -98,12 +93,10 @@ const errorLineGutter = gutterLineClass.compute([errorField], (state) => {
 
 const errorDisplayTheme = EditorView.theme({
   [`& .${ERROR_LINE_CLASS}, & .${ERROR_LINE_GUTTER_CLASS}`]: {
-    backgroundColor: "#ffe3e3",
+    backgroundColor: "#ff000015",
   },
   [`& .${ERROR_OFFSET_RANGE_CLASS}`]: {
-    textDecorationLine: "underline",
-    textDecorationStyle: "wavy",
-    textDecorationColor: "red",
+    borderBottom: "1.5px solid red",
   },
 });
 
