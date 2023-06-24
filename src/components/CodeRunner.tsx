@@ -33,7 +33,6 @@ function CodeRunner() {
 
   function onCodeUpdate(code: string) {
     setCode(code);
-    setError(null);
   }
 
   return (
@@ -41,7 +40,7 @@ function CodeRunner() {
       <CodeEditor
         code={code}
         onCodeUpdate={onCodeUpdate}
-        highlight={highlight}
+        evalRange={highlight}
         error={error}
       />
       <input

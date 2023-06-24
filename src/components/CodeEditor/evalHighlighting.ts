@@ -37,7 +37,7 @@ export function useEvalHighlight({
   const [scope, animate] = useAnimate();
 
   useEffect(() => {
-    if (!(range && editorView)) return;
+    if (!(range && editorElement && editorView)) return;
 
     const startPos = editorView.state.doc.line(range.line).from + range.col;
     const endPos = editorView.state.doc.line(range.endLine).from + range.endCol;
@@ -45,7 +45,7 @@ export function useEvalHighlight({
     const startCoords = editorView.coordsAtPos(startPos);
     const endCoords = editorView.coordsAtPos(endPos);
 
-    if (startCoords && endCoords && editorElement) {
+    if (startCoords && endCoords) {
       const editorCoords = editorElement.getBoundingClientRect();
 
       animate(`.${HIGHLIGHT_CLASS}`, {

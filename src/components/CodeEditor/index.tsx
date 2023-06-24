@@ -12,6 +12,7 @@ import { useCodeMirror } from "@uiw/react-codemirror";
 import { githubLightInit } from "@uiw/codemirror-theme-github";
 
 import { useEvalHighlight, evalHighlighting } from "./evalHighlighting";
+import errorDisplay, { clearErrorLine, setErrorLine } from "./errorDisplay";
 
 import * as cls from "./index.css";
 import { PosRange } from "@/TrackData";
@@ -26,6 +27,7 @@ const cssTheme = EditorView.theme({
 const extensions = [
   View.keymap.of(Commands.defaultKeymap),
   View.lineNumbers(),
+  EditorView.lineWrapping,
   Commands.history(),
   View.drawSelection(),
   View.dropCursor(),
@@ -37,6 +39,7 @@ const extensions = [
   python(),
   cssTheme,
   evalHighlighting,
+  errorDisplay,
 ];
 
 const theme = githubLightInit({
@@ -52,12 +55,13 @@ type CodeEditorProps = {
   code: string;
   onCodeUpdate: (code: string) => void;
 
-  highlight: PosRange | null;
+  evalRange: PosRange | null;
   error: RunError | null;
 };
 
-function CodeEditor({ code, onCodeUpdate, highlight, error }: CodeEditorProps) {
-  const editor = useRef<HTMLDivElement>(null);
+function CodeEditor({ code, onCodeUpdate, evalRange, error }: CodeEditorProps) {
+  const editor = useRef<HTMLDivElement | null>(null);
+
   const { setContainer, view } = useCodeMirror({
     className: cls.editor,
 
@@ -78,14 +82,25 @@ function CodeEditor({ code, onCodeUpdate, highlight, error }: CodeEditorProps) {
     if (editor.current) setContainer(editor.current);
   }, [setContainer]);
 
-  const evalAnimationScope = useEvalHighlight({
-    range: highlight,
+  useEffect(() => {
+    if (!view) return;
+
+    if (error) {
+      const errorPos = view.state.doc.line(error.line).from;
+      view.dispatch({ effects: setErrorLine.of(errorPos) });
+    } else {
+      view.dispatch({ effects: clearErrorLine.of(null) });
+    }
+  }, [view, error]);
+
+  const highlightScope = useEvalHighlight({
+    range: evalRange,
     editorView: view ?? null,
     editorElement: editor.current,
   });
 
   return (
-    <div ref={evalAnimationScope} className={cls.rootContainer}>
+    <div ref={highlightScope} className={cls.rootContainer}>
       <div ref={editor} />
     </div>
   );
