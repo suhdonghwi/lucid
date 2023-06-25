@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
-import { asyncRun, PyodideResult } from "../PyodideHelper";
+import { asyncRun } from "../PyodideHelper";
 
 import CodeEditor, { CodeEditorMode } from "./CodeEditor";
 import * as cls from "./CodeRunner.css";
@@ -14,40 +14,43 @@ fruits()`;
 
 function CodeRunner() {
   const [code, setCode] = useState(exampleCode);
-
-  const [lastRunResult, setLastRunResult] = useState<PyodideResult | null>(
-    null
-  );
-  const [evalStep, setEvalStep] = useState<number>(0);
-
-  const editorMode = useMemo<CodeEditorMode>(() => {
-    if (lastRunResult === null) return { type: "normal" };
-
-    switch (lastRunResult.type) {
-      case "success":
-        return {
-          type: "eval",
-          trackData: lastRunResult.data,
-          currentStep: evalStep,
-        };
-      case "error":
-        return {
-          type: "error",
-          error: lastRunResult.error,
-        };
-    }
-  }, [evalStep, lastRunResult]);
+  const [editorMode, setEditorMode] = useState<CodeEditorMode>({
+    type: "normal",
+  });
 
   async function runCode() {
     const result = await asyncRun(code, {});
     console.log(result);
 
-    setLastRunResult(result);
-    setEvalStep(0);
+    switch (result.type) {
+      case "success":
+        setEditorMode({
+          type: "eval",
+          trackData: result.data,
+          currentStep: 0,
+        });
+        break;
+      case "error":
+        setEditorMode({
+          type: "error",
+          error: result.error,
+        });
+    }
   }
 
   function onCodeUpdate(code: string) {
     setCode(code);
+  }
+
+  function adjustStep(by: number) {
+    if (editorMode.type === "eval") {
+      setEditorMode({
+        ...editorMode,
+        currentStep: editorMode.currentStep + by,
+      });
+    } else {
+      console.log("not in eval mode!");
+    }
   }
 
   return (
@@ -63,13 +66,13 @@ function CodeRunner() {
         type="button"
         className={cls.runButton}
         value="Next"
-        onClick={() => setEvalStep((v) => v + 1)}
+        onClick={() => adjustStep(1)}
       />
       <input
         type="button"
         className={cls.runButton}
         value="Prev"
-        onClick={() => setEvalStep((v) => v - 1)}
+        onClick={() => adjustStep(-1)}
       />
     </div>
   );
