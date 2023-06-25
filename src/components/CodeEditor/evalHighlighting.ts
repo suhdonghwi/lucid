@@ -31,13 +31,23 @@ export function useEvalHighlight({
   editorView,
 }: {
   range: EvalRange | null;
-  editorElement: HTMLDivElement | null;
+  editorElement: HTMLElement | null;
   editorView: EditorView | null;
 }) {
   const [scope, animate] = useAnimate();
 
   useEffect(() => {
-    if (!(range && editorElement && editorView)) return;
+    if (
+      editorView === null ||
+      editorElement === null ||
+      editorElement?.querySelector(`.${HIGHLIGHT_CLASS}`) === null
+    )
+      return;
+
+    if (!range) {
+      animate(`.${HIGHLIGHT_CLASS}`, { opacity: 0 });
+      return;
+    }
 
     const startPos = editorView.state.doc.line(range.line).from + range.col;
     const endPos = editorView.state.doc.line(range.endLine).from + range.endCol;
@@ -49,6 +59,7 @@ export function useEvalHighlight({
       const editorCoords = editorElement.getBoundingClientRect();
 
       animate(`.${HIGHLIGHT_CLASS}`, {
+        opacity: 1,
         x: startCoords.left - editorCoords.left,
         y: startCoords.top - editorCoords.top,
         width: endCoords.left - startCoords.left,

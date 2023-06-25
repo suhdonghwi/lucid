@@ -5,15 +5,12 @@ import { asyncRun, PyodideResult } from "../PyodideHelper";
 import CodeEditor, { CodeEditorMode } from "./CodeEditor";
 import * as cls from "./CodeRunner.css";
 
-import RunError from "../RunError";
-import { EvalRange } from "../TrackData";
-
-const exampleCode = `def f():
+const exampleCode = `def fruits():
     print("apple")
     print("banana")
     print("coconut")
 
-f()`;
+fruits()`;
 
 function CodeRunner() {
   const [code, setCode] = useState(exampleCode);

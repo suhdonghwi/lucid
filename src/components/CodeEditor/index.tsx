@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 
 import * as View from "@codemirror/view";
 import { EditorView } from "@codemirror/view";
@@ -34,8 +34,6 @@ const extensions = [
   Language.indentOnInput(),
   Language.bracketMatching(),
   Autocomplete.closeBrackets(),
-  View.highlightActiveLine(),
-  View.highlightActiveLineGutter(),
   python(),
   cssTheme,
   evalHighlighting,
@@ -63,7 +61,12 @@ type CodeEditorProps = {
 };
 
 function CodeEditor({ code, onCodeUpdate, mode }: CodeEditorProps) {
-  const editor = useRef<HTMLDivElement | null>(null);
+  // `editorDiv` is a reference to the editor element, which may be empty. (not initialized by CodeMirror yet)
+  // However, `editorElement` is a state variable that stores the initialized element.
+  // `editorDiv` and `editorElement` would refer to the same element eventually,
+  // but they become non-null at different times.
+  const editorDiv = useRef<HTMLDivElement | null>(null);
+  const [editorElement, setEditorElement] = useState<HTMLElement | null>(null);
 
   const { setContainer, view } = useCodeMirror({
     className: cls.editor,
@@ -78,15 +81,17 @@ function CodeEditor({ code, onCodeUpdate, mode }: CodeEditorProps) {
     extensions,
     basicSetup: false,
     onChange: onCodeUpdate,
-    container: editor.current,
+    onCreateEditor: (view) => {
+      setEditorElement(view.dom);
+    },
   });
 
   useEffect(() => {
-    if (editor.current) setContainer(editor.current);
+    if (editorDiv.current) setContainer(editorDiv.current);
   }, [setContainer]);
 
   useEffect(() => {
-    if (!view) return;
+    if (view === undefined) return;
 
     switch (mode.type) {
       case "error":
@@ -97,16 +102,17 @@ function CodeEditor({ code, onCodeUpdate, mode }: CodeEditorProps) {
     }
   }, [view, mode]);
 
+  const evalRange =
+    mode.type === "eval" ? mode.trackData[mode.currentStep].evalRange : null;
   const highlightScope = useEvalHighlight({
-    range:
-      mode.type === "eval" ? mode.trackData[mode.currentStep].evalRange : null,
+    range: evalRange,
     editorView: view ?? null,
-    editorElement: editor.current,
+    editorElement,
   });
 
   return (
     <div ref={highlightScope} className={cls.rootContainer}>
-      <div ref={editor} />
+      <div ref={editorDiv} />
     </div>
   );
 }
