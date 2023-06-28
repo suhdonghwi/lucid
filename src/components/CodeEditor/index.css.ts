@@ -12,6 +12,3 @@ export const rootContainer = style({
   borderRadius: "10px",
 });
 
-export const editor = style({
-  height: "100%",
-})

@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 
 import * as View from "@codemirror/view";
 import { EditorView } from "@codemirror/view";
@@ -8,7 +8,7 @@ import * as Autocomplete from "@codemirror/autocomplete";
 
 import { python } from "@codemirror/lang-python";
 
-import { useCodeMirror } from "@uiw/react-codemirror";
+import { useCodeMirror } from "./useCodeMirror";
 import { githubLightInit } from "@uiw/codemirror-theme-github";
 
 import { useEvalHighlight, evalHighlighting } from "./evalHighlighting";
@@ -68,22 +68,23 @@ function CodeEditor({ code, onCodeUpdate, mode }: CodeEditorProps) {
   const editorDiv = useRef<HTMLDivElement | null>(null);
   const [editorElement, setEditorElement] = useState<HTMLElement | null>(null);
 
-  const { setContainer, view } = useCodeMirror({
-    className: cls.editor,
+  const onCreateEditor = useCallback(
+    (view: EditorView) => setEditorElement(view.dom),
+    []
+  );
 
+  const { setContainer, view } = useCodeMirror({
     // Not actually a 2-way binding
     // But view dispatch does not occur if the value is same with view's internal state
     // Reference: https://github.com/uiwjs/react-codemirror/blob/8a14a69d5bafdc6abdb14a90302031594771c5a3/core/src/useCodeMirror.ts#L160-L167
     value: code,
 
-    height: "100%",
     theme,
     extensions,
-    basicSetup: false,
+    readOnly: false,
+
     onChange: onCodeUpdate,
-    onCreateEditor: (view) => {
-      setEditorElement(view.dom);
-    },
+    onCreateEditor,
   });
 
   useEffect(() => {
@@ -91,7 +92,7 @@ function CodeEditor({ code, onCodeUpdate, mode }: CodeEditorProps) {
   }, [setContainer]);
 
   useEffect(() => {
-    if (view === undefined) return;
+    if (view === null) return;
 
     switch (mode.type) {
       case "error":

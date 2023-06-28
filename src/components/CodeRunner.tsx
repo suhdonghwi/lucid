@@ -38,10 +38,6 @@ function CodeRunner() {
     }
   }
 
-  function onCodeUpdate(code: string) {
-    setCode(code);
-  }
-
   function adjustStep(by: number) {
     if (editorMode.type === "eval") {
       setEditorMode({
@@ -55,7 +51,7 @@ function CodeRunner() {
 
   return (
     <div className={cls.rootContainer}>
-      <CodeEditor code={code} onCodeUpdate={onCodeUpdate} mode={editorMode} />
+      <CodeEditor code={code} onCodeUpdate={setCode} mode={editorMode} />
       <input
         type="button"
         className={cls.runButton}
