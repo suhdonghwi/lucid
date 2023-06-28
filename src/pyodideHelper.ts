@@ -1,4 +1,4 @@
-import type { RunError } from "./RunError";
+import type RunError from "./RunError";
 import type { TrackData } from "./TrackData";
 
 const worker = new Worker(new URL("./PyodideWorker.ts", import.meta.url));

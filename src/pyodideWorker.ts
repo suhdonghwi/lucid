@@ -52,8 +52,8 @@ self.onmessage = async (event) => {
         range: {
           line: pyResult.line,
           endLine: pyResult.end_line,
-          col: pyResult.offset ?? null,
-          endCol: pyResult.end_offset ?? null,
+          col: pyResult.col ?? null,
+          endCol: pyResult.end_col ?? null,
         },
       } as RunError,
       id,

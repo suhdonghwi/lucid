@@ -9,16 +9,16 @@ class RunError:
         message: str,
         line: int | None,
         end_line: int | None,
-        offset: int | None,
-        end_offset: int | None,
+        col: int | None,
+        end_col: int | None,
     ) -> None:
         self.message = message
 
         self.line = line
         self.end_line = end_line
 
-        self.offset = offset
-        self.end_offset = end_offset
+        self.col = col
+        self.end_col = end_col
 
 
 def run(code: str):
