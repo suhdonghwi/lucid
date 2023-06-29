@@ -5,12 +5,11 @@ import { asyncRun } from "../PyodideHelper";
 import CodeEditor, { CodeEditorMode } from "./CodeEditor";
 import * as cls from "./CodeRunner.css";
 
-const exampleCode = `def fruits():
-    print("apple")
-    print("banana")
-    print("coconut")
+const exampleCode = `def add1(x):
+  x = x + 1
+  return x
 
-fruits()`;
+add1(10)`;
 
 function CodeRunner() {
   const [code, setCode] = useState(exampleCode);

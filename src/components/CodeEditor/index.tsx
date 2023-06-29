@@ -11,6 +11,7 @@ import { githubLightInit } from "@uiw/codemirror-theme-github";
 import { useCodeMirror } from "./useCodeMirror";
 
 import errorDisplay, { clearError, setError } from "./errorDisplay";
+import evalHighlight, { clearEvalRange, setEvalRange } from "./evalHighlight";
 
 import * as cls from "./index.css";
 import { TrackData } from "@/TrackData";
@@ -35,6 +36,7 @@ const extensions = [
   python(),
   cssTheme,
   errorDisplay,
+  evalHighlight,
 ];
 
 const theme = githubLightInit({
@@ -83,6 +85,11 @@ function CodeEditor({ code, onCodeUpdate, mode }: CodeEditorProps) {
     switch (mode.type) {
       case "error":
         view.dispatch({ effects: setError.of(mode.error) });
+        break;
+      case "eval":
+        view.dispatch({
+          effects: setEvalRange.of(mode.trackData[mode.currentStep]),
+        });
         break;
       default:
         view.dispatch({ effects: clearError.of(null) });
