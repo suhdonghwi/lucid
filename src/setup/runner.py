@@ -26,7 +26,7 @@ def run(code: str):
 
     try:
         tree = ast.parse(code)
-        attacher = TrackerAttacher("_track")
+        attacher = TrackerAttacher()
 
         attached_tree = attacher.attach(tree)
         exec_result = attached_tree.exec(file_name)

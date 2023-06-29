@@ -2,17 +2,17 @@ import ast
 import sys
 
 from track_data import TrackData
+import tracker_identifier as IDENT
 
 
 class AttachedTree:
-    def __init__(self, attached_tree: ast.Module, tracker_identifier: str):
+    def __init__(self, attached_tree: ast.Module):
         self.attached_tree = attached_tree
-        self.tracker_identifer = tracker_identifier
 
     def exec(self, file_name: str):
         tracking_result: list[TrackData] = []
 
-        def track_expression(
+        def track_expr(
             value: object, line: int, end_line: int, col: int, end_col: int
         ):
             frame = sys._getframe(1)
@@ -23,7 +23,7 @@ class AttachedTree:
 
         compiled_code = compile(self.attached_tree, filename=file_name, mode="exec")
         namespace = {
-            self.tracker_identifer: track_expression,
+            IDENT.TRACKER_EXPR: track_expr,
         }
         exec(compiled_code, namespace)
 

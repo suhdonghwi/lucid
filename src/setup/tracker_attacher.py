@@ -2,12 +2,11 @@ import ast
 
 from attached_tree import AttachedTree
 
+import tracker_identifier as IDENT
+
 
 class TrackerAttacher(ast.NodeTransformer):
-    def __init__(self, tracker_identifier: str):
-        self.tracker_identifier = tracker_identifier
-
-    def __add_tracker(self, node: ast.expr) -> ast.Call:
+    def __add_expr_tracker(self, node: ast.expr) -> ast.Call:
         line = ast.Constant(value=node.lineno)
         end_line = ast.Constant(value=node.end_lineno)
 
@@ -15,7 +14,7 @@ class TrackerAttacher(ast.NodeTransformer):
         end_col = ast.Constant(value=node.end_col_offset)
 
         return ast.Call(
-            func=ast.Name(id=self.tracker_identifier, ctx=ast.Load()),
+            func=ast.Name(id=IDENT.TRACKER_EXPR, ctx=ast.Load()),
             args=[node, line, end_line, col, end_col],
             keywords=[],
         )
@@ -32,7 +31,7 @@ class TrackerAttacher(ast.NodeTransformer):
 
             case ast.expr():
                 self.generic_visit(node)
-                return self.__add_tracker(node)
+                return self.__add_expr_tracker(node)
 
             case ast.FunctionDef():
                 for n in node.body:
@@ -44,4 +43,4 @@ class TrackerAttacher(ast.NodeTransformer):
 
     def attach(self, tree: ast.Module) -> AttachedTree:
         result: ast.Module = ast.fix_missing_locations(self.visit(tree))  # type: ignore
-        return AttachedTree(result, self.tracker_identifier)
+        return AttachedTree(result)

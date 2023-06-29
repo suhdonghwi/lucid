@@ -41,7 +41,7 @@ tree = ast.parse(code3)
 print("[AST Dump]")
 print(ast.dump(tree, indent=2))
 
-attacher = TrackerAttacher("_track")
+attacher = TrackerAttacher()
 attached_tree = attacher.attach(tree)
 
 print()
