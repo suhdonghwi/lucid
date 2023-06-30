@@ -41,6 +41,7 @@ class HighlightPlugin implements PluginValue {
 
     if (startCoords && endCoords) {
       gsap.to(this.highlightElement, {
+        opacity: 1,
         x: startCoords.left - viewRect.left,
         y: startCoords.top - viewRect.top,
         width: endCoords.left - startCoords.left,
@@ -63,7 +64,7 @@ class HighlightPlugin implements PluginValue {
             read: (view) => this.animateHighlight(range, view),
           });
         } else if (e.is(clearEvalRange)) {
-          // ?
+          gsap.to(this.highlightElement, { opacity: 0, width: 0, height: 0 });
         }
       }
     }

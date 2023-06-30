@@ -84,11 +84,16 @@ function CodeEditor({ code, onCodeUpdate, mode }: CodeEditorProps) {
 
     switch (mode.type) {
       case "error":
-        view.dispatch({ effects: setError.of(mode.error) });
+        view.dispatch({
+          effects: [setError.of(mode.error), clearEvalRange.of(null)],
+        });
         break;
       case "eval":
         view.dispatch({
-          effects: setEvalRange.of(mode.trackData[mode.currentStep]),
+          effects: [
+            setEvalRange.of(mode.trackData[mode.currentStep]),
+            clearError.of(null),
+          ],
         });
         break;
       default:
