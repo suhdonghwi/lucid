@@ -1,43 +1,15 @@
 import { useRef, useEffect } from "react";
 
-import * as View from "@codemirror/view";
-import { EditorView } from "@codemirror/view";
-import * as Commands from "@codemirror/commands";
-import * as Language from "@codemirror/language";
-import * as Autocomplete from "@codemirror/autocomplete";
-import { python } from "@codemirror/lang-python";
-
 import { githubLightInit } from "@uiw/codemirror-theme-github";
 import { useCodeMirror } from "./useCodeMirror";
 
-import errorDisplay, { clearError, setError } from "./errorDisplay";
-import evalHighlight, { clearEvalRange, setEvalRange } from "./evalHighlight";
+import extensions from "./extensions";
+import { clearError, setError } from "./extensions/errorDisplay";
+import { clearEvalRange, setEvalRange } from "./extensions/evalHighlight";
 
 import * as cls from "./index.css";
 import { TrackData } from "@/TrackData";
 import RunError from "@/RunError";
-
-const cssTheme = EditorView.theme({
-  "&.cm-focused": {
-    outline: "none",
-  },
-});
-
-const extensions = [
-  View.keymap.of(Commands.defaultKeymap),
-  View.lineNumbers(),
-  EditorView.lineWrapping,
-  Commands.history(),
-  View.drawSelection(),
-  View.dropCursor(),
-  Language.indentOnInput(),
-  Language.bracketMatching(),
-  Autocomplete.closeBrackets(),
-  python(),
-  cssTheme,
-  errorDisplay,
-  evalHighlight,
-];
 
 const theme = githubLightInit({
   theme: "light",
