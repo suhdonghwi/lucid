@@ -37,7 +37,7 @@ function CodeEditor({ code, onCodeUpdate, mode }: CodeEditorProps) {
   const { setContainer, view } = useCodeMirror({
     // Not actually a 2-way binding
     // But view dispatch does not occur if the value is same with view's internal state
-    // Reference: https://github.com/uiwjs/react-codemirror/blob/8a14a69d5bafdc6abdb14a90302031594771c5a3/core/src/useCodeMirror.ts#L160-L167
+    // (Refer "./useCodeMirror.ts")
     value: code,
 
     theme,

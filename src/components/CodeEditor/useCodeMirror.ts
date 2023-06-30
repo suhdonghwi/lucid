@@ -1,3 +1,6 @@
+// This code is mostly copy-and-pasted from...
+// https://github.com/uiwjs/react-codemirror/blob/528759f6f0b47bd0bebdb7c49bfbec63dbd56264/core/src/useCodeMirror.ts 
+
 import { useEffect, useMemo, useState } from "react";
 import {
   Annotation,
