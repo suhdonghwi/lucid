@@ -1,7 +1,7 @@
 import { style } from "@vanilla-extract/css";
 
 export const rootContainer = style({
-  width: "30rem",
+  width: "25rem",
   height: "30rem",
   fontSize: "14px",
 

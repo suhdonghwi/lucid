@@ -38,6 +38,8 @@ const errorField = StateField.define({
     for (const e of tr.effects) {
       if (e.is(setError)) {
         const range = e.value.range;
+        const newDoc = tr.newDoc;
+
         const marks = [];
 
         // If it is a multi-line expression, then we will highlight
@@ -46,7 +48,7 @@ const errorField = StateField.define({
         if (range.line !== range.endLine) {
           range.endLine = range.line;
 
-          const lineText = tr.newDoc.line(range.line).text;
+          const lineText = newDoc.line(range.line).text;
           range.endCol = lineText.length + 1;
 
           while (range.endCol > 0 && isWhitespace(lineText[range.endCol - 1])) {
@@ -55,13 +57,13 @@ const errorField = StateField.define({
         }
 
         if (range.col && range.endCol && range.col < range.endCol) {
-          const from = tr.newDoc.line(range.line).from + range.col - 1;
-          const to = tr.newDoc.line(range.endLine).from + range.endCol - 1;
+          const from = newDoc.line(range.line).from + range.col - 1;
+          const to = newDoc.line(range.endLine).from + range.endCol - 1;
           marks.push(errorOffsetRangeMark.range(from, to));
         }
 
         for (let l = range.line; l <= range.endLine; l++) {
-          const pos = tr.newDoc.line(l).from;
+          const pos = newDoc.line(l).from;
           marks.push(errorLineMark.range(pos));
         }
 

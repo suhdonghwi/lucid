@@ -27,7 +27,7 @@ const highlightLayer = layer({
 });
 
 function rectangleMarkerToRect(marker: RectangleMarker) {
-  // Currently properties like `left` and `width` in `RectangleMarker` are private.
+  // Currently properties like `left` and `width` in `RectangleMarker` are private
   // Used a hack to access private members, need to fix later on.
   return {
     x: marker["left"] as number,
@@ -37,7 +37,7 @@ function rectangleMarkerToRect(marker: RectangleMarker) {
   };
 }
 
-class HighlightPluginValue implements PluginValue {
+class HighlightPlugin implements PluginValue {
   highlights: {
     top: Element;
     middle: Element;
@@ -84,7 +84,9 @@ class HighlightPluginValue implements PluginValue {
       if (elems.length === 3) {
         const [top, middle, bottom] = elems;
         this.highlights = { top, middle, bottom };
-      } else return;
+      } else {
+        return;
+      }
     }
 
     for (const tr of vu.transactions) {
@@ -108,7 +110,7 @@ class HighlightPluginValue implements PluginValue {
   }
 }
 
-const highlightPlugin = ViewPlugin.fromClass(HighlightPluginValue);
+const highlightPlugin = ViewPlugin.fromClass(HighlightPlugin);
 
 const highlightTheme = EditorView.theme({
   [`& .${EVAL_HIGHLIGHT_LAYER_CLASS} .${EVAL_HIGHLIGHT_CLASS}`]: {
