@@ -1,3 +1,5 @@
+import ast
+
 from types import FrameType
 
 
@@ -5,19 +7,15 @@ class TrackData:
     def __init__(
         self,
         value: object,
-        line: int,
-        end_line: int,
-        col: int,
-        end_col: int,
+        node: ast.AST,
         frame: FrameType,
     ):
         self.value = value
 
-        self.line = line
-        self.end_line = end_line
-
-        self.col = col
-        self.end_col = end_col
+        self.line = node.lineno
+        self.end_line = node.end_lineno
+        self.col = node.col_offset
+        self.end_col = node.end_col_offset
 
         self.frame_id = id(frame)
         first_line, *_, last_line = frame.f_code.co_lines()
