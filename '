@@ -50,7 +50,8 @@ class TrackerAttacher(ast.NodeTransformer):
                 return self.__add_expr_tracker(node)
 
             case ast.FunctionDef():
-                node.body = list(map(self.visit, node.body))
+                for n in node.body:
+                    self.generic_visit(n)
                 return self.__add_stmt_tracker(node)
 
             case ast.stmt():

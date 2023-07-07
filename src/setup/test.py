@@ -1,14 +1,15 @@
 import ast
+
 from tracked_module import TrackedModule
 
 test_code = """
-def f():
-    print("apple")
-    print("banana")
-    print("coconut")
+def fac(n):
+    if n == 0:
+        return 1
+    else:
+        return n * fac(n-1)
 
-
-f()
+print(fac(1000))
 """
 
 test_module = TrackedModule(test_code, "<code>")
