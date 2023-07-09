@@ -1,43 +1,34 @@
-import type RunError from "./RunError";
-import type { TrackData } from "./TrackData";
+import { makeChannel } from "sync-message";
+import { SyncClient } from "comsync";
+import { PyodideWorkerAPI } from "./PyodideWorker";
 
-const worker = new Worker(new URL("./PyodideWorker.ts", import.meta.url));
-export type PyodideResult =
-  | {
-      type: "success";
-      data: TrackData[];
-      id: number;
-    }
-  | {
-      type: "error";
-      error: RunError;
-      id: number;
-    };
+async function initializeClient(): Promise<SyncClient<PyodideWorkerAPI>> {
+  await navigator.serviceWorker.register(
+    new URL("./PyodideServiceWorker.ts", import.meta.url),
+    { type: "module" }
+  );
 
-const callbacks: Record<number, (value: PyodideResult) => void> = {};
+  const channel = makeChannel();
+  console.log("Channel type:", channel?.type);
 
-worker.onmessage = (event) => {
-  const data = event.data as PyodideResult;
-  const onSuccess = callbacks[data.id];
-  delete callbacks[data.id];
-  onSuccess(data);
-};
+  const client = new SyncClient(
+    () =>
+      new Worker(new URL("./PyodideWorker.ts", import.meta.url), {
+        type: "module",
+      }),
+    channel
+  );
 
-const asyncRun = (() => {
-  let id = 0; // identify a Promise
-  return (code: string, context: any) => {
-    id = (id + 1) % Number.MAX_SAFE_INTEGER;
-    const modifiedCode = `from runner import run\nrun(${JSON.stringify(code)})`;
+  return client;
+}
 
-    return new Promise<PyodideResult>((onSuccess) => {
-      callbacks[id] = onSuccess;
-      worker.postMessage({
-        ...context,
-        code: modifiedCode,
-        id,
-      });
-    });
-  };
-})();
+const clientPromise = initializeClient();
 
-export { asyncRun };
+async function runPython(code: string) {
+  const client = await clientPromise;
+  const result = await client.call(client.workerProxy.runPython, code);
+
+  return result;
+}
+
+export { runPython };

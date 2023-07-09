@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { asyncRun } from "../PyodideHelper";
+import { runPython } from "../PyodideHelper";
 
 import CodeEditor, { CodeEditorMode } from "./CodeEditor";
 import * as cls from "./CodeRunner.css";
@@ -18,23 +18,25 @@ function CodeRunner() {
   });
 
   async function runCode() {
-    const result = await asyncRun(code, {});
+    const result = await runPython(code);
     console.log(result);
-
-    switch (result.type) {
-      case "success":
-        setEditorMode({
-          type: "eval",
-          trackData: result.data,
-          currentStep: 0,
-        });
-        break;
-      case "error":
-        setEditorMode({
-          type: "error",
-          error: result.error,
-        });
-    }
+    // const result = await asyncRun(code, {});
+    // console.log(result);
+    //
+    // switch (result.type) {
+    //   case "success":
+    //     setEditorMode({
+    //       type: "eval",
+    //       trackData: result.data,
+    //       currentStep: 0,
+    //     });
+    //     break;
+    //   case "error":
+    //     setEditorMode({
+    //       type: "error",
+    //       error: result.error,
+    //     });
+    // }
   }
 
   function adjustStep(by: number) {
