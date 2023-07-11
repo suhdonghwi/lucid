@@ -6,16 +6,17 @@ import { syncExpose } from "comsync";
 
 async function initializePyodide(): Promise<PyodideInterface> {
   const indexURL = "https://cdn.jsdelivr.net/pyodide/v0.23.4/full/";
-  const result = await loadPyodide({ indexURL });
+  const pyodide = await loadPyodide({ indexURL });
+  pyodide.registerComlink(Comlink);
 
   console.log("[worker] pyodide load complete.");
 
   for (const { name, code } of PYTHON_SETUP_FILES) {
-    result.FS.writeFile(name, code);
+    pyodide.FS.writeFile(name, code);
   }
 
   console.log("[worker] python setup files written.");
-  return result;
+  return pyodide;
 }
 
 const pyodidePromise = initializePyodide();
@@ -23,13 +24,15 @@ const pyodidePromise = initializePyodide();
 const api = {
   runPython: syncExpose(async (syncExtras, code: string) => {
     const pyodide = await pyodidePromise;
-    const result = await pyodide.runPythonAsync(code);
 
+    syncExtras.readMessage();
+    const runnerCode = `from runner import run\nrun(${JSON.stringify(code)})`;
+    const result = await pyodide.runPython(runnerCode);
     return result;
   }),
 };
 
-Comlink.expose(api, self);
+Comlink.expose(api);
 export type PyodideWorkerAPI = typeof api;
 
 //

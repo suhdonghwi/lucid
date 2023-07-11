@@ -40,6 +40,7 @@ def run(code: str):
             tb = tb.tb_next
 
         message = type(e).__name__ + ": " + str(e)
+        print(message)
         return RunError(message, tb.tb_lineno, tb.tb_lineno, None, None)  # type: ignore
 
-    return list(exec_result)
+    return exec_result

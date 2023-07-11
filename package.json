@@ -9,14 +9,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@codemirror/autocomplete": "^6.8.0",
+    "@codemirror/autocomplete": "^6.8.1",
     "@codemirror/commands": "^6.2.4",
     "@codemirror/lang-python": "^6.1.3",
     "@codemirror/language": "^6.8.0",
     "@codemirror/state": "^6.2.1",
-    "@codemirror/view": "^6.13.2",
-    "@uiw/codemirror-theme-github": "^4.21.3",
-    "@vanilla-extract/css": "^1.11.1",
+    "@codemirror/view": "^6.14.1",
+    "@uiw/codemirror-theme-github": "^4.21.7",
+    "@vanilla-extract/css": "^1.12.0",
     "codemirror": "^6.0.1",
     "comlink": "^4.4.1",
     "comsync": "^0.0.8",
@@ -26,20 +26,20 @@
     "sync-message": "^0.0.10"
   },
   "devDependencies": {
-    "@types/node": "^18.16.18",
-    "@types/react": "^18.2.13",
+    "@types/node": "^18.16.19",
+    "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.6",
-    "@typescript-eslint/eslint-plugin": "^5.60.0",
-    "@typescript-eslint/parser": "^5.60.0",
+    "@typescript-eslint/eslint-plugin": "^5.61.0",
+    "@typescript-eslint/parser": "^5.61.0",
     "@vanilla-extract/vite-plugin": "^3.8.2",
     "@vitejs/plugin-react": "^3.1.0",
-    "eslint": "^8.43.0",
+    "eslint": "^8.44.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "prettier": "2.8.6",
     "pyodide": "^0.23.4",
     "typescript": "^4.9.5",
-    "vite": "^4.3.9"
+    "vite": "^4.4.2"
   }
 }

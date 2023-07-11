@@ -1,23 +1,21 @@
 import { makeChannel } from "sync-message";
 import { SyncClient } from "comsync";
-import { PyodideWorkerAPI } from "./PyodideWorker";
+
+import PyodideWorker from "./PyodideWorker?worker";
+import type { PyodideWorkerAPI } from "./PyodideWorker";
 
 async function initializeClient(): Promise<SyncClient<PyodideWorkerAPI>> {
   await navigator.serviceWorker.register(
-    new URL("./PyodideServiceWorker.ts", import.meta.url),
-    { type: "module" }
+    new URL("../PyodideServiceWorker.ts", import.meta.url),
+    {
+      type: "module",
+    }
   );
 
   const channel = makeChannel();
-  console.log("Channel type:", channel?.type);
+  console.log("Channel type:", channel);
 
-  const client = new SyncClient(
-    () =>
-      new Worker(new URL("./PyodideWorker.ts", import.meta.url), {
-        type: "module",
-      }),
-    channel
-  );
+  const client = new SyncClient(() => new PyodideWorker(), channel);
 
   return client;
 }
@@ -26,7 +24,7 @@ const clientPromise = initializeClient();
 
 async function runPython(code: string) {
   const client = await clientPromise;
-  const result = await client.call(client.workerProxy.runPython, code);
+  const result = client.call(client.workerProxy.runPython, code);
 
   return result;
 }

@@ -9,7 +9,7 @@ def fac(n):
     else:
         return n * fac(n-1)
 
-print(fac(1000))
+print(fac(100))
 """
 
 test_module = TrackedModule(test_code, "<code>")
