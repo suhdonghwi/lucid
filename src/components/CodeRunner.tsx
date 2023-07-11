@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { runPython } from "../PyodideHelper";
+import { runPython } from "../pyodide-helper";
 
 import CodeEditor, { CodeEditorMode } from "./CodeEditor";
 import * as cls from "./CodeRunner.css";

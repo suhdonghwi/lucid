@@ -1,12 +1,12 @@
 import { makeChannel } from "sync-message";
 import { SyncClient } from "comsync";
 
-import PyodideWorker from "./PyodideWorker?worker";
-import type { PyodideWorkerAPI } from "./PyodideWorker";
+import PyodideWorker from "./pyodide-worker?worker";
+import type { PyodideWorkerAPI } from "./pyodide-worker";
 
 async function initializeClient(): Promise<SyncClient<PyodideWorkerAPI>> {
   await navigator.serviceWorker.register(
-    new URL("../PyodideServiceWorker.ts", import.meta.url),
+    new URL("../pyodide-service-worker.ts", import.meta.url),
     {
       type: "module",
     }

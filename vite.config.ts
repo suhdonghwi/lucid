@@ -35,19 +35,4 @@ export default defineConfig({
   worker: {
     format: "es",
   },
-  // build: {
-  //   rollupOptions: {
-  //     input: {
-  //       app: "./index.html",
-  //       "service-worker": "./src/PyodideServiceWorker.ts",
-  //     },
-  //     output: {
-  //       entryFileNames: (assetInfo) => {
-  //         return assetInfo.name === "service-worker"
-  //           ? "[name].js" // put service worker in root
-  //           : "assets/[name]-[hash].js"; // others in `assets/js/`
-  //       },
-  //     },
-  //   },
-  // },
 });
