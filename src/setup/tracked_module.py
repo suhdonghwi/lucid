@@ -5,10 +5,13 @@ from types import FrameType
 import tracker_identifier as IDENT
 from tracker_attacher import TrackerAttacher
 
-is_pyodide = "pyodide" in sys.modules
+IS_PYODIDE = "pyodide" in sys.modules
 
-if is_pyodide:
+if IS_PYODIDE:
     from js import after_stmt
+
+
+FrameNode = ast.FunctionDef | ast.Lambda | ast.Module
 
 
 class FrameInfo:
@@ -25,9 +28,7 @@ class FrameInfo:
 
 
 class FrameContext:
-    def __init__(
-        self, node: ast.FunctionDef | ast.Lambda, frame_info_stack: list[FrameInfo]
-    ):
+    def __init__(self, node: FrameNode, frame_info_stack: list[FrameInfo]):
         self.node = node
         self.frame_info_stack = frame_info_stack
 
@@ -52,7 +53,7 @@ class StmtContext:
         popped = self.frame_info.pop_stmt()
         assert self.node == popped
 
-        if is_pyodide:
+        if IS_PYODIDE:
             after_stmt()
 
 
@@ -86,7 +87,7 @@ class TrackedModule:
 
         # TODO: Handle lambda expression
         def track_frame(node_index: int):
-            node: ast.FunctionDef | ast.Lambda = self.tree_nodes[node_index]
+            node: FrameNode = self.tree_nodes[node_index]
             return FrameContext(node, frame_info_stack)
 
         namespace = {
