@@ -22,11 +22,15 @@ async function initializeClient(): Promise<SyncClient<PyodideWorkerAPI>> {
 
 const clientPromise = initializeClient();
 
-async function runPython(code: string) {
+export async function runPython(code: string) {
   const client = await clientPromise;
   const result = client.call(client.workerProxy.runPython, code);
 
   return result;
 }
 
-export { runPython };
+
+export async function writeMessage() {
+  const client = await clientPromise;
+  await client.writeMessage("Hello");
+}

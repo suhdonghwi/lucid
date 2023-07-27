@@ -25,7 +25,11 @@ const api = {
   runPython: syncExpose(async (syncExtras, code: string) => {
     const pyodide = await pyodidePromise;
 
-    syncExtras.readMessage();
+    self.after_stmt = () => {
+      const read = syncExtras.readMessage();
+      console.log(read);
+    };
+
     const runnerCode = `from runner import run\nrun(${JSON.stringify(code)})`;
     const result = await pyodide.runPython(runnerCode);
     return result;

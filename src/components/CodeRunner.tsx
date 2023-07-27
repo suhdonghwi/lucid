@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { runPython } from "../pyodide-helper";
+import { runPython, writeMessage } from "../pyodide-helper";
 
 import CodeEditor, { CodeEditorMode } from "./CodeEditor";
 import * as cls from "./CodeRunner.css";
@@ -39,15 +39,8 @@ function CodeRunner() {
     // }
   }
 
-  function adjustStep(by: number) {
-    if (editorMode.type === "eval") {
-      setEditorMode({
-        ...editorMode,
-        currentStep: editorMode.currentStep + by,
-      });
-    } else {
-      console.log("not in eval mode!");
-    }
+  async function adjustStep(by: number) {
+    await writeMessage();
   }
 
   return (

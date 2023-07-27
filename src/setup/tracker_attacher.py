@@ -33,10 +33,26 @@ class TrackerAttacher(ast.NodeTransformer):
 
         return ast.With(items=[ast.withitem(context_expr=tracker_call)], body=[node])
 
+    def __add_frame_tracker(self, index: int, body: list[ast.stmt]) -> list[ast.stmt]:
+        index_node = ast.Constant(value=index)
+
+        tracker_call = ast.Call(
+            func=ast.Name(id=IDENT.TRACKER_FRAME, ctx=ast.Load()),
+            args=[index_node],
+            keywords=[],
+        )
+
+        return [ast.With(items=[ast.withitem(context_expr=tracker_call)], body=body)]
+
     Node = TypeVar("Node", bound=ast.AST)
 
     def visit(self, node: Node) -> Node:
         match node:
+            case ast.Module():
+                node.body = list(map(self.visit, node.body))
+                node.body = self.__add_frame_tracker(node._index, node.body)
+                return node
+
             case ast.Name(ctx=ast.Del()) | ast.Name(ctx=ast.Store()):
                 pass
 
@@ -51,6 +67,7 @@ class TrackerAttacher(ast.NodeTransformer):
 
             case ast.FunctionDef():
                 node.body = list(map(self.visit, node.body))
+                node.body = self.__add_frame_tracker(node._index, node.body)
                 return self.__add_stmt_tracker(node)
 
             case ast.stmt():

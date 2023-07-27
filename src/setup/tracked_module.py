@@ -1,22 +1,59 @@
+import sys
 import ast
+from types import FrameType
 
 import tracker_identifier as IDENT
-
 from tracker_attacher import TrackerAttacher
 
-from js import before_stmt
+is_pyodide = "pyodide" in sys.modules
+
+if is_pyodide:
+    from js import after_stmt
+
+
+class FrameInfo:
+    def __init__(self, frame: FrameType):
+        self.frame = frame
+        self.expr_stack: list[ast.expr] = []
+        self.stmt_stack: list[ast.stmt] = []
+
+    def push_stmt(self, node: ast.stmt):
+        self.stmt_stack.append(node)
+
+    def pop_stmt(self):
+        return self.stmt_stack.pop()
+
+
+class FrameContext:
+    def __init__(
+        self, node: ast.FunctionDef | ast.Lambda, frame_info_stack: list[FrameInfo]
+    ):
+        self.node = node
+        self.frame_info_stack = frame_info_stack
+
+    def __enter__(self):
+        frame = sys._getframe(1)
+        frame_info = FrameInfo(frame)
+        self.frame_info_stack.append(frame_info)
+
+    def __exit__(self, _1, _2, _3):
+        self.frame_info_stack.pop()
 
 
 class StmtContext:
-    def __init__(self, node: ast.stmt):
+    def __init__(self, node: ast.stmt, frame_info: FrameInfo):
         self.node = node
+        self.frame_info = frame_info
 
     def __enter__(self):
-        before_stmt()
-        pass
+        self.frame_info.push_stmt(self.node)
 
     def __exit__(self, _1, _2, _3):
-        pass
+        popped = self.frame_info.pop_stmt()
+        assert self.node == popped
+
+        if is_pyodide:
+            after_stmt()
 
 
 class TrackedModule:
@@ -35,6 +72,8 @@ class TrackedModule:
         )
 
     def exec(self):
+        frame_info_stack: list[FrameInfo] = []
+
         def track_before_expr(node_index: int):
             return node_index
 
@@ -43,12 +82,18 @@ class TrackedModule:
 
         def track_stmt(node_index: int):
             node: ast.stmt = self.tree_nodes[node_index]
-            return StmtContext(node)
+            return StmtContext(node, frame_info_stack[-1])
+
+        # TODO: Handle lambda expression
+        def track_frame(node_index: int):
+            node: ast.FunctionDef | ast.Lambda = self.tree_nodes[node_index]
+            return FrameContext(node, frame_info_stack)
 
         namespace = {
             IDENT.TRACKER_BEFORE_EXPR: track_before_expr,
             IDENT.TRACKER_AFTER_EXPR: track_after_expr,
             IDENT.TRACKER_STMT: track_stmt,
+            IDENT.TRACKER_FRAME: track_frame,
         }
         exec(self.compiled_code, namespace)
 
