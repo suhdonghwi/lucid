@@ -6,7 +6,7 @@ import {
 } from "@codemirror/view";
 import { StateField, StateEffect, RangeSet, Range } from "@codemirror/state";
 
-import RunError from "@/RunError";
+import { RunError } from "@/RunError";
 
 const ERROR_LINE_CLASS = "error-line";
 const ERROR_LINE_GUTTER_CLASS = "error-line-gutter";

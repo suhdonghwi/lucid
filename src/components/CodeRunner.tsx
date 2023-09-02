@@ -1,3 +1,4 @@
+import { CodeRange } from "@/CodeRange";
 import { useState } from "react";
 
 import { runPython, writeMessage } from "../pyodide-helper";
@@ -17,29 +18,17 @@ function CodeRunner() {
     type: "normal",
   });
 
-  async function runCode() {
-    const result = await runPython(code);
-    console.log(result);
-    // const result = await asyncRun(code, {});
-    // console.log(result);
-    //
-    // switch (result.type) {
-    //   case "success":
-    //     setEditorMode({
-    //       type: "eval",
-    //       trackData: result.data,
-    //       currentStep: 0,
-    //     });
-    //     break;
-    //   case "error":
-    //     setEditorMode({
-    //       type: "error",
-    //       error: result.error,
-    //     });
-    // }
+  function onBreak(range: CodeRange) {
+    console.log(range);
+    setEditorMode({ type: "eval", range });
   }
 
-  async function adjustStep(by: number) {
+  async function runCode() {
+    const result = await runPython(code, onBreak);
+    console.log(result);
+  }
+
+  async function onClickNext() {
     await writeMessage();
   }
 
@@ -56,13 +45,7 @@ function CodeRunner() {
         type="button"
         className={cls.runButton}
         value="Next"
-        onClick={() => adjustStep(1)}
-      />
-      <input
-        type="button"
-        className={cls.runButton}
-        value="Prev"
-        onClick={() => adjustStep(-1)}
+        onClick={onClickNext}
       />
     </div>
   );

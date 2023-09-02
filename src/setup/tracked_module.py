@@ -54,7 +54,12 @@ class StmtContext:
         assert self.node == popped
 
         if IS_PYODIDE:
-            after_stmt()
+            after_stmt(
+                self.node.lineno,
+                self.node.end_lineno,
+                self.node.col_offset,
+                self.node.end_col_offset,
+            )
 
 
 class TrackedModule:
@@ -76,6 +81,7 @@ class TrackedModule:
         frame_info_stack: list[FrameInfo] = []
 
         def track_before_expr(node_index: int):
+            # print(self.tree_nodes[node_index])
             return node_index
 
         def track_after_expr(node_index: int, value: object):

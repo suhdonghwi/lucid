@@ -3,13 +3,13 @@ import { useRef, useEffect } from "react";
 import { githubLightInit } from "@uiw/codemirror-theme-github";
 import { useCodeMirror } from "./useCodeMirror";
 
-import extensions from "./extensions";
+import { extensions } from "./extensions";
 import { clearError, setError } from "./extensions/errorDisplay";
 import { clearEvalRange, setEvalRange } from "./extensions/evalHighlight";
 
 import * as cls from "./index.css";
-import { TrackData } from "@/TrackData";
-import RunError from "@/RunError";
+import { RunError } from "@/RunError";
+import { CodeRange } from "@/CodeRange";
 
 const theme = githubLightInit({
   theme: "light",
@@ -23,7 +23,7 @@ const theme = githubLightInit({
 export type CodeEditorMode =
   | { type: "normal" }
   | { type: "error"; error: RunError }
-  | { type: "eval"; trackData: TrackData[]; currentStep: number };
+  | { type: "eval"; range: CodeRange };
 
 type CodeEditorProps = {
   code: string;
@@ -35,8 +35,7 @@ function CodeEditor({ code, onCodeUpdate, mode }: CodeEditorProps) {
   const editorDiv = useRef<HTMLDivElement | null>(null);
 
   const { setContainer, view } = useCodeMirror({
-    // Not actually a 2-way binding
-    // But view dispatch does not occur if the value is same with view's internal state
+    // View dispatch does not occur if the value is same with view's internal state
     // (Refer "./useCodeMirror.ts")
     value: code,
 
@@ -63,7 +62,7 @@ function CodeEditor({ code, onCodeUpdate, mode }: CodeEditorProps) {
       case "eval":
         view.dispatch({
           effects: [
-            setEvalRange.of(mode.trackData[mode.currentStep]),
+            setEvalRange.of(mode.range),
             clearError.of(null),
           ],
         });

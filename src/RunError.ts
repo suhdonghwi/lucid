@@ -1,15 +1,6 @@
-export type ErrorRange = {
-  line: number;
-  endLine: number;
+import { CodeRange } from "./CodeRange";
 
-  col: number | null;
-  endCol: number | null;
-}
-
-type RunError = {
+export type RunError = {
   message: string;
-
-  range: ErrorRange;
+  range: CodeRange;
 };
-
-export default RunError;

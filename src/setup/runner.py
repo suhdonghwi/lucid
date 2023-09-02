@@ -1,5 +1,3 @@
-import ast
-
 from tracked_module import TrackedModule
 
 

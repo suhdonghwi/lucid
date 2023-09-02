@@ -22,18 +22,25 @@ async function initializePyodide(): Promise<PyodideInterface> {
 const pyodidePromise = initializePyodide();
 
 const api = {
-  runPython: syncExpose(async (syncExtras, code: string) => {
-    const pyodide = await pyodidePromise;
+  runPython: syncExpose(
+    async (syncExtras, code: string, onBreak: (range: CodeRange) => void) => {
+      const pyodide = await pyodidePromise;
 
-    self.after_stmt = () => {
-      const read = syncExtras.readMessage();
-      console.log(read);
-    };
+      self.after_stmt = (
+        lineNo: number,
+        endLineNo: number,
+        col: number,
+        endCol: number
+      ) => {
+        onBreak({ line: lineNo, endLine: endLineNo, col, endCol });
+        const read = syncExtras.readMessage();
+      };
 
-    const runnerCode = `from runner import run\nrun(${JSON.stringify(code)})`;
-    const result = await pyodide.runPython(runnerCode);
-    return result;
-  }),
+      const runnerCode = `from runner import run\nrun(${JSON.stringify(code)})`;
+      const result = await pyodide.runPython(runnerCode);
+      return result;
+    }
+  ),
 };
 
 Comlink.expose(api);

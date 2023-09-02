@@ -10,12 +10,12 @@ import { EditorSelection, StateEffect } from "@codemirror/state";
 
 import gsap from "gsap";
 
-import { EvalRange, TrackData } from "@/TrackData";
+import { CodeRange } from "@/CodeRange";
 
 const EVAL_HIGHLIGHT_LAYER_CLASS = "cm-eval-highlight-layer";
 const EVAL_HIGHLIGHT_CLASS = "cm-eval-highlight";
 
-export const setEvalRange = StateEffect.define<TrackData>();
+export const setEvalRange = StateEffect.define<CodeRange>();
 export const clearEvalRange = StateEffect.define();
 
 const highlightLayer = layer({
@@ -44,7 +44,7 @@ class HighlightPluginValue implements PluginValue {
     bottom: Element;
   } | null = null;
 
-  animateHighlight(range: EvalRange, view: EditorView) {
+  animateHighlight(range: CodeRange, view: EditorView) {
     if (this.highlights === null) return;
 
     const startLine = view.state.doc.line(range.line);
@@ -91,7 +91,7 @@ class HighlightPluginValue implements PluginValue {
       for (const e of tr.effects) {
         if (e.is(setEvalRange)) {
           vu.view.requestMeasure({
-            read: (view) => this.animateHighlight(e.value.evalRange, view),
+            read: (view) => this.animateHighlight(e.value, view),
           });
         } else if (e.is(clearEvalRange)) {
           gsap.to(

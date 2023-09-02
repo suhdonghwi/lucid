@@ -13,7 +13,7 @@ const cssTheme = View.EditorView.theme({
 import errorDisplay from "./errorDisplay";
 import evalHighlight from "./evalHighlight";
 
-export default [
+export const extensions = [
   View.keymap.of(Commands.defaultKeymap),
   View.lineNumbers(),
   View.EditorView.lineWrapping,
