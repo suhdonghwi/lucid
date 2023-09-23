@@ -15,7 +15,7 @@ async function initializeClient(): Promise<SyncClient<PyodideWorkerAPI>> {
   );
 
   const channel = makeChannel();
-  console.log("Channel type:", channel);
+  console.log("Channel:", channel);
 
   const client = new SyncClient(() => new PyodideWorker(), channel);
 

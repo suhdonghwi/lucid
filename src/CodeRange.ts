@@ -1,6 +1,6 @@
 export type CodeRange = {
-  line: number;
-  endLine: number;
+  lineNo: number;
+  endLineNo: number;
 
   col: number;
   endCol: number;

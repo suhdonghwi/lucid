@@ -47,8 +47,8 @@ class HighlightPluginValue implements PluginValue {
   animateHighlight(range: CodeRange, view: EditorView) {
     if (this.highlights === null) return;
 
-    const startLine = view.state.doc.line(range.line);
-    const endLine = view.state.doc.line(range.endLine);
+    const startLine = view.state.doc.line(range.lineNo);
+    const endLine = view.state.doc.line(range.endLineNo);
 
     const startPos = startLine.from + range.col;
     const endPos = endLine.from + range.endCol;

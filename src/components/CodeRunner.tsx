@@ -19,7 +19,7 @@ function CodeRunner() {
   });
 
   function onBreak(range: CodeRange) {
-    console.log(range);
+    // console.log(range);
     setEditorMode({ type: "eval", range });
   }
 

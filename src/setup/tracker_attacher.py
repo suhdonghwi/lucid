@@ -43,6 +43,7 @@ class TrackerAttacher(ast.NodeTransformer):
             args=[index_node],
             keywords=[],
         )
+
         return [ast.With(items=[ast.withitem(context_expr=tracker_call)], body=body)]
 
     NodeType = TypeVar("NodeType", bound=ast.AST)

@@ -61,10 +61,7 @@ function CodeEditor({ code, onCodeUpdate, mode }: CodeEditorProps) {
         break;
       case "eval":
         view.dispatch({
-          effects: [
-            setEvalRange.of(mode.range),
-            clearError.of(null),
-          ],
+          effects: [setEvalRange.of(mode.range), clearError.of(null)],
         });
         break;
       default:

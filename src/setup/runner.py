@@ -1,3 +1,4 @@
+from types import TracebackType
 from tracked_module import TrackedModule
 
 
@@ -5,15 +6,15 @@ class RunError:
     def __init__(
         self,
         message: str,
-        line: int | None,
-        end_line: int | None,
+        lineno: int,
+        end_lineno: int | None,
         col: int | None,
         end_col: int | None,
     ) -> None:
         self.message = message
 
-        self.line = line
-        self.end_line = end_line
+        self.lineno = lineno
+        self.end_lineno = end_lineno
 
         self.col = col
         self.end_col = end_col
@@ -27,6 +28,10 @@ def run(code: str):
         exec_result = module.exec()
     except SyntaxError as e:
         message = "SyntaxError: " + e.msg
+
+        assert isinstance(e.lineno, int)
+        assert isinstance(e.offset, int)
+
         return RunError(message, e.lineno, e.end_lineno, e.offset, e.end_offset)
     except Exception as e:
         tb = e.__traceback__.tb_next.tb_next  # type: ignore
@@ -37,8 +42,9 @@ def run(code: str):
         ):
             tb = tb.tb_next
 
-        message = type(e).__name__ + ": " + str(e)
-        print(message)
-        return RunError(message, tb.tb_lineno, tb.tb_lineno, None, None)  # type: ignore
+        assert isinstance(tb, TracebackType)
+
+        message = f"${type(e).__name__}: ${e}"
+        return RunError(message, tb.tb_lineno, None, None, None)
 
     return exec_result

@@ -8,7 +8,7 @@ from tracker_attacher import TrackerAttacher
 IS_PYODIDE = "pyodide" in sys.modules
 
 if IS_PYODIDE:
-    from js import after_stmt
+    import js_callbacks
 
 
 FrameNode = ast.FunctionDef | ast.Lambda | ast.Module
@@ -54,11 +54,11 @@ class StmtContext:
         assert self.node == popped
 
         if IS_PYODIDE:
-            after_stmt(
-                self.node.lineno,
-                self.node.end_lineno,
-                self.node.col_offset,
-                self.node.end_col_offset,
+            js_callbacks.after_stmt(
+                lineNo=self.node.lineno,
+                endLineNo=self.node.end_lineno,
+                col=self.node.col_offset,
+                endCol=self.node.end_col_offset,
             )
 
 

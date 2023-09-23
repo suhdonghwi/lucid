@@ -45,10 +45,10 @@ const errorField = StateField.define({
         // If it is a multi-line expression, then we will highlight
         // until the last non-whitespace character of the starting line.
         // Reference: https://github.com/python/cpython/blob/4849a80dd1cbbc5010e8749ba60eb91a541ae4e7/Python/traceback.c#L853-L867
-        if (range.line !== range.endLine) {
-          range.endLine = range.line;
+        if (range.lineNo !== range.endLineNo) {
+          range.endLineNo = range.lineNo;
 
-          const lineText = newDoc.line(range.line).text;
+          const lineText = newDoc.line(range.lineNo).text;
           range.endCol = lineText.length + 1;
 
           while (range.endCol > 0 && isWhitespace(lineText[range.endCol - 1])) {
@@ -57,12 +57,12 @@ const errorField = StateField.define({
         }
 
         if (range.col && range.endCol && range.col < range.endCol) {
-          const from = newDoc.line(range.line).from + range.col - 1;
-          const to = newDoc.line(range.endLine).from + range.endCol - 1;
+          const from = newDoc.line(range.lineNo).from + range.col - 1;
+          const to = newDoc.line(range.endLineNo).from + range.endCol - 1;
           marks.push(errorOffsetRangeMark.range(from, to));
         }
 
-        for (let l = range.line; l <= range.endLine; l++) {
+        for (let l = range.lineNo; l <= range.endLineNo; l++) {
           const pos = newDoc.line(l).from;
           marks.push(errorLineMark.range(pos));
         }
