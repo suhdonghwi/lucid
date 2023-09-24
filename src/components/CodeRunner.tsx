@@ -29,7 +29,7 @@ function CodeRunner() {
     if (result.type === "error") {
       setEditorMode({
         type: "error",
-        error: { range: result.range, message: result.message },
+        error: result.error,
       });
     }
     console.log(result);

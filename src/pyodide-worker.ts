@@ -5,6 +5,7 @@ import * as Comlink from "comlink";
 import { syncExpose } from "comsync";
 
 import type { CodeRange } from "./CodeRange";
+import type { RunError } from "./RunError";
 
 async function initializePyodide(): Promise<PyodideInterface> {
   const indexURL = "https://cdn.jsdelivr.net/pyodide/v0.23.4/full/";
@@ -25,7 +26,7 @@ const pyodidePromise = initializePyodide();
 
 export type RunPythonResult =
   | { type: "success"; data: any }
-  | { type: "error"; message: string; range: CodeRange };
+  | { type: "error"; error: RunError };
 
 const api = {
   runPython: syncExpose(
@@ -52,14 +53,18 @@ const api = {
         runResult !== null &&
         runResult.type === "RunError"
       ) {
+        const range = {
+          lineNo: runResult.lineno,
+          endLineNo: runResult.end_lineno,
+          col: runResult.col,
+          endCol: runResult.end_col,
+        };
+
         return {
           type: "error",
-          message: runResult.message,
-          range: {
-            lineNo: runResult.lineno,
-            endLineNo: runResult.end_lineno,
-            col: runResult.col,
-            endCol: runResult.end_col,
+          error: {
+            message: runResult.message,
+            range,
           },
         };
       } else {
