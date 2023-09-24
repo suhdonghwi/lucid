@@ -25,6 +25,13 @@ function CodeRunner() {
 
   async function runCode() {
     const result = await runPython(code, onBreak);
+
+    if (result.type === "error") {
+      setEditorMode({
+        type: "error",
+        error: { range: result.range, message: result.message },
+      });
+    }
     console.log(result);
   }
 

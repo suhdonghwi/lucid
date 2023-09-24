@@ -7,8 +7,6 @@ import { syncExpose } from "comsync";
 import type { CodeRange } from "./CodeRange";
 
 async function initializePyodide(): Promise<PyodideInterface> {
-  await new Promise((r) => setTimeout(r, 5000));
-
   const indexURL = "https://cdn.jsdelivr.net/pyodide/v0.23.4/full/";
   const pyodide = await loadPyodide({ indexURL });
   pyodide.registerComlink(Comlink);
