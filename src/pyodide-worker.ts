@@ -7,6 +7,8 @@ import { syncExpose } from "comsync";
 import type { CodeRange } from "./CodeRange";
 import type { RunError } from "./RunError";
 
+import { ExecError } from "./schemas/ExecResult";
+
 async function initializePyodide(): Promise<PyodideInterface> {
   const indexURL = "https://cdn.jsdelivr.net/pyodide/v0.23.4/full/";
   const pyodide = await loadPyodide({ indexURL });
@@ -46,31 +48,29 @@ const api = {
       pyodide.registerJsModule("js_callbacks", callbacks);
 
       const fullCode = `from runner import run\nrun(${JSON.stringify(code)})`;
-      const runResult = await pyodide.runPythonAsync(fullCode);
+      const execResult = await pyodide.runPythonAsync(fullCode);
 
-      if (
-        typeof runResult === "object" &&
-        runResult !== null &&
-        runResult.type === "RunError"
-      ) {
+      if (execResult !== undefined) {
+        const execError = ExecError.parse(execResult);
+
         const range: CodeRange = {
-          lineNo: runResult.lineno,
-          endLineNo: runResult.end_lineno,
-          col: runResult.col,
-          endCol: runResult.end_col,
+          lineNo: execError.lineno,
+          endLineNo: execError.end_lineno,
+          col: execError.col,
+          endCol: execError.end_col,
         };
 
         return {
           type: "error",
           error: {
-            message: runResult.message,
+            message: execError.message,
             range,
           },
         };
       } else {
         return {
           type: "success",
-          data: runResult,
+          data: execResult,
         };
       }
     }

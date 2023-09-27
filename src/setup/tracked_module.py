@@ -104,7 +104,5 @@ class TrackedModule:
         }
         exec(self.compiled_code, namespace)
 
-        return None
-
     def unparse(self) -> str:
         return ast.unparse(self.tracked_tree)

@@ -25,7 +25,7 @@ def run(code: str):
 
     try:
         module = TrackedModule(code, file_name)
-        exec_result = module.exec()
+        module.exec()
     except SyntaxError as e:
         message = "SyntaxError: " + e.msg
 
@@ -46,5 +46,3 @@ def run(code: str):
 
         message = f"${type(e).__name__}: ${e}"
         return RunError(message, tb.tb_lineno, None, None, None)
-
-    return exec_result
