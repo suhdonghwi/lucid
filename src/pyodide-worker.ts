@@ -53,7 +53,7 @@ const api = {
         runResult !== null &&
         runResult.type === "RunError"
       ) {
-        const range = {
+        const range: CodeRange = {
           lineNo: runResult.lineno,
           endLineNo: runResult.end_lineno,
           col: runResult.col,
