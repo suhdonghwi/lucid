@@ -9,7 +9,7 @@ import { clearEvalRange, setEvalRange } from "./extensions/evalHighlight";
 
 import * as cls from "./index.css";
 import { RunError } from "@/RunError";
-import { CodeRange } from "@/CodeRange";
+import type { PosRange } from "@/schemas/PosRange";
 
 const theme = githubLightInit({
   theme: "light",
@@ -23,7 +23,7 @@ const theme = githubLightInit({
 export type CodeEditorMode =
   | { type: "normal" }
   | { type: "error"; error: RunError }
-  | { type: "eval"; range: CodeRange };
+  | { type: "eval"; range: PosRange };
 
 type CodeEditorProps = {
   code: string;

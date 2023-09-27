@@ -1,7 +1,7 @@
-import { CodeRange } from "@/CodeRange";
 import { useState } from "react";
 
-import { runPython, writeMessage } from "../pyodide-helper";
+import type { PosRange } from "@/schemas/PosRange";
+import { runPython, writeMessage } from "@/pyodide-helper";
 
 import CodeEditor, { CodeEditorMode } from "./CodeEditor";
 import * as cls from "./CodeRunner.css";
@@ -18,7 +18,7 @@ function CodeRunner() {
     type: "normal",
   });
 
-  function onBreak(range: CodeRange) {
+  function onBreak(range: PosRange) {
     // console.log(range);
     setEditorMode({ type: "eval", range });
   }

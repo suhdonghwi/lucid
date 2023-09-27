@@ -10,12 +10,12 @@ import { EditorSelection, StateEffect } from "@codemirror/state";
 
 import gsap from "gsap";
 
-import { CodeRange } from "@/CodeRange";
+import type { PosRange } from "@/schemas/PosRange";
 
 const EVAL_HIGHLIGHT_LAYER_CLASS = "cm-eval-highlight-layer";
 const EVAL_HIGHLIGHT_CLASS = "cm-eval-highlight";
 
-export const setEvalRange = StateEffect.define<CodeRange>();
+export const setEvalRange = StateEffect.define<PosRange>();
 export const clearEvalRange = StateEffect.define();
 
 const highlightLayer = layer({
@@ -44,11 +44,21 @@ class HighlightPluginValue implements PluginValue {
     bottom: Element;
   } | null = null;
 
-  animateHighlight(range: CodeRange, view: EditorView) {
+  animateHighlight(range: PosRange, view: EditorView) {
     if (this.highlights === null) return;
 
-    const startLine = view.state.doc.line(range.lineNo);
-    const endLine = view.state.doc.line(range.endLineNo);
+    // FIXME
+    if (
+      range.endLineno === undefined ||
+      range.col === undefined ||
+      range.endCol === undefined
+    ) {
+      console.log(range);
+      return;
+    }
+
+    const startLine = view.state.doc.line(range.lineno);
+    const endLine = view.state.doc.line(range.endLineno);
 
     const startPos = startLine.from + range.col;
     const endPos = endLine.from + range.endCol;

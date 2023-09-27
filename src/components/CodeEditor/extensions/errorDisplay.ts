@@ -6,13 +6,13 @@ import {
 } from "@codemirror/view";
 import { StateField, StateEffect, RangeSet, Range } from "@codemirror/state";
 
-import { RunError } from "@/RunError";
+import type { ExecError } from "@/schemas/ExecError";
 
 const ERROR_LINE_CLASS = "error-line";
 const ERROR_LINE_GUTTER_CLASS = "error-line-gutter";
 const ERROR_OFFSET_RANGE_CLASS = "error-offset-range";
 
-export const setError = StateEffect.define<RunError>();
+export const setError = StateEffect.define<ExecError>();
 export const clearError = StateEffect.define();
 
 const errorLineMark = Decoration.line({
@@ -42,13 +42,22 @@ const errorField = StateField.define({
 
         const marks = [];
 
+        // FIXME
+        if (
+          range.endLineno === undefined ||
+          range.col === undefined ||
+          range.endCol === undefined
+        ) {
+          return RangeSet.empty;
+        }
+
         // If it is a multi-line expression, then we will highlight
         // until the last non-whitespace character of the starting line.
         // Reference: https://github.com/python/cpython/blob/4849a80dd1cbbc5010e8749ba60eb91a541ae4e7/Python/traceback.c#L853-L867
-        if (range.lineNo !== range.endLineNo) {
-          range.endLineNo = range.lineNo;
+        if (range.lineno !== range.endLineno) {
+          range.endLineno = range.lineno;
 
-          const lineText = newDoc.line(range.lineNo).text;
+          const lineText = newDoc.line(range.lineno).text;
           range.endCol = lineText.length + 1;
 
           while (range.endCol > 0 && isWhitespace(lineText[range.endCol - 1])) {
@@ -57,12 +66,12 @@ const errorField = StateField.define({
         }
 
         if (range.col && range.endCol && range.col < range.endCol) {
-          const from = newDoc.line(range.lineNo).from + range.col - 1;
-          const to = newDoc.line(range.endLineNo).from + range.endCol - 1;
+          const from = newDoc.line(range.lineno).from + range.col - 1;
+          const to = newDoc.line(range.endLineno).from + range.endCol - 1;
           marks.push(errorOffsetRangeMark.range(from, to));
         }
 
-        for (let l = range.lineNo; l <= range.endLineNo; l++) {
+        for (let l = range.lineno; l <= range.endLineno; l++) {
           const pos = newDoc.line(l).from;
           marks.push(errorLineMark.range(pos));
         }

@@ -4,10 +4,8 @@ import { loadPyodide } from "pyodide";
 import * as Comlink from "comlink";
 import { syncExpose } from "comsync";
 
-import type { CodeRange } from "./CodeRange";
-import type { RunError } from "./RunError";
-
-import { ExecError } from "./schemas/ExecResult";
+import { ExecError, ExecErrorSchema } from "./schemas/ExecError";
+import { PosRange, PosRangeSchema } from "./schemas/PosRange";
 
 async function initializePyodide(): Promise<PyodideInterface> {
   const indexURL = "https://cdn.jsdelivr.net/pyodide/v0.23.4/full/";
@@ -27,20 +25,21 @@ async function initializePyodide(): Promise<PyodideInterface> {
 const pyodidePromise = initializePyodide();
 
 export type RunPythonResult =
-  | { type: "success"; data: any }
-  | { type: "error"; error: RunError };
+  | { type: "success" }
+  | { type: "error"; error: ExecError };
 
 const api = {
   runPython: syncExpose(
     async (
       syncExtras,
       code: string,
-      onBreak: (range: CodeRange) => void
+      onBreak: (range: PosRange) => void
     ): Promise<RunPythonResult> => {
       const pyodide = await pyodidePromise;
 
       const callbacks = {
-        after_stmt: (range: CodeRange) => {
+        after_stmt: (range: PosRange) => {
+          // range = PosRangeSchema.parse(range);
           onBreak(range);
           const readResult = syncExtras.readMessage();
         },
@@ -51,28 +50,11 @@ const api = {
       const execResult = await pyodide.runPythonAsync(fullCode);
 
       if (execResult !== undefined) {
-        const execError = ExecError.parse(execResult);
-
-        const range: CodeRange = {
-          lineNo: execError.lineno,
-          endLineNo: execError.end_lineno,
-          col: execError.col,
-          endCol: execError.end_col,
-        };
-
-        return {
-          type: "error",
-          error: {
-            message: execError.message,
-            range,
-          },
-        };
-      } else {
-        return {
-          type: "success",
-          data: execResult,
-        };
+        const execError = ExecErrorSchema.parse(execResult);
+        return { type: "error", error: execError };
       }
+
+      return { type: "success" };
     }
   ),
 };

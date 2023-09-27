@@ -55,8 +55,8 @@ class StmtContext:
 
         if IS_PYODIDE:
             js_callbacks.after_stmt(
-                lineNo=self.node.lineno,
-                endLineNo=self.node.end_lineno,
+                lineno=self.node.lineno,
+                endLineno=self.node.end_lineno,
                 col=self.node.col_offset,
                 endCol=self.node.end_col_offset,
             )

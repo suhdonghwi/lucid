@@ -1,23 +1,16 @@
 from types import TracebackType
+from pos_range import PosRange
 from tracked_module import TrackedModule
 
 
 class RunError:
     def __init__(
         self,
+        range: PosRange,
         message: str,
-        lineno: int,
-        end_lineno: int | None,
-        col: int | None,
-        end_col: int | None,
     ) -> None:
+        self.range = range
         self.message = message
-
-        self.lineno = lineno
-        self.end_lineno = end_lineno
-
-        self.col = col
-        self.end_col = end_col
 
 
 def run(code: str):
@@ -27,12 +20,12 @@ def run(code: str):
         module = TrackedModule(code, file_name)
         module.exec()
     except SyntaxError as e:
+        assert isinstance(e.lineno, int)
+
+        error_range = PosRange(e.lineno, e.end_lineno, e.offset, e.end_offset)
         message = "SyntaxError: " + e.msg
 
-        assert isinstance(e.lineno, int)
-        assert isinstance(e.offset, int)
-
-        return RunError(message, e.lineno, e.end_lineno, e.offset, e.end_offset)
+        return RunError(error_range, message)
     except Exception as e:
         tb = e.__traceback__.tb_next.tb_next  # type: ignore
         while (
@@ -44,5 +37,6 @@ def run(code: str):
 
         assert isinstance(tb, TracebackType)
 
+        error_range = PosRange(tb.tb_lineno, None, None, None)
         message = f"${type(e).__name__}: ${e}"
-        return RunError(message, tb.tb_lineno, None, None, None)
+        return RunError(error_range, message)
