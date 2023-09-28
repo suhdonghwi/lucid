@@ -1,16 +1,6 @@
 from types import TracebackType
-from pos_range import PosRange
 from tracked_module import TrackedModule
-
-
-class RunError:
-    def __init__(
-        self,
-        range: PosRange,
-        message: str,
-    ) -> None:
-        self.range = range
-        self.message = message
+from util import js_object
 
 
 def run(code: str):
@@ -22,10 +12,12 @@ def run(code: str):
     except SyntaxError as e:
         assert isinstance(e.lineno, int)
 
-        error_range = PosRange(e.lineno, e.end_lineno, e.offset, e.end_offset)
+        error_range = js_object(
+            lineno=e.lineno, endLineno=e.end_lineno, col=e.offset, endCol=e.end_offset
+        )
         message = "SyntaxError: " + e.msg
 
-        return RunError(error_range, message)
+        return js_object(range=error_range, message=message)
     except Exception as e:
         tb = e.__traceback__.tb_next.tb_next  # type: ignore
         while (
@@ -39,4 +31,4 @@ def run(code: str):
 
         error_range = PosRange(tb.tb_lineno, None, None, None)
         message = f"${type(e).__name__}: ${e}"
-        return RunError(error_range, message)
+        return js_object(range=error_range, message=message)
