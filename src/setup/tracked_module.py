@@ -4,12 +4,12 @@ from types import FrameType
 
 import tracker_identifier as IDENT
 from tracker_attacher import TrackerAttacher
-from pos_range import PosRange
 
 IS_PYODIDE = "pyodide" in sys.modules
 
 if IS_PYODIDE:
     import js_callbacks
+    from util import js_object
 
 
 FrameNode = ast.FunctionDef | ast.Lambda | ast.Module
@@ -56,11 +56,11 @@ class StmtContext:
 
         if IS_PYODIDE:
             js_callbacks.after_stmt(
-                PosRange(
-                    self.node.lineno,
-                    self.node.end_lineno,
-                    self.node.col_offset,
-                    self.node.end_col_offset,
+                js_object(
+                    lineno=self.node.lineno,
+                    endLineno=self.node.end_lineno,
+                    col=self.node.col_offset,
+                    endCol=self.node.end_col_offset,
                 )
             )
 

@@ -1,4 +1,5 @@
 import type { PyodideInterface } from "pyodide";
+import type { PyProxy } from "pyodide/ffi";
 import { loadPyodide } from "pyodide";
 
 import * as Comlink from "comlink";
@@ -38,8 +39,8 @@ const api = {
       const pyodide = await pyodidePromise;
 
       const callbacks = {
-        after_stmt: (rangeAny: any) => {
-          const range = PosRangeSchema.parse(rangeAny);
+        after_stmt: (maybeRange: PyProxy) => {
+          const range = PosRangeSchema.parse(maybeRange);
           onBreak(range);
 
           const readResult = syncExtras.readMessage();

@@ -1,30 +1,27 @@
 import { z } from "zod";
-import { camelize } from "./camelize";
 
 const posNumber = z.number().int().nonnegative();
 const exclude = z.never().optional();
 
-export const PosRangeSchema = z
-  .union([
-    z.object({
-      lineno: posNumber,
-      end_lineno: posNumber,
-      col: posNumber,
-      end_col: posNumber,
-    }),
-    z.object({
-      lineno: posNumber,
-      end_lineno: exclude,
-      col: posNumber,
-      end_col: exclude,
-    }),
-    z.object({
-      lineno: posNumber,
-      end_lineno: exclude,
-      col: exclude,
-      end_col: exclude,
-    }),
-  ])
-  .transform(camelize);
+export const PosRangeSchema = z.union([
+  z.strictObject({
+    lineno: posNumber,
+    endLineno: posNumber,
+    col: posNumber,
+    endCol: posNumber,
+  }),
+  z.strictObject({
+    lineno: posNumber,
+    endLineno: exclude,
+    col: posNumber,
+    endCol: exclude,
+  }),
+  z.strictObject({
+    lineno: posNumber,
+    endLineno: exclude,
+    col: exclude,
+    endCol: exclude,
+  }),
+]);
 
 export type PosRange = z.infer<typeof PosRangeSchema>;
