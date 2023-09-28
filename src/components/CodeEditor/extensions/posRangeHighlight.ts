@@ -12,18 +12,20 @@ import gsap from "gsap";
 
 import type { PosRange } from "@/schemas/PosRange";
 
-const EVAL_HIGHLIGHT_LAYER_CLASS = "cm-eval-highlight-layer";
-const EVAL_HIGHLIGHT_CLASS = "cm-eval-highlight";
+const POS_RANGE_HIGHLIGHT_LAYER_CLASS = "cm-pos-range-highlight-layer";
+const POS_RANGE_HIGHLIGHT_CLASS = "cm-pos-range-highlight";
 
-export const setEvalRange = StateEffect.define<PosRange>();
-export const clearEvalRange = StateEffect.define();
+export const setPosRange = StateEffect.define<PosRange>();
+export const clearPosRange = StateEffect.define();
 
 const highlightLayer = layer({
-  class: EVAL_HIGHLIGHT_LAYER_CLASS,
+  class: POS_RANGE_HIGHLIGHT_LAYER_CLASS,
   above: false,
   update: () => false,
   markers: () =>
-    [0, 1, 2].map(() => new RectangleMarker(EVAL_HIGHLIGHT_CLASS, 0, 0, 0, 0)),
+    [0, 1, 2].map(
+      () => new RectangleMarker(POS_RANGE_HIGHLIGHT_CLASS, 0, 0, 0, 0)
+    ),
 });
 
 function rectangleMarkerToRect(marker: RectangleMarker) {
@@ -89,7 +91,9 @@ class HighlightPluginValue implements PluginValue {
 
   update(vu: ViewUpdate) {
     if (this.highlights === null) {
-      const elems = vu.view.dom.getElementsByClassName(EVAL_HIGHLIGHT_CLASS);
+      const elems = vu.view.dom.getElementsByClassName(
+        POS_RANGE_HIGHLIGHT_CLASS
+      );
 
       if (elems.length === 3) {
         const [top, middle, bottom] = elems;
@@ -99,11 +103,11 @@ class HighlightPluginValue implements PluginValue {
 
     for (const tr of vu.transactions) {
       for (const e of tr.effects) {
-        if (e.is(setEvalRange)) {
+        if (e.is(setPosRange)) {
           vu.view.requestMeasure({
             read: (view) => this.animateHighlight(e.value, view),
           });
-        } else if (e.is(clearEvalRange)) {
+        } else if (e.is(clearPosRange)) {
           gsap.to(
             [
               this.highlights.top,
@@ -121,7 +125,7 @@ class HighlightPluginValue implements PluginValue {
 const highlightPlugin = ViewPlugin.fromClass(HighlightPluginValue);
 
 const highlightTheme = EditorView.theme({
-  [`& .${EVAL_HIGHLIGHT_LAYER_CLASS} .${EVAL_HIGHLIGHT_CLASS}`]: {
+  [`& .${POS_RANGE_HIGHLIGHT_LAYER_CLASS} .${POS_RANGE_HIGHLIGHT_CLASS}`]: {
     backgroundColor: "#ffe066",
     borderRadius: "3px",
   },
