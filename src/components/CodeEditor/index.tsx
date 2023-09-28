@@ -8,8 +8,8 @@ import { clearError, setError } from "./extensions/errorDisplay";
 import { clearEvalRange, setEvalRange } from "./extensions/evalHighlight";
 
 import * as cls from "./index.css";
-import { RunError } from "@/RunError";
 import type { PosRange } from "@/schemas/PosRange";
+import type { ExecError } from "@/schemas/ExecError";
 
 const theme = githubLightInit({
   theme: "light",
@@ -22,7 +22,7 @@ const theme = githubLightInit({
 
 export type CodeEditorMode =
   | { type: "normal" }
-  | { type: "error"; error: RunError }
+  | { type: "error"; error: ExecError }
   | { type: "eval"; range: PosRange };
 
 type CodeEditorProps = {
