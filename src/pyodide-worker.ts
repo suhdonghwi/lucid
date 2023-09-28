@@ -38,9 +38,10 @@ const api = {
       const pyodide = await pyodidePromise;
 
       const callbacks = {
-        after_stmt: (range: PosRange) => {
-          // range = PosRangeSchema.parse(range);
+        after_stmt: (rangeAny: any) => {
+          const range = PosRangeSchema.parse(rangeAny);
           onBreak(range);
+
           const readResult = syncExtras.readMessage();
         },
       };

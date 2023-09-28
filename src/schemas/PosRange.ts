@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { camelize } from "./camelize";
 
-const posNumber = z.number().int().gte(0);
+const posNumber = z.number().int().nonnegative();
 const exclude = z.never().optional();
 
 export const PosRangeSchema = z
