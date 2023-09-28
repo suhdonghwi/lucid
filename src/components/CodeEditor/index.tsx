@@ -14,8 +14,8 @@ import type { ExecError } from "@/schemas/ExecError";
 const theme = githubLightInit({
   theme: "light",
   settings: {
-    background: "transparent",
-    gutterBackground: "transparent",
+    background: "white",
+    gutterBackground: "white",
     fontFamily: "JetBrains Mono, monospace",
   },
 });

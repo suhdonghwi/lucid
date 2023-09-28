@@ -7,8 +7,8 @@ export const rootContainer = style({
 
   overflow: "auto",
 
-  backgroundColor: "#f8f9fa",
-  padding: "0.9rem 0.4rem",
+  backgroundColor: "white",
   borderRadius: "10px",
-});
 
+  boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px",
+});

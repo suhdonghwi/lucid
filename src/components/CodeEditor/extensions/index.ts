@@ -16,7 +16,7 @@ import posRangeHighlight from "./posRangeHighlight";
 export const extensions = [
   View.keymap.of(Commands.defaultKeymap),
   View.lineNumbers(),
-  View.EditorView.lineWrapping,
+  // View.EditorView.lineWrapping,
   Commands.history(),
   View.drawSelection(),
   View.dropCursor(),

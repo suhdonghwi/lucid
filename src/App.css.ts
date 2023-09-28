@@ -7,4 +7,6 @@ export const container = style({
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
+
+  backgroundColor: "#f8f9fa",
 });
