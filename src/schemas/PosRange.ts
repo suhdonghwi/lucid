@@ -3,7 +3,7 @@ import { z } from "zod";
 const posNumber = z.number().int().nonnegative();
 const exclude = z.never().optional();
 
-export const PosRangeSchema = z.union([
+export const posRangeSchema = z.union([
   z.strictObject({
     lineno: posNumber,
     endLineno: posNumber,
@@ -24,4 +24,4 @@ export const PosRangeSchema = z.union([
   }),
 ]);
 
-export type PosRange = z.infer<typeof PosRangeSchema>;
+export type PosRange = z.infer<typeof posRangeSchema>;
