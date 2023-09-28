@@ -5,8 +5,8 @@ import { loadPyodide } from "pyodide";
 import * as Comlink from "comlink";
 import { syncExpose } from "comsync";
 
-import { ExecError, ExecErrorSchema } from "./schemas/ExecError";
-import { PosRange, PosRangeSchema } from "./schemas/PosRange";
+import { ExecError, execErrorSchema } from "./schemas/ExecError";
+import { PosRange, posRangeSchema } from "./schemas/PosRange";
 
 async function initializePyodide(): Promise<PyodideInterface> {
   const indexURL = "https://cdn.jsdelivr.net/pyodide/v0.23.4/full/";
@@ -40,7 +40,7 @@ const api = {
 
       const callbacks = {
         after_stmt: (maybeRange: PyProxy) => {
-          const range = PosRangeSchema.parse(maybeRange);
+          const range = posRangeSchema.parse(maybeRange);
           onBreak(range);
 
           const readResult = syncExtras.readMessage();
@@ -52,7 +52,7 @@ const api = {
       const execResult = await pyodide.runPythonAsync(fullCode);
 
       if (execResult !== undefined) {
-        const execError = ExecErrorSchema.parse(execResult);
+        const execError = execErrorSchema.parse(execResult);
         return { type: "error", error: execError };
       }
 
