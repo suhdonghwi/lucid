@@ -101,13 +101,13 @@ class HighlightPluginValue implements PluginValue {
       } else return;
     }
 
-    for (const tr of vu.transactions) {
-      for (const e of tr.effects) {
-        if (e.is(setPosRange)) {
+    for (const transaction of vu.transactions) {
+      for (const effect of transaction.effects) {
+        if (effect.is(setPosRange)) {
           vu.view.requestMeasure({
-            read: (view) => this.animateHighlight(e.value, view),
+            read: (view) => this.animateHighlight(effect.value, view),
           });
-        } else if (e.is(clearPosRange)) {
+        } else if (effect.is(clearPosRange)) {
           gsap.to(
             [
               this.highlights.top,

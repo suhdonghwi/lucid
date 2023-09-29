@@ -8,6 +8,10 @@ const cssTheme = View.EditorView.theme({
   "&.cm-focused": {
     outline: "none",
   },
+
+  "&": {
+    height: "100%",
+  },
 });
 
 import errorDisplay from "./errorDisplay";

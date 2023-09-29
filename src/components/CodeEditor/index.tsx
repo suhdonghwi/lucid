@@ -69,11 +69,7 @@ function CodeEditor({ code, onCodeUpdate, mode }: CodeEditorProps) {
     }
   }, [view, mode]);
 
-  return (
-    <div className={cls.rootContainer}>
-      <div ref={editorDiv} />
-    </div>
-  );
+  return <div className={cls.rootContainer} ref={editorDiv} />;
 }
 
 export default CodeEditor;
