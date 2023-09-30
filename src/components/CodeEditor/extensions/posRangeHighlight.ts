@@ -127,7 +127,6 @@ const highlightPlugin = ViewPlugin.fromClass(HighlightPluginValue);
 const highlightTheme = EditorView.theme({
   [`& .${POS_RANGE_HIGHLIGHT_LAYER_CLASS} .${POS_RANGE_HIGHLIGHT_CLASS}`]: {
     backgroundColor: "#ffe066",
-    borderRadius: "3px",
   },
 });
 

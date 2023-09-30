@@ -87,21 +87,6 @@ const errorField = StateField.define({
   provide: (f) => EditorView.decorations.from(f),
 });
 
-const errorLineGutterMark = new (class extends GutterMarker {
-  elementClass = ERROR_LINE_GUTTER_CLASS;
-})();
-
-const errorLineGutter = gutterLineClass.compute([errorField], (state) => {
-  const marks: Range<GutterMarker>[] = [];
-  const errorLine = state.field(errorField);
-
-  errorLine.between(0, Number.MAX_VALUE, (p) => {
-    marks.push(errorLineGutterMark.range(p));
-  });
-
-  return RangeSet.of(marks);
-});
-
 const errorDisplayTheme = EditorView.theme({
   [`& .${ERROR_LINE_CLASS}, & .${ERROR_LINE_GUTTER_CLASS}`]: {
     backgroundColor: "#ff000015",
@@ -111,4 +96,4 @@ const errorDisplayTheme = EditorView.theme({
   },
 });
 
-export default [errorField, errorLineGutter, errorDisplayTheme];
+export default [errorField, errorDisplayTheme];

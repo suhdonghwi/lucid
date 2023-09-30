@@ -25,7 +25,6 @@ export const extensions = [
   View.drawSelection(),
   View.dropCursor(),
   Language.indentOnInput(),
-  Language.bracketMatching(),
   Autocomplete.closeBrackets(),
   python(),
   cssTheme,
