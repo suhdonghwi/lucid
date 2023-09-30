@@ -12,19 +12,19 @@ import gsap from "gsap";
 
 import type { PosRange } from "@/schemas/PosRange";
 
-const POS_RANGE_HIGHLIGHT_LAYER_CLASS = "cm-pos-range-highlight-layer";
-const POS_RANGE_HIGHLIGHT_CLASS = "cm-pos-range-highlight";
+const LINE_RANGE_HIGHLIGHT_LAYER_CLASS = "cm-line-range-highlight-layer";
+const LINE_RANGE_HIGHLIGHT_CLASS = "cm-line-range-highlight";
 
-export const setPosRange = StateEffect.define<PosRange>();
-export const clearPosRange = StateEffect.define();
+export const setLineRange = StateEffect.define<PosRange>();
+export const clearLineRange = StateEffect.define();
 
 const highlightLayer = layer({
-  class: POS_RANGE_HIGHLIGHT_LAYER_CLASS,
+  class: LINE_RANGE_HIGHLIGHT_LAYER_CLASS,
   above: false,
   update: () => false,
   markers: () =>
     [0, 1, 2].map(
-      () => new RectangleMarker(POS_RANGE_HIGHLIGHT_CLASS, 0, 0, 0, 0)
+      () => new RectangleMarker(LINE_RANGE_HIGHLIGHT_CLASS, 0, 0, 0, 0)
     ),
 });
 
@@ -92,7 +92,7 @@ class HighlightPluginValue implements PluginValue {
   update(vu: ViewUpdate) {
     if (this.highlights === null) {
       const elems = vu.view.dom.getElementsByClassName(
-        POS_RANGE_HIGHLIGHT_CLASS
+        LINE_RANGE_HIGHLIGHT_CLASS
       );
 
       if (elems.length === 3) {
@@ -103,11 +103,11 @@ class HighlightPluginValue implements PluginValue {
 
     for (const transaction of vu.transactions) {
       for (const effect of transaction.effects) {
-        if (effect.is(setPosRange)) {
+        if (effect.is(setLineRange)) {
           vu.view.requestMeasure({
             read: (view) => this.animateHighlight(effect.value, view),
           });
-        } else if (effect.is(clearPosRange)) {
+        } else if (effect.is(clearLineRange)) {
           gsap.to(
             [
               this.highlights.top,
@@ -125,7 +125,7 @@ class HighlightPluginValue implements PluginValue {
 const highlightPlugin = ViewPlugin.fromClass(HighlightPluginValue);
 
 const highlightTheme = EditorView.theme({
-  [`& .${POS_RANGE_HIGHLIGHT_LAYER_CLASS} .${POS_RANGE_HIGHLIGHT_CLASS}`]: {
+  [`& .${LINE_RANGE_HIGHLIGHT_LAYER_CLASS} .${LINE_RANGE_HIGHLIGHT_CLASS}`]: {
     backgroundColor: "#ffe066",
   },
 });

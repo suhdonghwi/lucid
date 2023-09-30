@@ -5,7 +5,7 @@ import { useCodeMirror } from "./useCodeMirror";
 
 import { extensions } from "./extensions";
 import { clearError, setError } from "./extensions/errorDisplay";
-import { clearPosRange, setPosRange } from "./extensions/posRangeHighlight";
+import { clearLineRange, setLineRange } from "./extensions/lineRangeHighlight";
 
 import * as cls from "./index.css";
 import type { PosRange } from "@/schemas/PosRange";
@@ -56,12 +56,12 @@ function CodeEditor({ code, onCodeUpdate, mode }: CodeEditorProps) {
     switch (mode.type) {
       case "error":
         view.dispatch({
-          effects: [setError.of(mode.error), clearPosRange.of(null)],
+          effects: [setError.of(mode.error), clearLineRange.of(null)],
         });
         break;
       case "eval":
         view.dispatch({
-          effects: [setPosRange.of(mode.range), clearError.of(null)],
+          effects: [setLineRange.of(mode.range), clearError.of(null)],
         });
         break;
       default:

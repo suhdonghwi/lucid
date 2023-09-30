@@ -15,7 +15,7 @@ const cssTheme = View.EditorView.theme({
 });
 
 import errorDisplay from "./errorDisplay";
-import posRangeHighlight from "./posRangeHighlight";
+import lineRangeHighlight from "./lineRangeHighlight";
 
 export const extensions = [
   View.keymap.of(Commands.defaultKeymap),
@@ -29,5 +29,5 @@ export const extensions = [
   python(),
   cssTheme,
   errorDisplay,
-  posRangeHighlight,
+  lineRangeHighlight,
 ];

@@ -1,10 +1,5 @@
-import {
-  EditorView,
-  Decoration,
-  GutterMarker,
-  gutterLineClass,
-} from "@codemirror/view";
-import { StateField, StateEffect, RangeSet, Range } from "@codemirror/state";
+import { EditorView, Decoration } from "@codemirror/view";
+import { StateField, StateEffect, RangeSet } from "@codemirror/state";
 
 import type { ExecError } from "@/schemas/ExecError";
 
