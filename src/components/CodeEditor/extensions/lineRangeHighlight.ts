@@ -70,6 +70,7 @@ class HighlightPluginValue implements PluginValue {
         LINE_RANGE_HIGHLIGHT_CLASS
       );
 
+      if (elems.length === 0) return;
       this.highlightElement = elems[0];
     }
 
