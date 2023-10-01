@@ -6,7 +6,7 @@ import {
   ViewPlugin,
   PluginValue,
 } from "@codemirror/view";
-import { EditorSelection, StateEffect } from "@codemirror/state";
+import { StateEffect } from "@codemirror/state";
 
 import gsap from "gsap";
 
@@ -22,83 +22,48 @@ const highlightLayer = layer({
   class: LINE_RANGE_HIGHLIGHT_LAYER_CLASS,
   above: false,
   update: () => false,
-  markers: () =>
-    [0, 1, 2].map(
-      () => new RectangleMarker(LINE_RANGE_HIGHLIGHT_CLASS, 0, 0, 0, 0)
+  markers: (view) => [
+    new RectangleMarker(
+      LINE_RANGE_HIGHLIGHT_CLASS,
+      0,
+      0,
+      view.dom.getBoundingClientRect().width,
+      0
     ),
+  ],
 });
 
-function rectangleMarkerToRect(marker: RectangleMarker) {
-  // Currently properties like `left` and `width` in `RectangleMarker` are private.
-  // Used a hack to access private members, need to fix later on.
-  return {
-    x: marker["left"] as number,
-    y: marker["top"] as number,
-    width: marker["width"] as number,
-    height: marker["height"] as number,
-  };
-}
-
 class HighlightPluginValue implements PluginValue {
-  highlights: {
-    top: Element;
-    middle: Element;
-    bottom: Element;
-  } | null = null;
+  highlightElement?: Element = undefined;
 
   animateHighlight(range: PosRange, view: EditorView) {
-    if (this.highlights === null) return;
-
-    // FIXME
-    if (
-      range.endLineno === undefined ||
-      range.col === undefined ||
-      range.endCol === undefined
-    ) {
-      console.log(range);
-      return;
-    }
+    if (this.highlightElement === undefined) return;
 
     const startLine = view.state.doc.line(range.lineno);
     const endLine = view.state.doc.line(range.endLineno);
 
-    const startPos = startLine.from + range.col;
-    const endPos = endLine.from + range.endCol;
+    const startLineBlock = view.lineBlockAt(startLine.from);
+    const endLineBlock = view.lineBlockAt(endLine.from);
 
-    const rects = RectangleMarker.forRange(
-      view,
-      "",
-      EditorSelection.range(startPos, endPos)
-    ).map(rectangleMarkerToRect);
+    const rect = new RectangleMarker(
+      LINE_RANGE_HIGHLIGHT_CLASS,
+      0,
+      startLineBlock.top + view.documentPadding.top,
+      view.dom.getBoundingClientRect().width,
+      endLineBlock.top - startLineBlock.top + endLineBlock.height
+    );
 
-    if (rects.length === 1) {
-      gsap.to(
-        [this.highlights.top, this.highlights.middle, this.highlights.bottom],
-        { opacity: 1, ...rects[0] }
-      );
-    } else if (rects.length === 2) {
-      gsap.to(this.highlights.top, { opacity: 1, ...rects[0] });
-      gsap.to([this.highlights.bottom, this.highlights.middle], {
-        opacity: 1,
-        ...rects[1],
-      });
-    } else if (rects.length === 3) {
-      gsap.to(this.highlights.top, { opacity: 1, ...rects[0] });
-      gsap.to(this.highlights.middle, { opacity: 1, ...rects[1] });
-      gsap.to(this.highlights.bottom, { opacity: 1, ...rects[2] });
-    }
+    gsap.to(this.highlightElement, { opacity: 1, duration: 0.25, ...rect });
   }
 
   update(vu: ViewUpdate) {
-    if (this.highlights === null) {
+    if (this.highlightElement === undefined) {
       const elems = vu.view.dom.getElementsByClassName(
         LINE_RANGE_HIGHLIGHT_CLASS
       );
 
-      if (elems.length === 3) {
-        const [top, middle, bottom] = elems;
-        this.highlights = { top, middle, bottom };
-      } else return;
+      // assert(elems.length === 1);
+      this.highlightElement = elems[0];
     }
 
     for (const transaction of vu.transactions) {
@@ -108,14 +73,7 @@ class HighlightPluginValue implements PluginValue {
             read: (view) => this.animateHighlight(effect.value, view),
           });
         } else if (effect.is(clearLineRange)) {
-          gsap.to(
-            [
-              this.highlights.top,
-              this.highlights.middle,
-              this.highlights.bottom,
-            ],
-            { opacity: 0, width: 0, height: 0 }
-          );
+          gsap.to(this.highlightElement, { opacity: 0, width: 0, height: 0 });
         }
       }
     }

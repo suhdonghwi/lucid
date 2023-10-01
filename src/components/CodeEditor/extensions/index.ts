@@ -9,6 +9,15 @@ const cssTheme = View.EditorView.theme({
     outline: "none",
   },
 
+  "& .cm-gutters": {
+    border: "none",
+
+    "& .cm-gutterElement": {
+      minWidth: "30px",
+      padding: "0 7px",
+    },
+  },
+
   "&": {
     height: "100%",
   },

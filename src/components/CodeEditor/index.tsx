@@ -15,7 +15,7 @@ const theme = githubLightInit({
   theme: "light",
   settings: {
     background: "white",
-    gutterBackground: "white",
+    gutterBackground: "rgba(255, 255, 255, 0.5)",
     fontFamily: "JetBrains Mono, monospace",
   },
 });
