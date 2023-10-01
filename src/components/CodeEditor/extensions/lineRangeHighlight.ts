@@ -22,15 +22,7 @@ const highlightLayer = layer({
   class: LINE_RANGE_HIGHLIGHT_LAYER_CLASS,
   above: false,
   update: () => false,
-  markers: (view) => [
-    new RectangleMarker(
-      LINE_RANGE_HIGHLIGHT_CLASS,
-      0,
-      0,
-      view.dom.getBoundingClientRect().width,
-      0
-    ),
-  ],
+  markers: () => [new RectangleMarker(LINE_RANGE_HIGHLIGHT_CLASS, 0, 0, 0, 0)],
 });
 
 class HighlightPluginValue implements PluginValue {
@@ -49,7 +41,7 @@ class HighlightPluginValue implements PluginValue {
       LINE_RANGE_HIGHLIGHT_CLASS,
       0,
       startLineBlock.top + view.documentPadding.top,
-      view.dom.getBoundingClientRect().width,
+      view.scrollDOM.scrollWidth,
       endLineBlock.top - startLineBlock.top + endLineBlock.height
     );
 
@@ -84,7 +76,7 @@ const highlightPlugin = ViewPlugin.fromClass(HighlightPluginValue);
 
 const highlightTheme = EditorView.theme({
   [`& .${LINE_RANGE_HIGHLIGHT_LAYER_CLASS} .${LINE_RANGE_HIGHLIGHT_CLASS}`]: {
-    backgroundColor: "#ffe066",
+    backgroundColor: "#ffec99",
   },
 });
 
