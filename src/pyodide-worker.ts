@@ -52,7 +52,7 @@ const api = {
 
       const fullCode = `from runner import run\nrun(${JSON.stringify(code)})`;
 
-      const execResult = pyodide.runPython(fullCode);
+      const execResult = await pyodide.runPythonAsync(fullCode);
       if (execResult !== undefined) {
         const execError = execErrorSchema.parse(execResult);
         return { type: "error", error: execError };
