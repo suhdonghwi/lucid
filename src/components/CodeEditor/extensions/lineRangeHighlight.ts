@@ -40,16 +40,15 @@ class HighlightPluginValue implements PluginValue {
     const startLineBlock = view.lineBlockAt(startLine.from);
     const endLineBlock = view.lineBlockAt(endLine.from);
 
-    const rect = new RectangleMarker(
-      LINE_RANGE_HIGHLIGHT_CLASS,
-      0,
-      startLineBlock.top + view.documentPadding.top,
-      view.scrollDOM.scrollWidth,
-      endLineBlock.top - startLineBlock.top + endLineBlock.height
-    );
+    const rect = {
+      left: 0,
+      top: startLineBlock.top + view.documentPadding.top,
+      width: view.scrollDOM.scrollWidth,
+      height: endLineBlock.top - startLineBlock.top + endLineBlock.height,
+    };
 
     if (!this.visible) {
-      gsap.set(this.highlightElement, { ...rect });
+      gsap.set(this.highlightElement, rect);
       gsap.to(this.highlightElement, {
         duration: ANIMATE_DURATION,
         opacity: 1,
