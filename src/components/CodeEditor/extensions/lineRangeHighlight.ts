@@ -15,6 +15,8 @@ import type { PosRange } from "@/schemas/PosRange";
 const LINE_RANGE_HIGHLIGHT_LAYER_CLASS = "cm-line-range-highlight-layer";
 const LINE_RANGE_HIGHLIGHT_CLASS = "cm-line-range-highlight";
 
+const ANIMATE_DURATION = 0.25;
+
 export const setLineRange = StateEffect.define<PosRange>();
 export const clearLineRange = StateEffect.define();
 
@@ -27,6 +29,7 @@ const highlightLayer = layer({
 
 class HighlightPluginValue implements PluginValue {
   highlightElement?: Element = undefined;
+  visible = false;
 
   animateHighlight(range: PosRange, view: EditorView) {
     if (this.highlightElement === undefined) return;
@@ -45,7 +48,21 @@ class HighlightPluginValue implements PluginValue {
       endLineBlock.top - startLineBlock.top + endLineBlock.height
     );
 
-    gsap.to(this.highlightElement, { opacity: 1, duration: 0.25, ...rect });
+    if (!this.visible) {
+      gsap.set(this.highlightElement, { ...rect });
+      gsap.to(this.highlightElement, {
+        duration: ANIMATE_DURATION,
+        opacity: 1,
+      });
+    } else {
+      gsap.to(this.highlightElement, {
+        duration: ANIMATE_DURATION,
+        opacity: 1,
+        ...rect,
+      });
+    }
+
+    this.visible = true;
   }
 
   update(vu: ViewUpdate) {
@@ -54,7 +71,6 @@ class HighlightPluginValue implements PluginValue {
         LINE_RANGE_HIGHLIGHT_CLASS
       );
 
-      // assert(elems.length === 1);
       this.highlightElement = elems[0];
     }
 
@@ -65,7 +81,11 @@ class HighlightPluginValue implements PluginValue {
             read: (view) => this.animateHighlight(effect.value, view),
           });
         } else if (effect.is(clearLineRange)) {
-          gsap.to(this.highlightElement, { opacity: 0, width: 0, height: 0 });
+          gsap.to(this.highlightElement, {
+            duration: ANIMATE_DURATION,
+            opacity: 0,
+          });
+          this.visible = false;
         }
       }
     }
@@ -77,6 +97,7 @@ const highlightPlugin = ViewPlugin.fromClass(HighlightPluginValue);
 const highlightTheme = EditorView.theme({
   [`& .${LINE_RANGE_HIGHLIGHT_LAYER_CLASS} .${LINE_RANGE_HIGHLIGHT_CLASS}`]: {
     backgroundColor: "#ffec99",
+    opacity: 0,
   },
 });
 
