@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import type { PosRange } from "@/schemas/PosRange";
-import { runPython, writeMessage } from "@/pyodide-helper";
+import { runPython, writeMessage, interrupt } from "@/pyodide-helper";
 
 import CodeEditor, { CodeEditorMode } from "./CodeEditor";
 import * as cls from "./CodeRunner.css";
@@ -19,7 +19,6 @@ function CodeRunner() {
   });
 
   function onBreak(range: PosRange) {
-    // console.log(range);
     setEditorMode({ type: "eval", range });
   }
 
@@ -32,11 +31,14 @@ function CodeRunner() {
         error: result.error,
       });
     }
-    console.log(result);
   }
 
   async function onClickNext() {
     await writeMessage();
+  }
+
+  async function onInterrupt() {
+    await interrupt();
   }
 
   return (
@@ -53,6 +55,12 @@ function CodeRunner() {
         className={cls.runButton}
         value="Next"
         onClick={onClickNext}
+      />
+      <input
+        type="button"
+        className={cls.runButton}
+        value="Interrupt"
+        onClick={onInterrupt}
       />
     </div>
   );

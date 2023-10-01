@@ -33,24 +33,26 @@ const api = {
   runPython: syncExpose(
     async (
       syncExtras,
+      interruptBuffer: Uint8Array,
       code: string,
       onBreak: (range: PosRange) => void
     ): Promise<RunPythonResult> => {
       const pyodide = await pyodidePromise;
+      pyodide.setInterruptBuffer(interruptBuffer);
 
       const callbacks = {
         after_stmt: (maybeRange: PyProxy) => {
           const range = posRangeSchema.parse(maybeRange);
           onBreak(range);
 
-          const readResult = syncExtras.readMessage();
+          return syncExtras.readMessage();
         },
       };
       pyodide.registerJsModule("js_callbacks", callbacks);
 
       const fullCode = `from runner import run\nrun(${JSON.stringify(code)})`;
-      const execResult = await pyodide.runPythonAsync(fullCode);
 
+      const execResult = pyodide.runPython(fullCode);
       if (execResult !== undefined) {
         const execError = execErrorSchema.parse(execResult);
         return { type: "error", error: execError };

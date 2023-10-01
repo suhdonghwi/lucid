@@ -27,19 +27,29 @@ const clientPromise = initializeClient();
 export async function runPython(
   code: string,
   onBreak: (range: PosRange) => void
-) {
+): Promise<RunPythonResult> {
   const client = await clientPromise;
 
-  const result: RunPythonResult = await client.call(
+  const interruptBuffer = new Uint8Array(new SharedArrayBuffer(1));
+  client.interrupter = () => {
+    console.log("interrupt");
+    interruptBuffer[0] = 2;
+  };
+
+  return await client.call(
     client.workerProxy.runPython,
+    interruptBuffer,
     code,
     Comlink.proxy(onBreak)
   );
-
-  return result;
 }
 
 export async function writeMessage() {
   const client = await clientPromise;
   await client.writeMessage("Hello");
+}
+
+export async function interrupt() {
+  const client = await clientPromise;
+  await client.interrupt();
 }

@@ -68,6 +68,7 @@ function CodeEditor({ code, onCodeUpdate, mode }: CodeEditorProps) {
         view.dispatch({
           effects: [clearLineRange.of(null), clearError.of(null)],
         });
+        break;
     }
   }, [view, mode]);
 

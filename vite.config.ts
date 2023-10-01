@@ -27,7 +27,20 @@ fs.readdir(SETUP_PATH, (err, files) => {
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), vanillaExtractPlugin()],
+  plugins: [
+    react(),
+    vanillaExtractPlugin(),
+    {
+      name: "configure-response-headers",
+      configureServer: (server) => {
+        server.middlewares.use((_req, res, next) => {
+          res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+          res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+          next();
+        });
+      },
+    },
+  ],
   define: { PYTHON_SETUP_FILES },
   resolve: {
     alias: [{ find: "@", replacement: path.resolve(__dirname, "src") }],
