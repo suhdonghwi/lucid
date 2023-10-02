@@ -27,11 +27,11 @@ export type CodeWindowMode =
 
 type CodeWindowProps = {
   code: string;
-  onCodeUpdate: (code: string) => void;
+  onCodeChange: (code: string) => void;
   mode: CodeWindowMode;
 };
 
-export function CodeWindow({ code, onCodeUpdate, mode }: CodeWindowProps) {
+export function CodeWindow({ code, onCodeChange, mode }: CodeWindowProps) {
   const editorDiv = useRef<HTMLDivElement | null>(null);
 
   const { setContainer, view } = useCodeMirror({
@@ -43,7 +43,7 @@ export function CodeWindow({ code, onCodeUpdate, mode }: CodeWindowProps) {
     extensions,
     readOnly: false,
 
-    onChange: onCodeUpdate,
+    onChange: onCodeChange,
   });
 
   useEffect(() => {

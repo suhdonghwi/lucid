@@ -6,10 +6,6 @@ export const rootContainer = style({
   position: "relative",
 });
 
-export const buttonContainer = style({
-  position: "absolute",
-});
-
 export const windowsContainer = style({
   position: "absolute",
 
