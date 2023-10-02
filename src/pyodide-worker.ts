@@ -3,7 +3,7 @@ import type { PyProxy } from "pyodide/ffi";
 import { loadPyodide } from "pyodide";
 
 import * as Comlink from "comlink";
-import { syncExpose } from "comsync";
+import { syncExpose, SyncExtras } from "comsync";
 
 import { ExecError, execErrorSchema } from "./schemas/ExecError";
 import { PosRange, posRangeSchema } from "./schemas/PosRange";
@@ -25,6 +25,21 @@ async function initializePyodide(): Promise<PyodideInterface> {
 
 const pyodidePromise = initializePyodide();
 
+const makeCallbacks = ({
+  syncExtras,
+  onBreak,
+}: {
+  syncExtras: SyncExtras;
+  onBreak: (range: PosRange) => void;
+}) => ({
+  after_stmt: (maybeRange: PyProxy) => {
+    const range = posRangeSchema.parse(maybeRange);
+    onBreak(range);
+
+    return syncExtras.readMessage();
+  },
+});
+
 export type RunPythonResult =
   | { type: "success" }
   | { type: "error"; error: ExecError };
@@ -40,15 +55,7 @@ const api = {
       const pyodide = await pyodidePromise;
       pyodide.setInterruptBuffer(interruptBuffer);
 
-      const callbacks = {
-        after_stmt: (maybeRange: PyProxy) => {
-          const range = posRangeSchema.parse(maybeRange);
-          onBreak(range);
-
-          return syncExtras.readMessage();
-        },
-      };
-
+      const callbacks = makeCallbacks({ syncExtras, onBreak });
       const jsCallbacksModule = pyodide.pyimport("js_callbacks");
       for (const [name, func] of Object.entries(callbacks)) {
         jsCallbacksModule[name] = func;

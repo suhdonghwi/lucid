@@ -15,11 +15,9 @@ async function initializeClient(): Promise<SyncClient<PyodideWorkerAPI>> {
   );
 
   const channel = makeChannel();
-  console.log("Channel:", channel);
+  console.log("Channel :", channel);
 
-  const client = new SyncClient(() => new PyodideWorker(), channel);
-
-  return client;
+  return new SyncClient(() => new PyodideWorker(), channel);
 }
 
 const clientPromise = initializeClient();
@@ -31,13 +29,11 @@ export async function runPython(
   const client = await clientPromise;
 
   let interruptBuffer = undefined;
-  try {
+  if (client.channel?.type === "atomics") {
     interruptBuffer = new Uint8Array(new SharedArrayBuffer(1));
     client.interrupter = () => {
       interruptBuffer[0] = 2;
     };
-  } catch {
-    // SharedArrayBuffer is not supported
   }
 
   return await client.call(
