@@ -4,7 +4,7 @@ import type { PosRange } from "@/schemas/PosRange";
 import { runPython, writeMessage, interrupt } from "@/pyodide-helper";
 
 import { CodeWindow, CodeWindowMode } from "./CodeWindow";
-import * as cls from "./CodeRunner.css";
+import * as cls from "./CodeSpace.css";
 
 const exampleCode = `def add1(x):
   x = x + 1
@@ -12,7 +12,7 @@ const exampleCode = `def add1(x):
 
 add1(10)`;
 
-function CodeRunner() {
+export function CodeSpace() {
   const [code, setCode] = useState(exampleCode);
   const [editorMode, setEditorMode] = useState<CodeWindowMode>({
     type: "normal",
@@ -69,5 +69,3 @@ function CodeRunner() {
     </div>
   );
 }
-
-export default CodeRunner;

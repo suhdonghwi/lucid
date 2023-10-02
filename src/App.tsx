@@ -1,11 +1,11 @@
 import { container } from "./App.css";
 
-import CodeRunner from "./components/CodeRunner";
+import { CodeSpace } from "./components/CodeSpace";
 
 function App() {
   return (
     <div className={container}>
-      <CodeRunner />
+      <CodeSpace />
     </div>
   );
 }

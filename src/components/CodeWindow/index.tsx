@@ -25,13 +25,13 @@ export type CodeWindowMode =
   | { type: "error"; error: ExecError }
   | { type: "eval"; range: PosRange };
 
-type CodeEditorProps = {
+type CodeWindowProps = {
   code: string;
   onCodeUpdate: (code: string) => void;
   mode: CodeWindowMode;
 };
 
-export function CodeWindow({ code, onCodeUpdate, mode }: CodeEditorProps) {
+export function CodeWindow({ code, onCodeUpdate, mode }: CodeWindowProps) {
   const editorDiv = useRef<HTMLDivElement | null>(null);
 
   const { setContainer, view } = useCodeMirror({
