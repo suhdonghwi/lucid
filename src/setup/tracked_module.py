@@ -19,14 +19,13 @@ FrameNode = ast.FunctionDef | ast.Lambda | ast.Module
 class FrameInfo:
     def __init__(self, frame: FrameType):
         self.frame = frame
-        self.expr_stack: list[ast.expr] = []
-        self.stmt_stack: list[ast.stmt] = []
+        self.stack: list[ast.expr | ast.stmt] = []
 
-    def push_stmt(self, node: ast.stmt):
-        self.stmt_stack.append(node)
+    def push(self, node: ast.expr | ast.stmt):
+        self.stack.append(node)
 
-    def pop_stmt(self):
-        return self.stmt_stack.pop()
+    def pop(self) -> ast.expr | ast.stmt:
+        return self.stack.pop()
 
 
 class FrameContext:
@@ -43,6 +42,7 @@ class FrameContext:
             if not isinstance(self.node, ast.FunctionDef):
                 return
 
+            # NOTE: lambda nodes would require column number information too
             js_callbacks.frame_enter(
                 js_object(
                     lineno=self.node.lineno,
@@ -63,13 +63,13 @@ class StmtContext:
         self.frame_info = frame_info
 
     def __enter__(self):
-        self.frame_info.push_stmt(self.node)
+        self.frame_info.push(self.node)
 
     def __exit__(self, exc_type, exc_value, exc_tb):
         if exc_type is not None:
             return False
 
-        popped = self.frame_info.pop_stmt()
+        popped = self.frame_info.pop()
         assert self.node == popped
 
         if IS_PYODIDE:
@@ -102,10 +102,12 @@ class TrackedModule:
         frame_info_stack: list[FrameInfo] = []
 
         def track_before_expr(node_index: int):
-            # print(self.tree_nodes[node_index])
+            node: ast.expr = self.tree_nodes[node_index]
+            frame_info_stack[-1].push(node)
             return node_index
 
-        def track_after_expr(node_index: int, value: object):
+        def track_after_expr(_: int, value: object):
+            frame_info_stack[-1].pop()
             return value
 
         def track_stmt(node_index: int):
