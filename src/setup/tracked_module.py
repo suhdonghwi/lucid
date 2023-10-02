@@ -1,16 +1,17 @@
 import sys
-import inspect
 import ast
 from types import FrameType
 
 import tracker_identifier as IDENT
 from tracker_attacher import TrackerAttacher
 
+from util import js_range_object
+
 IS_PYODIDE = "pyodide" in sys.modules
 
 if IS_PYODIDE:
     import js_callbacks
-    from util import js_object
+    from util import js_range_object
 
 
 FrameNode = ast.FunctionDef | ast.Lambda | ast.Module
@@ -48,13 +49,7 @@ class FrameContext:
             caller_frame = self.frame_info_stack[-2]
             print("Caller: ", caller_frame.top())
 
-            # NOTE: lambda nodes would require column number information too
-            js_callbacks.frame_enter(
-                js_object(
-                    lineno=self.node.lineno,
-                    endLineno=self.node.end_lineno,
-                )
-            )
+            js_callbacks.frame_enter(js_range_object(self.node))
 
     def __exit__(self, exc_type, exc_value, exc_tb):
         if exc_type is not None:
@@ -79,14 +74,7 @@ class StmtContext:
         assert self.node == popped
 
         if IS_PYODIDE:
-            js_callbacks.stmt_exit(
-                js_object(
-                    lineno=self.node.lineno,
-                    endLineno=self.node.end_lineno,
-                    col=self.node.col_offset,
-                    endCol=self.node.end_col_offset,
-                )
-            )
+            js_callbacks.stmt_exit(js_range_object(self.node))
 
 
 class TrackedModule:
