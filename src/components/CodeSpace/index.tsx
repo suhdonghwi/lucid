@@ -3,8 +3,8 @@ import { useState } from "react";
 import type { PosRange } from "@/schemas/PosRange";
 import { runPython, writeMessage, interrupt } from "@/pyodide-helper";
 
-import { CodeWindow, CodeWindowMode } from "./CodeWindow";
-import * as cls from "./CodeSpace.css";
+import { CodeWindow, CodeWindowMode } from "@/components/CodeWindow";
+import * as cls from "./index.css";
 
 const exampleCode = `def add1(x):
   x = x + 1
