@@ -20,7 +20,8 @@ export function SpaceController() {
       onStmtExit: ({ stmtPosRange }) => {
         return;
       },
-      onFrameEnter: ({ framePosRange, callerPosRange }) => {
+      onFrameEnter: ({ codeObjectId, framePosRange, callerPosRange }) => {
+        console.log(codeObjectId);
         return;
       },
     });

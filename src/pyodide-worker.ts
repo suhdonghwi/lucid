@@ -26,11 +26,9 @@ async function initializePyodide(): Promise<PyodideInterface> {
 const pyodidePromise = initializePyodide();
 
 export type Callbacks = {
-  onStmtExit: ({ stmtPosRange }: { stmtPosRange: PosRange }) => void;
-  onFrameEnter: ({
-    framePosRange,
-    callerPosRange,
-  }: {
+  onStmtExit: (args: { stmtPosRange: PosRange }) => void;
+  onFrameEnter: (args: {
+    codeObjectId: number;
     framePosRange: PosRange;
     callerPosRange: PosRange;
   }) => void;
@@ -48,16 +46,18 @@ const makeCallbacksForPython = (
   },
 
   frame_enter: ({
+    codeObjectId,
     framePosRange: maybeFramePosRange,
     callerPosRange: maybeCallerPosRange,
   }: {
+    codeObjectId: number;
     framePosRange: PyProxy;
     callerPosRange: PyProxy;
   }) => {
     const framePosRange = posRangeSchema.parse(maybeFramePosRange);
     const callerPosRange = posRangeSchema.parse(maybeCallerPosRange);
 
-    callbacks.onFrameEnter({ framePosRange, callerPosRange });
+    callbacks.onFrameEnter({ codeObjectId, framePosRange, callerPosRange });
   },
 });
 

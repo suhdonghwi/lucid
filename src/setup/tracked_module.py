@@ -48,6 +48,7 @@ class FrameContext:
             caller_frame = self.frame_info_stack[-2]
             js_callbacks.frame_enter(
                 js_object(
+                    codeObjectId=id(frame.f_code),
                     framePosRange=js_range_object(self.node),
                     callerPosRange=js_range_object(caller_frame.top()),
                 )
