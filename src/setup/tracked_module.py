@@ -51,7 +51,6 @@ class StmtContext:
         self.frame_info.push_stmt(self.node)
 
     def __exit__(self, exc_type, exc_value, exc_tb):
-        # Why not KeyboardInterrupt?
         if exc_type is not None:
             return False
 

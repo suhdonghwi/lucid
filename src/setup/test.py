@@ -3,13 +3,9 @@ import ast
 from tracked_module import TrackedModule
 
 test_code = """
-def fac(n):
-    if n == 0:
-        return 1
-    else:
-        return n * fac(n-1)
-
-print(fac(100))
+print("wefwef")
+print("wefwef")
+print("wefwef")
 """
 
 test_module = TrackedModule(test_code, "<code>")

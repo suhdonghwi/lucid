@@ -19,6 +19,9 @@ def run(code: str):
 
         return js_object(range=error_range, message=message)
     except BaseException as e:
+        if hasattr(e, 'name') and e.name == "InterruptError":
+            return None
+
         tb = e.__traceback__.tb_next.tb_next  # type: ignore
         while (
             tb is not None
