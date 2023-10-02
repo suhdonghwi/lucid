@@ -27,7 +27,7 @@ export type CodeWindowMode =
 
 type CodeWindowProps = {
   code: string;
-  onCodeChange: (code: string) => void;
+  onCodeChange?: (code: string) => void;
   mode: CodeWindowMode;
 };
 

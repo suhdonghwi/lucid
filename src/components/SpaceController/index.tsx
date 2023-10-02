@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { runPython, writeMessage, interrupt } from "@/pyodide-helper";
 
-import { CodeSpace } from "@/components/CodeSpace";
+import { CodeSpace, Callstack } from "@/components/CodeSpace";
 
 import * as cls from "./index.css";
 
@@ -14,6 +14,7 @@ add1(10)`;
 
 export function SpaceController() {
   const [mainCode, setMainCode] = useState(exampleCode);
+  const [callstack, setCallstack] = useState<Callstack>([]);
 
   async function runCode() {
     const result = await runPython(mainCode, {
@@ -21,7 +22,10 @@ export function SpaceController() {
         return;
       },
       onFrameEnter: ({ codeObjectId, framePosRange, callerPosRange }) => {
-        console.log(codeObjectId);
+        setCallstack((callstack) => [
+          ...callstack,
+          { codeObjectId, framePosRange, callerPosRange },
+        ]);
         return;
       },
     });
@@ -37,7 +41,11 @@ export function SpaceController() {
       </div>
 
       <div className={cls.spaceContainer}>
-        <CodeSpace mainCode={mainCode} onMainCodeChange={setMainCode} />
+        <CodeSpace
+          mainCode={mainCode}
+          onMainCodeChange={setMainCode}
+          callstack={callstack}
+        />
       </div>
     </div>
   );

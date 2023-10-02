@@ -19,3 +19,9 @@ export const posRangeSchema = z.union([
 ]);
 
 export type PosRange = z.infer<typeof posRangeSchema>;
+
+// TODO: Make use of col information
+export function cropPosRange(source: string, range: PosRange) {
+  const lines = source.split("\n");
+  return lines.slice(range.lineno - 1, range.endLineno).join("\n");
+}
