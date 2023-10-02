@@ -41,7 +41,7 @@ export function CodeWindow({ code, onCodeChange, mode }: CodeWindowProps) {
 
     theme,
     extensions,
-    readOnly: false,
+    readOnly: onCodeChange === undefined,
 
     onChange: onCodeChange,
   });
