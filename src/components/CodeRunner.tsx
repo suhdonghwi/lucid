@@ -30,6 +30,10 @@ function CodeRunner() {
         type: "error",
         error: result.error,
       });
+    } else {
+      setEditorMode({
+        type: "normal",
+      });
     }
   }
 

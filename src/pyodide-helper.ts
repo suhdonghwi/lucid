@@ -32,11 +32,6 @@ export async function runPython(
 
   const interruptBuffer = new Uint8Array(new SharedArrayBuffer(1));
 
-  client.interrupter = () => {
-    console.log("interrupt");
-    interruptBuffer[0] = 2;
-  };
-
   return await client.call(
     client.workerProxy.runPython,
     interruptBuffer,

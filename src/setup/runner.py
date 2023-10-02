@@ -9,6 +9,8 @@ def run(code: str):
     try:
         module = TrackedModule(code, file_name)
         module.exec()
+    except KeyboardInterrupt:
+        print("Interrupt from py")
     except SyntaxError as e:
         assert isinstance(e.lineno, int)
 
@@ -19,11 +21,6 @@ def run(code: str):
 
         return js_object(range=error_range, message=message)
     except BaseException as e:
-        print(e.__dict__)
-        js_error = str(getattr(e, "js_error", ""))
-        if isinstance(e, KeyboardInterrupt) or "KeyboardInterrupt" in js_error:
-            print("Interrupt from py")
-
         tb = e.__traceback__.tb_next.tb_next  # type: ignore
         while (
             tb is not None
