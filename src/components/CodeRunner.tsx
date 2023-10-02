@@ -3,7 +3,7 @@ import { useState } from "react";
 import type { PosRange } from "@/schemas/PosRange";
 import { runPython, writeMessage, interrupt } from "@/pyodide-helper";
 
-import CodeEditor, { CodeEditorMode } from "./CodeEditor";
+import { CodeWindow, CodeWindowMode } from "./CodeWindow";
 import * as cls from "./CodeRunner.css";
 
 const exampleCode = `def add1(x):
@@ -14,7 +14,7 @@ add1(10)`;
 
 function CodeRunner() {
   const [code, setCode] = useState(exampleCode);
-  const [editorMode, setEditorMode] = useState<CodeEditorMode>({
+  const [editorMode, setEditorMode] = useState<CodeWindowMode>({
     type: "normal",
   });
 
@@ -47,7 +47,7 @@ function CodeRunner() {
 
   return (
     <div className={cls.rootContainer}>
-      <CodeEditor code={code} onCodeUpdate={setCode} mode={editorMode} />
+      <CodeWindow code={code} onCodeUpdate={setCode} mode={editorMode} />
       <input
         type="button"
         className={cls.runButton}

@@ -20,7 +20,7 @@ const theme = githubLightInit({
   },
 });
 
-export type CodeEditorMode =
+export type CodeWindowMode =
   | { type: "normal" }
   | { type: "error"; error: ExecError }
   | { type: "eval"; range: PosRange };
@@ -28,10 +28,10 @@ export type CodeEditorMode =
 type CodeEditorProps = {
   code: string;
   onCodeUpdate: (code: string) => void;
-  mode: CodeEditorMode;
+  mode: CodeWindowMode;
 };
 
-function CodeEditor({ code, onCodeUpdate, mode }: CodeEditorProps) {
+export function CodeWindow({ code, onCodeUpdate, mode }: CodeEditorProps) {
   const editorDiv = useRef<HTMLDivElement | null>(null);
 
   const { setContainer, view } = useCodeMirror({
@@ -74,5 +74,3 @@ function CodeEditor({ code, onCodeUpdate, mode }: CodeEditorProps) {
 
   return <div className={cls.rootContainer} ref={editorDiv} />;
 }
-
-export default CodeEditor;

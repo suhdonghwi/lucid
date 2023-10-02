@@ -15,6 +15,7 @@ if IS_PYODIDE:
 FrameNode = ast.FunctionDef | ast.Lambda | ast.Module
 
 
+# TODO: rename into more intuitive one
 class FrameInfo:
     def __init__(self, frame: FrameType):
         self.frame = frame
