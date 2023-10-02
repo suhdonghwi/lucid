@@ -5,13 +5,11 @@ from types import FrameType
 import tracker_identifier as IDENT
 from tracker_attacher import TrackerAttacher
 
-from util import js_range_object
-
 IS_PYODIDE = "pyodide" in sys.modules
 
 if IS_PYODIDE:
     import js_callbacks
-    from util import js_range_object
+    from util import js_object, js_range_object
 
 
 FrameNode = ast.FunctionDef | ast.Lambda | ast.Module
@@ -47,9 +45,12 @@ class FrameContext:
                 return
 
             caller_frame = self.frame_info_stack[-2]
-            print("Caller: ", caller_frame.top())
-
-            js_callbacks.frame_enter(js_range_object(self.node))
+            js_callbacks.frame_enter(
+                js_object(
+                    framePosRange=js_range_object(self.node),
+                    callerPosRange=js_range_object(caller_frame.top()),
+                )
+            )
 
     def __exit__(self, exc_type, exc_value, exc_tb):
         if exc_type is not None:
