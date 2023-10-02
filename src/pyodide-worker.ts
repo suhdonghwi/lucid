@@ -3,7 +3,7 @@ import type { PyProxy } from "pyodide/ffi";
 import { loadPyodide } from "pyodide";
 
 import * as Comlink from "comlink";
-import { syncExpose, SyncExtras } from "comsync";
+import { InterruptError, syncExpose, SyncExtras } from "comsync";
 
 import { ExecError, execErrorSchema } from "./schemas/ExecError";
 import { PosRange, posRangeSchema } from "./schemas/PosRange";
@@ -36,7 +36,12 @@ const makeCallbacks = ({
     const range = posRangeSchema.parse(maybeRange);
     onBreak(range);
 
-    return syncExtras.readMessage();
+    try {
+      return syncExtras.readMessage();
+    } catch (e: any) {
+      if (e.type === "InterruptError") e.name = e.type;
+      throw e;
+    }
   },
 });
 
@@ -56,7 +61,10 @@ const api = {
       pyodide.setInterruptBuffer(interruptBuffer);
 
       const callbacks = makeCallbacks({ syncExtras, onBreak });
+
+      pyodide.registerJsModule("js_callbacks", {});
       const jsCallbacksModule = pyodide.pyimport("js_callbacks");
+
       for (const [name, func] of Object.entries(callbacks)) {
         jsCallbacksModule[name] = func;
       }
