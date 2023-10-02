@@ -30,7 +30,15 @@ export async function runPython(
 ): Promise<RunPythonResult> {
   const client = await clientPromise;
 
-  const interruptBuffer = new Uint8Array(new SharedArrayBuffer(1));
+  let interruptBuffer = undefined;
+  try {
+    interruptBuffer = new Uint8Array(new SharedArrayBuffer(1));
+    client.interrupter = () => {
+      interruptBuffer[0] = 2;
+    };
+  } catch {
+    // SharedArrayBuffer is not supported
+  }
 
   return await client.call(
     client.workerProxy.runPython,
