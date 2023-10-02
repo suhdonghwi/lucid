@@ -8,7 +8,7 @@ import { clearError, setError } from "./extensions/errorDisplay";
 import { clearLineRange, setLineRange } from "./extensions/lineRangeHighlight";
 
 import * as cls from "./index.css";
-import type { PosRange } from "@/schemas/PosRange";
+import { cropPosRange, PosRange } from "@/schemas/PosRange";
 import type { ExecError } from "@/schemas/ExecError";
 
 const theme = githubLightInit({
@@ -28,20 +28,30 @@ export type CodeWindowMode =
 type CodeWindowProps = {
   code: string;
   onCodeChange?: (code: string) => void;
+
   mode: CodeWindowMode;
+
+  posRange?: PosRange;
 };
 
-export function CodeWindow({ code, onCodeChange, mode }: CodeWindowProps) {
+export function CodeWindow({
+  code,
+  onCodeChange,
+  mode,
+  posRange,
+}: CodeWindowProps) {
   const editorDiv = useRef<HTMLDivElement | null>(null);
 
+  const croppedCode =
+    posRange !== undefined ? cropPosRange(code, posRange) : code;
   const { setContainer, view } = useCodeMirror({
     // View dispatch does not occur if the value is same with view's internal state
     // (Refer "./useCodeMirror.ts")
-    value: code,
+    value: croppedCode,
 
     theme,
     extensions,
-    readOnly: onCodeChange === undefined,
+    readOnly: posRange !== undefined || onCodeChange === undefined,
 
     onChange: onCodeChange,
   });

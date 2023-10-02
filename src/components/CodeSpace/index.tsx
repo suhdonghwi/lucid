@@ -3,7 +3,6 @@ import { useState } from "react";
 import { CodeWindow, CodeWindowMode } from "@/components/CodeWindow";
 import * as cls from "./index.css";
 
-import { cropPosRange } from "@/schemas/PosRange";
 import type { Frame } from "@/schemas/Frame";
 
 type CodeSpaceProps = {
@@ -32,7 +31,8 @@ export function CodeSpace({
         {callstack.map(({ posRange }, index) => (
           <CodeWindow
             key={index}
-            code={cropPosRange(mainCode, posRange)}
+            code={mainCode}
+            posRange={posRange}
             mode={{ type: "normal" }}
           />
         ))}
