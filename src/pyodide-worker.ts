@@ -3,11 +3,10 @@ import type { PyProxy } from "pyodide/ffi";
 import { loadPyodide } from "pyodide";
 
 import * as Comlink from "comlink";
-import { InterruptError, syncExpose, SyncExtras } from "comsync";
+import { syncExpose, SyncExtras } from "comsync";
 
 import { ExecError, execErrorSchema } from "./schemas/ExecError";
 import { PosRange, posRangeSchema } from "./schemas/PosRange";
-import { builtinModules } from "module";
 
 async function initializePyodide(): Promise<PyodideInterface> {
   const indexURL = "https://cdn.jsdelivr.net/pyodide/v0.23.4/full/";
@@ -33,7 +32,7 @@ const makeCallbacks = ({
   syncExtras: SyncExtras;
   onBreak: (range: PosRange) => void;
 }) => ({
-  after_stmt: (maybeRange: PyProxy) => {
+  stmt_exit: (maybeRange: PyProxy) => {
     const range = posRangeSchema.parse(maybeRange);
     onBreak(range);
 
@@ -43,6 +42,10 @@ const makeCallbacks = ({
       if (e.type === "InterruptError") e.name = e.type;
       throw e;
     }
+  },
+  frame_enter: (maybeRange: PyProxy) => {
+    const range = posRangeSchema.parse(maybeRange);
+    console.log(range);
   },
 });
 

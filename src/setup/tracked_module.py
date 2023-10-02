@@ -1,4 +1,5 @@
 import sys
+import inspect
 import ast
 from types import FrameType
 
@@ -38,7 +39,21 @@ class FrameContext:
         frame_info = FrameInfo(frame)
         self.frame_info_stack.append(frame_info)
 
-    def __exit__(self, _1, _2, _3):
+        if IS_PYODIDE:
+            if not isinstance(self.node, ast.FunctionDef):
+                return
+
+            js_callbacks.frame_enter(
+                js_object(
+                    lineno=self.node.lineno,
+                    endLineno=self.node.end_lineno,
+                )
+            )
+
+    def __exit__(self, exc_type, exc_value, exc_tb):
+        if exc_type is not None:
+            return False
+
         self.frame_info_stack.pop()
 
 
@@ -58,7 +73,7 @@ class StmtContext:
         assert self.node == popped
 
         if IS_PYODIDE:
-            js_callbacks.after_stmt(
+            js_callbacks.stmt_exit(
                 js_object(
                     lineno=self.node.lineno,
                     endLineno=self.node.end_lineno,

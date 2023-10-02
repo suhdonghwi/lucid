@@ -3,9 +3,13 @@ import ast
 from tracked_module import TrackedModule
 
 test_code = """
-print("wefwef")
-print("wefwef")
-print("wefwef")
+def f():
+    print("hi")
+    print("hi")
+    print("hi")
+
+
+f()
 """
 
 test_module = TrackedModule(test_code, "<code>")
