@@ -3,6 +3,8 @@ import { style } from "@vanilla-extract/css";
 export const rootContainer = style({
   width: "25rem",
   height: "30rem",
+  padding: "0.25rem 0",
+
   fontSize: "14px",
 
   overflow: "auto",

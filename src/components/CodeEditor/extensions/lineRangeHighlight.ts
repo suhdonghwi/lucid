@@ -96,7 +96,7 @@ const highlightPlugin = ViewPlugin.fromClass(HighlightPluginValue);
 
 const highlightTheme = EditorView.theme({
   [`& .${LINE_RANGE_HIGHLIGHT_LAYER_CLASS} .${LINE_RANGE_HIGHLIGHT_CLASS}`]: {
-    backgroundColor: "#ffec99",
+    backgroundColor: "#fff3bf",
     opacity: 0,
   },
 });

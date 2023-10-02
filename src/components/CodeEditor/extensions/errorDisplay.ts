@@ -37,15 +37,6 @@ const errorField = StateField.define({
 
         const marks = [];
 
-        // FIXME
-        if (
-          range.endLineno === undefined ||
-          range.col === undefined ||
-          range.endCol === undefined
-        ) {
-          return RangeSet.empty;
-        }
-
         // If it is a multi-line expression, then we will highlight
         // until the last non-whitespace character of the starting line.
         // Reference: https://github.com/python/cpython/blob/4849a80dd1cbbc5010e8749ba60eb91a541ae4e7/Python/traceback.c#L853-L867

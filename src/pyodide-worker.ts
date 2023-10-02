@@ -7,6 +7,7 @@ import { InterruptError, syncExpose, SyncExtras } from "comsync";
 
 import { ExecError, execErrorSchema } from "./schemas/ExecError";
 import { PosRange, posRangeSchema } from "./schemas/PosRange";
+import { builtinModules } from "module";
 
 async function initializePyodide(): Promise<PyodideInterface> {
   const indexURL = "https://cdn.jsdelivr.net/pyodide/v0.23.4/full/";
