@@ -25,19 +25,28 @@ async function initializePyodide(): Promise<PyodideInterface> {
 
 const pyodidePromise = initializePyodide();
 
-const makeCallbacks = ({
-  syncExtras,
-  onBreak,
-}: {
-  syncExtras: SyncExtras;
-  onBreak: (range: PosRange) => void;
-}) => ({
+export type Callbacks = {
+  onStmtExit: ({ stmtPosRange }: { stmtPosRange: PosRange }) => void;
+  onFrameEnter: ({
+    framePosRange,
+    callerPosRange,
+  }: {
+    framePosRange: PosRange;
+    callerPosRange: PosRange;
+  }) => void;
+};
+
+const makeCallbacksForPython = (
+  syncExtras: SyncExtras,
+  callbacks: Callbacks
+) => ({
   stmt_exit: (maybePosRange: PyProxy) => {
-    const posRange = posRangeSchema.parse(maybePosRange);
-    onBreak(posRange);
+    const stmtPosRange = posRangeSchema.parse(maybePosRange);
+    callbacks.onStmtExit({ stmtPosRange });
 
     return syncExtras.readMessage();
   },
+
   frame_enter: ({
     framePosRange: maybeFramePosRange,
     callerPosRange: maybeCallerPosRange,
@@ -48,8 +57,7 @@ const makeCallbacks = ({
     const framePosRange = posRangeSchema.parse(maybeFramePosRange);
     const callerPosRange = posRangeSchema.parse(maybeCallerPosRange);
 
-    console.log(framePosRange);
-    console.log(callerPosRange);
+    callbacks.onFrameEnter({ framePosRange, callerPosRange });
   },
 });
 
@@ -63,17 +71,17 @@ const api = {
       syncExtras,
       interruptBuffer: Uint8Array,
       code: string,
-      onBreak: (range: PosRange) => void
+      callbacks: Callbacks
     ): Promise<RunPythonResult> => {
       const pyodide = await pyodidePromise;
       pyodide.setInterruptBuffer(interruptBuffer);
 
-      const callbacks = makeCallbacks({ syncExtras, onBreak });
+      const callbacksForPython = makeCallbacksForPython(syncExtras, callbacks);
 
       pyodide.registerJsModule("js_callbacks", {});
       const jsCallbacksModule = pyodide.pyimport("js_callbacks");
 
-      for (const [name, func] of Object.entries(callbacks)) {
+      for (const [name, func] of Object.entries(callbacksForPython)) {
         jsCallbacksModule[name] = func;
       }
 

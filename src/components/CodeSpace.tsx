@@ -18,12 +18,17 @@ export function CodeSpace() {
     type: "normal",
   });
 
-  function onBreak(range: PosRange) {
+  function highlightLineRange(range: PosRange) {
     setEditorMode({ type: "eval", range });
   }
 
   async function runCode() {
-    const result = await runPython(code, onBreak);
+    const result = await runPython(code, {
+      onStmtExit: ({ stmtPosRange }) => highlightLineRange(stmtPosRange),
+      onFrameEnter: ({ framePosRange, callerPosRange }) => {
+        return;
+      },
+    });
     console.log("runPython result: ", result);
 
     if (result.type === "error") {
@@ -55,7 +60,6 @@ export function CodeSpace() {
       </div>
 
       <div className={cls.windowsContainer}>
-        <CodeWindow code={code} onCodeUpdate={setCode} mode={editorMode} />
         <CodeWindow code={code} onCodeUpdate={setCode} mode={editorMode} />
       </div>
     </div>

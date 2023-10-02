@@ -3,8 +3,11 @@ import { SyncClient } from "comsync";
 import * as Comlink from "comlink";
 
 import PyodideWorker from "./pyodide-worker?worker";
-import type { PyodideWorkerAPI, RunPythonResult } from "./pyodide-worker";
-import type { PosRange } from "./schemas/PosRange";
+import type {
+  Callbacks,
+  PyodideWorkerAPI,
+  RunPythonResult,
+} from "./pyodide-worker";
 
 async function initializeClient(): Promise<SyncClient<PyodideWorkerAPI>> {
   await navigator.serviceWorker.register(
@@ -24,7 +27,7 @@ const clientPromise = initializeClient();
 
 export async function runPython(
   code: string,
-  onBreak: (range: PosRange) => void
+  callbacks: Callbacks
 ): Promise<RunPythonResult> {
   const client = await clientPromise;
 
@@ -40,7 +43,7 @@ export async function runPython(
     client.workerProxy.runPython,
     interruptBuffer,
     code,
-    Comlink.proxy(onBreak)
+    Comlink.proxy(callbacks)
   );
 }
 
