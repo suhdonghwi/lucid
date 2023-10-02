@@ -9,8 +9,6 @@ def run(code: str):
     try:
         module = TrackedModule(code, file_name)
         module.exec()
-    except KeyboardInterrupt:
-        print("Interrupt from py")
     except SyntaxError as e:
         assert isinstance(e.lineno, int)
 

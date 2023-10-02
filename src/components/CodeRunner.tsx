@@ -24,7 +24,7 @@ function CodeRunner() {
 
   async function runCode() {
     const result = await runPython(code, onBreak);
-
+    console.log("runPython result: ", result);
     if (result.type === "error") {
       setEditorMode({
         type: "error",

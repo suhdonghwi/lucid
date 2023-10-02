@@ -51,15 +51,15 @@ class StmtContext:
         self.frame_info.push_stmt(self.node)
 
     def __exit__(self, exc_type, exc_value, exc_tb):
-        print(exc_type)
-        if isinstance(exc_value, KeyboardInterrupt):
+        # Why not KeyboardInterrupt?
+        if exc_type is not None:
             return False
 
         popped = self.frame_info.pop_stmt()
         assert self.node == popped
 
         if IS_PYODIDE:
-            js_callbacks.callbacks.after_stmt(
+            js_callbacks.after_stmt(
                 js_object(
                     lineno=self.node.lineno,
                     endLineno=self.node.end_lineno,

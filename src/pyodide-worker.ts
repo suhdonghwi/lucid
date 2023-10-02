@@ -45,19 +45,15 @@ const api = {
           const range = posRangeSchema.parse(maybeRange);
           onBreak(range);
 
-          try {
-            console.log("Reading");
-            const result = syncExtras.readMessage();
-            console.log("Read:", result);
-            return result;
-          } catch (e) {
-            console.log("Interrupted while Reading");
-            interruptBuffer[0] = 2;
-          }
+          return syncExtras.readMessage();
         },
       };
 
-      pyodide.pyimport("js_callbacks").callbacks = callbacks;
+      const jsCallbacksModule = pyodide.pyimport("js_callbacks");
+      for (const [name, func] of Object.entries(callbacks)) {
+        jsCallbacksModule[name] = func;
+      }
+
       const fullCode = `from runner import run\nrun(${JSON.stringify(code)})`;
 
       const execResult = await pyodide.runPythonAsync(fullCode);
