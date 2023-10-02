@@ -3,7 +3,7 @@ import { useRef, useEffect } from "react";
 import { githubLightInit } from "@uiw/codemirror-theme-github";
 import { useCodeMirror } from "./useCodeMirror";
 
-import { extensions } from "./extensions";
+import { basicExtensions } from "./extensions";
 import { clearError, setError } from "./extensions/errorDisplay";
 import { clearLineRange, setLineRange } from "./extensions/lineRangeHighlight";
 
@@ -50,7 +50,7 @@ export function CodeWindow({
     value: croppedCode,
 
     theme,
-    extensions,
+    extensions: basicExtensions(posRange),
     readOnly: posRange !== undefined || onCodeChange === undefined,
 
     onChange: onCodeChange,

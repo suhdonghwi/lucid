@@ -26,9 +26,15 @@ const cssTheme = View.EditorView.theme({
 import errorDisplay from "./errorDisplay";
 import lineRangeHighlight from "./lineRangeHighlight";
 
-export const extensions = [
+import { PosRange } from "@/schemas/PosRange";
+
+export const basicExtensions = (posRange?: PosRange) => [
   View.keymap.of(Commands.defaultKeymap),
-  View.lineNumbers(),
+  View.lineNumbers(
+    posRange && {
+      formatNumber: (line) => (line + posRange.lineno - 1).toString(),
+    }
+  ),
   // View.EditorView.lineWrapping,
   Commands.history(),
   View.drawSelection(),
