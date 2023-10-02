@@ -2,9 +2,10 @@ import { useState } from "react";
 
 import { runPython, writeMessage, interrupt } from "@/pyodide-helper";
 
-import { CodeSpace, Callstack } from "@/components/CodeSpace";
+import { CodeSpace } from "@/components/CodeSpace";
 
 import * as cls from "./index.css";
+import { Frame } from "@/schemas/Frame";
 
 const exampleCode = `def add1(x):
   x = x + 1
@@ -14,18 +15,15 @@ add1(10)`;
 
 export function SpaceController() {
   const [mainCode, setMainCode] = useState(exampleCode);
-  const [callstack, setCallstack] = useState<Callstack>([]);
+  const [callstack, setCallstack] = useState<Frame[]>([]);
 
   async function runCode() {
     const result = await runPython(mainCode, {
       onStmtExit: ({ stmtPosRange }) => {
         return;
       },
-      onFrameEnter: ({ codeObjectId, framePosRange, callerPosRange }) => {
-        setCallstack((callstack) => [
-          ...callstack,
-          { codeObjectId, framePosRange, callerPosRange },
-        ]);
+      onFrameEnter: (frame) => {
+        setCallstack((callstack) => [...callstack, frame]);
         return;
       },
     });

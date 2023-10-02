@@ -7,6 +7,7 @@ import { syncExpose, SyncExtras } from "comsync";
 
 import { ExecError, execErrorSchema } from "./schemas/ExecError";
 import { PosRange, posRangeSchema } from "./schemas/PosRange";
+import { Frame, frameSchema } from "./schemas/Frame";
 
 async function initializePyodide(): Promise<PyodideInterface> {
   const indexURL = "https://cdn.jsdelivr.net/pyodide/v0.23.4/full/";
@@ -27,11 +28,7 @@ const pyodidePromise = initializePyodide();
 
 export type Callbacks = {
   onStmtExit: (args: { stmtPosRange: PosRange }) => void;
-  onFrameEnter: (args: {
-    codeObjectId: number;
-    framePosRange: PosRange;
-    callerPosRange: PosRange;
-  }) => void;
+  onFrameEnter: (frame: Frame) => void;
 };
 
 const makeCallbacksForPython = (
@@ -45,19 +42,9 @@ const makeCallbacksForPython = (
     return syncExtras.readMessage();
   },
 
-  frame_enter: ({
-    codeObjectId,
-    framePosRange: maybeFramePosRange,
-    callerPosRange: maybeCallerPosRange,
-  }: {
-    codeObjectId: number;
-    framePosRange: PyProxy;
-    callerPosRange: PyProxy;
-  }) => {
-    const framePosRange = posRangeSchema.parse(maybeFramePosRange);
-    const callerPosRange = posRangeSchema.parse(maybeCallerPosRange);
-
-    callbacks.onFrameEnter({ codeObjectId, framePosRange, callerPosRange });
+  frame_enter: (maybeFrame: PyProxy) => {
+    const frame = frameSchema.parse(maybeFrame);
+    callbacks.onFrameEnter(frame);
   },
 });
 

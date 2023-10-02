@@ -2,19 +2,14 @@ import { useState } from "react";
 
 import { CodeWindow, CodeWindowMode } from "@/components/CodeWindow";
 import * as cls from "./index.css";
-import { cropPosRange, PosRange } from "@/schemas/PosRange";
 
-// TODO: make this a schema
-export type Callstack = Array<{
-  codeObjectId: number;
-  framePosRange: PosRange;
-  callerPosRange: PosRange;
-}>;
+import { cropPosRange } from "@/schemas/PosRange";
+import type { Frame } from "@/schemas/Frame";
 
 type CodeSpaceProps = {
   mainCode: string;
   onMainCodeChange: (mainCode: string) => void;
-  callstack: Callstack;
+  callstack: Frame[];
 };
 
 export function CodeSpace({
@@ -34,10 +29,10 @@ export function CodeSpace({
           onCodeChange={onMainCodeChange}
           mode={editorMode}
         />
-        {callstack.map(({ framePosRange }, index) => (
+        {callstack.map(({ posRange }, index) => (
           <CodeWindow
             key={index}
-            code={cropPosRange(mainCode, framePosRange)}
+            code={cropPosRange(mainCode, posRange)}
             mode={{ type: "normal" }}
           />
         ))}
