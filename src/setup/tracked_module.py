@@ -27,6 +27,9 @@ class FrameInfo:
     def pop(self) -> ast.expr | ast.stmt:
         return self.stack.pop()
 
+    def top(self) -> ast.expr | ast.stmt:
+        return self.stack[-1]
+
 
 class FrameContext:
     def __init__(self, node: FrameNode, frame_info_stack: list[FrameInfo]):
@@ -41,6 +44,9 @@ class FrameContext:
         if IS_PYODIDE:
             if not isinstance(self.node, ast.FunctionDef):
                 return
+
+            caller_frame = self.frame_info_stack[-2]
+            print("Caller: ", caller_frame.top())
 
             # NOTE: lambda nodes would require column number information too
             js_callbacks.frame_enter(
