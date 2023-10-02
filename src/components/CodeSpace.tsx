@@ -48,25 +48,16 @@ export function CodeSpace() {
 
   return (
     <div className={cls.rootContainer}>
-      <CodeWindow code={code} onCodeUpdate={setCode} mode={editorMode} />
-      <input
-        type="button"
-        className={cls.runButton}
-        value="Run"
-        onClick={runCode}
-      />
-      <input
-        type="button"
-        className={cls.runButton}
-        value="Next"
-        onClick={onClickNext}
-      />
-      <input
-        type="button"
-        className={cls.runButton}
-        value="Interrupt"
-        onClick={onInterrupt}
-      />
+      <div className={cls.buttonContainer}>
+        <input type="button" value="Run" onClick={runCode} />
+        <input type="button" value="Next" onClick={onClickNext} />
+        <input type="button" value="Interrupt" onClick={onInterrupt} />
+      </div>
+
+      <div className={cls.windowsContainer}>
+        <CodeWindow code={code} onCodeUpdate={setCode} mode={editorMode} />
+        <CodeWindow code={code} onCodeUpdate={setCode} mode={editorMode} />
+      </div>
     </div>
   );
 }
