@@ -36,8 +36,8 @@ dependencies:
     specifier: ^4.4.1
     version: 4.4.1
   comsync:
-    specifier: ^0.0.8
-    version: 0.0.8(comlink@4.4.1)(sync-message@0.0.10)
+    specifier: ^0.0.9
+    version: 0.0.9(comlink@4.4.1)(sync-message@0.0.10)
   gsap:
     specifier: ^3.12.2
     version: 3.12.2
@@ -1465,8 +1465,8 @@ packages:
     resolution: {integrity: sha512-+1dlx0aY5Jo1vHy/tSsIGpSkN4tS9rZSW8FIhG0JH/crs9wwweswIo/POr451r7bZww3hFbPAKnTpimzL/mm4Q==}
     dev: false
 
-  /comsync@0.0.8(comlink@4.4.1)(sync-message@0.0.10):
-    resolution: {integrity: sha512-K5Onmu1SBdlsCguzHR2HxLkhnAz+nAUHflygqk8UfkAc2pJuSpr3zrNL1g6LaBM5s/CycyqAaLY+Ujbxq9ZENg==}
+  /comsync@0.0.9(comlink@4.4.1)(sync-message@0.0.10):
+    resolution: {integrity: sha512-5xM6K5eiPHtDS9Ehrm6ib3dPQ3p2uQDFzgCgd2dmtCdSOkmj8SnesMtFB/scA/deJNaMFkNucdJ9plpWWdayHw==}
     peerDependencies:
       comlink: '*'
       sync-message: '*'

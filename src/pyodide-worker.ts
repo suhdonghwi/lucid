@@ -36,12 +36,7 @@ const makeCallbacks = ({
     const range = posRangeSchema.parse(maybeRange);
     onBreak(range);
 
-    try {
-      return syncExtras.readMessage();
-    } catch (e: any) {
-      if (e.type === "InterruptError") e.name = e.type;
-      throw e;
-    }
+    return syncExtras.readMessage();
   },
   frame_enter: (maybeRange: PyProxy) => {
     const range = posRangeSchema.parse(maybeRange);
