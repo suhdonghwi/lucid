@@ -32,15 +32,24 @@ const makeCallbacks = ({
   syncExtras: SyncExtras;
   onBreak: (range: PosRange) => void;
 }) => ({
-  stmt_exit: (maybeRange: PyProxy) => {
-    const range = posRangeSchema.parse(maybeRange);
-    onBreak(range);
+  stmt_exit: (maybePosRange: PyProxy) => {
+    const posRange = posRangeSchema.parse(maybePosRange);
+    onBreak(posRange);
 
     return syncExtras.readMessage();
   },
-  frame_enter: (maybeRange: PyProxy) => {
-    const range = posRangeSchema.parse(maybeRange);
-    console.log(range);
+  frame_enter: ({
+    framePosRange: maybeFramePosRange,
+    callerPosRange: maybeCallerPosRange,
+  }: {
+    framePosRange: PyProxy;
+    callerPosRange: PyProxy;
+  }) => {
+    const framePosRange = posRangeSchema.parse(maybeFramePosRange);
+    const callerPosRange = posRangeSchema.parse(maybeCallerPosRange);
+
+    console.log(framePosRange);
+    console.log(callerPosRange);
   },
 });
 
