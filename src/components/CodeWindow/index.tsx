@@ -42,11 +42,10 @@ export function CodeWindow({
 
   const startLineno = posRange?.lineno ?? 1;
   const basicExtensions = useBasicExtensions(startLineno);
-  const {
-    setEvalHighlightRange,
-    clearEvalHighlightRange,
-    rangeHighlightExtension,
-  } = useLineRangeHighlight({ startLineno, highlightColor: "#fff3bf" });
+  const [setEvalHighlightRange, clearEvalHighlight, evalHighlightExtension] =
+    useLineRangeHighlight({ startLineno, highlightColor: "#fff3bf" });
+  const [setErrorHighlightRange, clearErrorHighlight, errorHighlightExtension] =
+    useLineRangeHighlight({ startLineno, highlightColor: "#ffe3e3" });
 
   const croppedCode =
     posRange === undefined ? code : cropPosRange(code, posRange);
@@ -57,7 +56,11 @@ export function CodeWindow({
     value: croppedCode,
 
     theme,
-    extensions: [...basicExtensions, rangeHighlightExtension],
+    extensions: [
+      ...basicExtensions,
+      evalHighlightExtension,
+      errorHighlightExtension,
+    ],
     readOnly: onCodeChange === undefined,
 
     onChange: onCodeChange,
@@ -72,6 +75,9 @@ export function CodeWindow({
 
     switch (mode.type) {
       case "error":
+        view.dispatch({
+          effects: [setErrorHighlightRange.of(mode.error.range)],
+        });
         break;
       case "eval": {
         view.dispatch({
@@ -81,11 +87,18 @@ export function CodeWindow({
       }
       default:
         view.dispatch({
-          effects: [clearEvalHighlightRange.of(null)],
+          effects: [clearEvalHighlight.of(null), clearEvalHighlight.of(null)],
         });
         break;
     }
-  }, [view, mode, posRange, clearEvalHighlightRange, setEvalHighlightRange]);
+  }, [
+    view,
+    mode,
+    posRange,
+    setEvalHighlightRange,
+    clearEvalHighlight,
+    setErrorHighlightRange,
+  ]);
 
   return <div className={cls.rootContainer} ref={editorDiv} />;
 }

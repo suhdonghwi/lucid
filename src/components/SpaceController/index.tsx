@@ -6,7 +6,7 @@ import { CodeSpace } from "@/components/CodeSpace";
 
 import * as cls from "./index.css";
 import { Frame } from "@/schemas/Frame";
-import { PosRange } from "@/schemas/PosRange";
+import { CodeWindowMode } from "../CodeWindow";
 
 const exampleCode = `def add1(x):
   x = x + 1
@@ -18,14 +18,14 @@ export function SpaceController() {
   const [mainCode, setMainCode] = useState(exampleCode);
 
   const [callstack, setCallstack] = useState<Frame[]>([]);
-  const [currentPosRange, setCurrentPosRange] = useState<PosRange | undefined>(
-    undefined
-  );
+  const [windowMode, setWindowMode] = useState<CodeWindowMode>({
+    type: "normal",
+  });
 
   async function runCode() {
     const result = await runPython(mainCode, {
       onStmtExit: ({ stmtPosRange }) => {
-        setCurrentPosRange(stmtPosRange);
+        setWindowMode({ type: "eval", range: stmtPosRange });
         console.log("stmt exit");
       },
       onFrameEnter: (frame) => {
@@ -40,8 +40,12 @@ export function SpaceController() {
 
     console.log("runPython result: ", result);
 
-    setCurrentPosRange(undefined);
-    setCallstack([]);
+    if (result.type === "error") {
+      setWindowMode({ type: "error", error: result.error });
+    } else {
+      setWindowMode({ type: "normal" });
+      setCallstack([]);
+    }
   }
 
   return (
@@ -57,7 +61,7 @@ export function SpaceController() {
           mainCode={mainCode}
           onMainCodeChange={setMainCode}
           callstack={callstack}
-          highlightPosRange={currentPosRange}
+          windowMode={windowMode}
         />
       </div>
     </div>
