@@ -32,6 +32,10 @@ export function SpaceController() {
         setCallstack((callstack) => [...callstack, frame]);
         console.log("frame enter");
       },
+      onFrameExit: () => {
+        setCallstack(callstack.slice(0, -1));
+        console.log("frame exit");
+      },
     });
 
     console.log("runPython result: ", result);

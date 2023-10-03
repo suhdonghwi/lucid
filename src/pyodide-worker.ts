@@ -28,7 +28,9 @@ const pyodidePromise = initializePyodide();
 
 export type Callbacks = {
   onStmtExit: (args: { stmtPosRange: PosRange }) => void;
+
   onFrameEnter: (frame: Frame) => void;
+  onFrameExit: () => void;
 };
 
 const makeCallbacksForPython = (
@@ -45,6 +47,11 @@ const makeCallbacksForPython = (
   frame_enter: (maybeFrame: PyProxy) => {
     const frame = frameSchema.parse(maybeFrame);
     callbacks.onFrameEnter(frame);
+  },
+
+  // TODO: add frame info
+  frame_exit: () => {
+    callbacks.onFrameExit();
   },
 });
 

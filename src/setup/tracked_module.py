@@ -39,6 +39,7 @@ class FrameContext:
     def __enter__(self):
         frame = sys._getframe(1)
         frame_info = FrameInfo(frame)
+
         self.frame_info_stack.append(frame_info)
 
         if IS_PYODIDE:
@@ -63,6 +64,13 @@ class FrameContext:
             return False
 
         self.frame_info_stack.pop()
+
+        if IS_PYODIDE:
+            match self.node:
+                case ast.FunctionDef():
+                    js_callbacks.frame_exit()
+                case _:
+                    pass
 
 
 class StmtContext:
