@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { runPython, writeMessage, interrupt } from "@/pyodide-helper";
 
@@ -8,7 +8,7 @@ import * as cls from "./index.css";
 
 import type { EvalEvent } from "@/schemas/EvalEvent";
 import type { FrameEvent } from "@/schemas/FrameEvent";
-import type { CallGraph } from "./CallGraph";
+import { CallGraph, CallNode } from "./CallGraph";
 
 const exampleCode = `def add1(x):
   x = x + 1
@@ -16,47 +16,38 @@ const exampleCode = `def add1(x):
 
 add1(10)`;
 
+function useForceUpdate() {
+  const [value, setValue] = useState(0); // integer state
+  return () => setValue((value) => value + 1); // update state to force render
+  // A function that increment 👆🏻 the previous state like here
+  // is better than directly setting `setValue(value + 1)`
+}
+
 export function SpaceController() {
   const [mainCode, setMainCode] = useState(exampleCode);
-  const [callGraph, setCallGraph] = useState<CallGraph>([{ evalStack: [] }]);
+
+  const callGraphRef = useRef<CallGraph>(new CallGraph());
+  const forceUpdate = useForceUpdate();
 
   async function runCode() {
     const result = await runPython(mainCode, {
       onStmtEnter: (evalEvent: EvalEvent) => {
-        setCallGraph((callGraph) => {
-          const newCallGraph = callGraph.slice();
-          newCallGraph[newCallGraph.length - 1].evalStack.push(
-            evalEvent.posRange
-          );
-          return newCallGraph;
-        });
+        callGraphRef.current.top().push(evalEvent.posRange);
+        forceUpdate();
 
         console.log("stmt enter");
       },
       onStmtExit: (evalEvent: EvalEvent) => {
-        setCallGraph((callGraph) => {
-          const newCallGraph = callGraph.slice();
-          newCallGraph[newCallGraph.length - 1].evalStack.pop();
-          return newCallGraph;
-        });
-
+        callGraphRef.current.top().pop();
         console.log("stmt exit");
       },
       onFrameEnter: (frameEvent: FrameEvent) => {
-        setCallGraph((callGraph) => {
-          const newCallGraph = callGraph.slice();
-          newCallGraph.push({ event: frameEvent, evalStack: [] });
-          return newCallGraph;
-        });
-
+        callGraphRef.current.push(new CallNode(frameEvent));
         console.log("frame enter");
       },
       onFrameExit: (frameEvent: FrameEvent) => {
-        setCallGraph((callGraph) => {
-          const newCallGraph = callGraph.slice();
-          newCallGraph.pop();
-          return newCallGraph;
-        });
+        callGraphRef.current.pop();
+        forceUpdate();
 
         console.log("frame exit");
       },
@@ -64,7 +55,8 @@ export function SpaceController() {
 
     console.log("runPython result: ", result);
 
-    // setCallGraph([]);
+    callGraphRef.current = new CallGraph();
+    forceUpdate();
   }
 
   return (
@@ -79,7 +71,7 @@ export function SpaceController() {
         <CodeSpace
           mainCode={mainCode}
           onMainCodeChange={setMainCode}
-          callGraph={callGraph}
+          callGraph={callGraphRef.current}
         />
       </div>
     </div>

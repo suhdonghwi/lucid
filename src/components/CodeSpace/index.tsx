@@ -1,4 +1,4 @@
-import { CodeWindow, CodeWindowMode } from "@/components/CodeWindow";
+import { CodeWindow } from "@/components/CodeWindow";
 import { CallGraph } from "../SpaceController/CallGraph";
 import * as cls from "./index.css";
 
@@ -17,15 +17,22 @@ export function CodeSpace({
   return (
     <div className={cls.rootContainer}>
       <div className={cls.windowsContainer}>
-        {callGraph.map(({ event }, index) => (
-          <CodeWindow
-            key={index}
-            code={mainCode}
-            onCodeChange={index === 0 ? onMainCodeChange : undefined}
-            posRange={event?.posRange}
-            mode={{ type: "normal" }}
-          />
-        ))}
+        {callGraph.nodes.map((callNode, index) => {
+          const latestRange = callNode.top();
+          return (
+            <CodeWindow
+              key={index}
+              code={mainCode}
+              onCodeChange={index === 0 ? onMainCodeChange : undefined}
+              posRange={callNode.event?.posRange}
+              mode={
+                latestRange === undefined
+                  ? { type: "normal" }
+                  : { type: "eval", range: latestRange }
+              }
+            />
+          );
+        })}
       </div>
     </div>
   );

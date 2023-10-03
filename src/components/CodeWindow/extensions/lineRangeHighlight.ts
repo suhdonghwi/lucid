@@ -78,6 +78,8 @@ export function lineRangeHighlight({
             duration: ANIMATE_DURATION,
             opacity: 1,
           });
+
+          this.visible = true;
         } else {
           gsap.to(this.highlightLayerElement, {
             duration: ANIMATE_DURATION,
@@ -85,8 +87,6 @@ export function lineRangeHighlight({
             ...rect,
           });
         }
-
-        this.visible = true;
       }
 
       update(vu: ViewUpdate) {

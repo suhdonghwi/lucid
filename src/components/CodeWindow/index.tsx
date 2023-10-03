@@ -79,12 +79,11 @@ export function CodeWindow({
           effects: [setErrorHighlightRange.of(mode.error.range)],
         });
         break;
-      case "eval": {
+      case "eval":
         view.dispatch({
           effects: [setEvalHighlightRange.of(mode.range)],
         });
         break;
-      }
       default:
         view.dispatch({
           effects: [clearEvalHighlight.of(null), clearEvalHighlight.of(null)],

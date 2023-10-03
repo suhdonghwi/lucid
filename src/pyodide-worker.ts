@@ -6,7 +6,6 @@ import * as Comlink from "comlink";
 import { syncExpose, SyncExtras } from "comsync";
 
 import { ExecError, execErrorSchema } from "./schemas/ExecError";
-import { Frame, frameSchema } from "./schemas/Frame";
 import { EvalEvent, evalEventSchema } from "./schemas/EvalEvent";
 import { FrameEvent, frameEventSchema } from "./schemas/FrameEvent";
 
@@ -35,21 +34,17 @@ export type Callbacks = {
   onFrameExit: (event: FrameEvent) => void;
 };
 
-const makeCallbacksForPython = (
-  syncExtras: SyncExtras,
-  callbacks: Callbacks
-) => ({
+const makeCallbacksForPython = (extras: SyncExtras, callbacks: Callbacks) => ({
   stmt_enter: (maybeEvalEvent: PyProxy) => {
     const event = evalEventSchema.parse(maybeEvalEvent);
-
     callbacks.onStmtEnter(event);
   },
 
   stmt_exit: (maybeEvalEvent: PyProxy) => {
+    extras.readMessage();
+
     const event = evalEventSchema.parse(maybeEvalEvent);
     callbacks.onStmtExit(event);
-
-    return syncExtras.readMessage();
   },
 
   frame_enter: (maybeFrameEvent: PyProxy) => {
@@ -57,7 +52,6 @@ const makeCallbacksForPython = (
     callbacks.onFrameEnter(frameEvent);
   },
 
-  // TODO: add frame info
   frame_exit: (maybeFrameEvent: PyProxy) => {
     const frameEvent = frameEventSchema.parse(maybeFrameEvent);
     callbacks.onFrameExit(frameEvent);
@@ -71,7 +65,7 @@ export type RunPythonResult =
 const api = {
   runPython: syncExpose(
     async (
-      syncExtras,
+      extras,
       interruptBuffer: Uint8Array,
       code: string,
       callbacks: Callbacks
@@ -79,7 +73,7 @@ const api = {
       const pyodide = await pyodidePromise;
       pyodide.setInterruptBuffer(interruptBuffer);
 
-      const callbacksForPython = makeCallbacksForPython(syncExtras, callbacks);
+      const callbacksForPython = makeCallbacksForPython(extras, callbacks);
 
       pyodide.registerJsModule("js_callbacks", {});
       const jsCallbacksModule = pyodide.pyimport("js_callbacks");
