@@ -42,15 +42,18 @@ class FrameContext:
         self.frame_info_stack.append(frame_info)
 
         if IS_PYODIDE:
-            if not isinstance(self.node, ast.FunctionDef):
-                return
+            match self.node:
+                case ast.FunctionDef():
+                    caller_pos_range = js_range_object(self.frame_info_stack[-2].top())
+                    pos_range = js_range_object(self.node)
+                case _:
+                    return
 
-            caller_frame = self.frame_info_stack[-2]
             js_callbacks.frame_enter(
                 js_object(
                     codeObjectId=id(frame.f_code),
-                    posRange=js_range_object(self.node),
-                    callerPosRange=js_range_object(caller_frame.top()),
+                    posRange=pos_range,
+                    callerPosRange=caller_pos_range,
                 )
             )
 

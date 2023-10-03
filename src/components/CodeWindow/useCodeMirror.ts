@@ -54,12 +54,10 @@ export function useCodeMirror(props: UseCodeMirror) {
   );
 
   const getExtensions = useMemo(
-    () => [
-      updateListener,
-      theme,
-      EditorState.readOnly.of(readOnly),
-      ...extensions,
-    ],
+    () =>
+      [updateListener, theme, EditorState.readOnly.of(readOnly)].concat(
+        extensions
+      ),
     [extensions, readOnly, theme, updateListener]
   );
 

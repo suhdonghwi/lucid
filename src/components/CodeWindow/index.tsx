@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useMemo } from "react";
 
 import { githubLightInit } from "@uiw/codemirror-theme-github";
 import { useCodeMirror } from "./useCodeMirror";
@@ -41,6 +41,11 @@ export function CodeWindow({
   posRange,
 }: CodeWindowProps) {
   const editorDiv = useRef<HTMLDivElement | null>(null);
+  const extensions = useMemo(
+    () => basicExtensions({ startLine: posRange?.lineno }),
+    [posRange]
+  );
+
   const croppedCode =
     posRange === undefined ? code : cropPosRange(code, posRange);
 
@@ -50,7 +55,7 @@ export function CodeWindow({
     value: croppedCode,
 
     theme,
-    extensions: basicExtensions(posRange),
+    extensions,
     readOnly: onCodeChange === undefined,
 
     onChange: onCodeChange,
@@ -70,17 +75,8 @@ export function CodeWindow({
         });
         break;
       case "eval": {
-        const adjustedPosRange: PosRange =
-          posRange === undefined
-            ? mode.range
-            : {
-              ...mode.range,
-              lineno: mode.range.lineno - posRange.lineno + 1,
-              endLineno: mode.range.endLineno - posRange.lineno + 1,
-            };
-
         view.dispatch({
-          effects: [setLineRange.of(adjustedPosRange), clearError.of(null)],
+          effects: [setLineRange.of(mode.range), clearError.of(null)],
         });
         break;
       }
