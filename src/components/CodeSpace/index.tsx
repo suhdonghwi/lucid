@@ -1,24 +1,27 @@
-import { useState } from "react";
-
 import { CodeWindow, CodeWindowMode } from "@/components/CodeWindow";
 import * as cls from "./index.css";
 
 import type { Frame } from "@/schemas/Frame";
+import { PosRange } from "@/schemas/PosRange";
 
 type CodeSpaceProps = {
   mainCode: string;
   onMainCodeChange: (mainCode: string) => void;
+
   callstack: Frame[];
+  highlightPosRange?: PosRange;
 };
 
 export function CodeSpace({
   mainCode,
   onMainCodeChange,
   callstack,
+  highlightPosRange,
 }: CodeSpaceProps) {
-  const [editorMode, setEditorMode] = useState<CodeWindowMode>({
-    type: "normal",
-  });
+  const windowMode: CodeWindowMode =
+    highlightPosRange === undefined
+      ? { type: "normal" }
+      : { type: "eval", range: highlightPosRange };
 
   return (
     <div className={cls.rootContainer}>
@@ -26,14 +29,14 @@ export function CodeSpace({
         <CodeWindow
           code={mainCode}
           onCodeChange={onMainCodeChange}
-          mode={editorMode}
+          mode={windowMode}
         />
         {callstack.map(({ posRange }, index) => (
           <CodeWindow
             key={index}
             code={mainCode}
             posRange={posRange}
-            mode={{ type: "normal" }}
+            mode={windowMode}
           />
         ))}
       </div>

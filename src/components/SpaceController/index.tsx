@@ -6,6 +6,7 @@ import { CodeSpace } from "@/components/CodeSpace";
 
 import * as cls from "./index.css";
 import { Frame } from "@/schemas/Frame";
+import { PosRange } from "@/schemas/PosRange";
 
 const exampleCode = `def add1(x):
   x = x + 1
@@ -15,18 +16,24 @@ add1(10)`;
 
 export function SpaceController() {
   const [mainCode, setMainCode] = useState(exampleCode);
+
   const [callstack, setCallstack] = useState<Frame[]>([]);
+  const [currentPosRange, setCurrentPosRange] = useState<PosRange | undefined>(
+    undefined
+  );
 
   async function runCode() {
     const result = await runPython(mainCode, {
       onStmtExit: ({ stmtPosRange }) => {
-        return;
+        setCurrentPosRange(stmtPosRange);
+        console.log("stmt exit");
       },
       onFrameEnter: (frame) => {
         setCallstack((callstack) => [...callstack, frame]);
-        return;
+        console.log("frame enter");
       },
     });
+
     console.log("runPython result: ", result);
   }
 
@@ -43,6 +50,7 @@ export function SpaceController() {
           mainCode={mainCode}
           onMainCodeChange={setMainCode}
           callstack={callstack}
+          highlightPosRange={currentPosRange}
         />
       </div>
     </div>

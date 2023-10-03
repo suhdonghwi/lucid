@@ -41,11 +41,11 @@ export function CodeWindow({
   posRange,
 }: CodeWindowProps) {
   const editorDiv = useRef<HTMLDivElement | null>(null);
-
   const croppedCode =
-    posRange !== undefined ? cropPosRange(code, posRange) : code;
+    posRange === undefined ? code : cropPosRange(code, posRange);
+
   const { setContainer, view } = useCodeMirror({
-    // View dispatch does not occur if the value is same with view's internal state
+    // NOTE1: View dispatch does not occur if the value is same with view's internal state
     // (Refer "./useCodeMirror.ts")
     value: croppedCode,
 
@@ -69,18 +69,28 @@ export function CodeWindow({
           effects: [setError.of(mode.error), clearLineRange.of(null)],
         });
         break;
-      case "eval":
+      case "eval": {
+        const newPosRange: PosRange =
+          posRange === undefined
+            ? mode.range
+            : {
+              ...mode.range,
+              lineno: mode.range.lineno - posRange.lineno + 1,
+              endLineno: mode.range.lineno - posRange.lineno + 1,
+            };
+
         view.dispatch({
-          effects: [setLineRange.of(mode.range), clearError.of(null)],
+          effects: [setLineRange.of(newPosRange), clearError.of(null)],
         });
         break;
+      }
       default:
         view.dispatch({
           effects: [clearLineRange.of(null), clearError.of(null)],
         });
         break;
     }
-  }, [view, mode]);
+  }, [view, mode, posRange]);
 
   return <div className={cls.rootContainer} ref={editorDiv} />;
 }

@@ -1,7 +1,6 @@
 import {
   EditorView,
   layer,
-  RectangleMarker,
   ViewUpdate,
   ViewPlugin,
   PluginValue,
@@ -13,7 +12,6 @@ import gsap from "gsap";
 import type { PosRange } from "@/schemas/PosRange";
 
 const LINE_RANGE_HIGHLIGHT_LAYER_CLASS = "cm-line-range-highlight-layer";
-const LINE_RANGE_HIGHLIGHT_CLASS = "cm-line-range-highlight";
 
 const ANIMATE_DURATION = 0.25;
 
@@ -24,7 +22,7 @@ const highlightLayer = layer({
   class: LINE_RANGE_HIGHLIGHT_LAYER_CLASS,
   above: false,
   update: () => false,
-  markers: () => [new RectangleMarker(LINE_RANGE_HIGHLIGHT_CLASS, 0, 0, 0, 0)],
+  markers: () => [],
 });
 
 class HighlightPluginValue implements PluginValue {
@@ -32,7 +30,10 @@ class HighlightPluginValue implements PluginValue {
   visible = false;
 
   animateHighlight(range: PosRange, view: EditorView) {
-    if (this.highlightElement === undefined) return;
+    if (this.highlightElement === undefined) {
+      console.error("highlight element is undefined");
+      return;
+    }
 
     const startLine = view.state.doc.line(range.lineno);
     const endLine = view.state.doc.line(range.endLineno);
@@ -65,12 +66,16 @@ class HighlightPluginValue implements PluginValue {
   }
 
   update(vu: ViewUpdate) {
+    console.log(vu);
     if (this.highlightElement === undefined) {
       const elems = vu.view.dom.getElementsByClassName(
-        LINE_RANGE_HIGHLIGHT_CLASS
+        LINE_RANGE_HIGHLIGHT_LAYER_CLASS
       );
 
-      if (elems.length === 0) return;
+      if (elems.length === 0) {
+        console.error("highlight element not found");
+        return;
+      }
       this.highlightElement = elems[0];
     }
 
@@ -95,7 +100,7 @@ class HighlightPluginValue implements PluginValue {
 const highlightPlugin = ViewPlugin.fromClass(HighlightPluginValue);
 
 const highlightTheme = EditorView.theme({
-  [`& .${LINE_RANGE_HIGHLIGHT_LAYER_CLASS} .${LINE_RANGE_HIGHLIGHT_CLASS}`]: {
+  [`& .${LINE_RANGE_HIGHLIGHT_LAYER_CLASS}`]: {
     backgroundColor: "#fff3bf",
     opacity: 0,
   },
