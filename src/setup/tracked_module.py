@@ -16,7 +16,7 @@ FrameNode = ast.FunctionDef | ast.Lambda | ast.Module
 
 
 # TODO: rename into more intuitive one
-class FrameInfo:
+class FrameWrapper:
     def __init__(self, frame: FrameType):
         self.frame = frame
         self.stack: list[ast.expr | ast.stmt] = []
@@ -32,20 +32,20 @@ class FrameInfo:
 
 
 class FrameContext:
-    def __init__(self, node: FrameNode, frame_info_stack: list[FrameInfo]):
+    def __init__(self, node: FrameNode, callstack: list[FrameWrapper]):
         self.node = node
-        self.frame_info_stack = frame_info_stack
+        self.callstack = callstack
 
     def __enter__(self):
         frame = sys._getframe(1)
-        frame_info = FrameInfo(frame)
+        frame_wrapper = FrameWrapper(frame)
 
-        self.frame_info_stack.append(frame_info)
+        self.callstack.append(frame_wrapper)
 
         if IS_PYODIDE:
             match self.node:
                 case ast.FunctionDef():
-                    caller_pos_range = js_range_object(self.frame_info_stack[-2].top())
+                    caller_pos_range = js_range_object(self.callstack[-2].top())
                     pos_range = js_range_object(self.node)
                 case _:
                     return
@@ -63,7 +63,7 @@ class FrameContext:
         if exc_type is not None:
             return False
 
-        self.frame_info_stack.pop()
+        self.callstack.pop()
 
         if IS_PYODIDE:
             match self.node:
@@ -74,18 +74,18 @@ class FrameContext:
 
 
 class StmtContext:
-    def __init__(self, node: ast.stmt, frame_info: FrameInfo):
+    def __init__(self, node: ast.stmt, frame_wrapper: FrameWrapper):
         self.node = node
-        self.frame_info = frame_info
+        self.frame_wrapper = frame_wrapper
 
     def __enter__(self):
-        self.frame_info.push(self.node)
+        self.frame_wrapper.push(self.node)
 
     def __exit__(self, exc_type, exc_value, exc_tb):
         if exc_type is not None:
             return False
 
-        popped = self.frame_info.pop()
+        popped = self.frame_wrapper.pop()
         assert self.node == popped
 
         if IS_PYODIDE:
@@ -108,25 +108,25 @@ class TrackedModule:
         )
 
     def exec(self):
-        frame_info_stack: list[FrameInfo] = []
+        callstack: list[FrameWrapper] = []
 
         def track_before_expr(node_index: int):
             node: ast.expr = self.tree_nodes[node_index]
-            frame_info_stack[-1].push(node)
+            callstack[-1].push(node)
             return node_index
 
         def track_after_expr(_: int, value: object):
-            frame_info_stack[-1].pop()
+            callstack[-1].pop()
             return value
 
         def track_stmt(node_index: int):
             node: ast.stmt = self.tree_nodes[node_index]
-            return StmtContext(node, frame_info_stack[-1])
+            return StmtContext(node, callstack[-1])
 
         # TODO: Handle lambda expression
         def track_frame(node_index: int):
             node: FrameNode = self.tree_nodes[node_index]
-            return FrameContext(node, frame_info_stack)
+            return FrameContext(node, callstack)
 
         namespace = {
             IDENT.TRACKER_BEFORE_EXPR: track_before_expr,
