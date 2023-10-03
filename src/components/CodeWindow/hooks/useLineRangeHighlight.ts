@@ -1,8 +1,15 @@
 import { useMemo } from "react";
+import { uuidv4 } from "sync-message";
 
 import { lineRangeHighlight } from "../extensions/lineRangeHighlight";
 
-export function useLineRangeHighlight(startLineno: number) {
+export function useLineRangeHighlight({
+  startLineno,
+  highlightColor,
+}: {
+  startLineno: number;
+  highlightColor: string;
+}) {
   const [
     setEvalHighlightRange,
     clearEvalHighlightRange,
@@ -11,10 +18,10 @@ export function useLineRangeHighlight(startLineno: number) {
     () =>
       lineRangeHighlight({
         startLineno,
-        highlightColor: "#fff3bf",
-        id: "eval",
+        highlightColor,
+        id: uuidv4(),
       }),
-    [startLineno]
+    [startLineno, highlightColor]
   );
 
   return {

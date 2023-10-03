@@ -46,7 +46,7 @@ export function CodeWindow({
     setEvalHighlightRange,
     clearEvalHighlightRange,
     rangeHighlightExtension,
-  } = useLineRangeHighlight(startLineno);
+  } = useLineRangeHighlight({ startLineno, highlightColor: "#fff3bf" });
 
   const croppedCode =
     posRange === undefined ? code : cropPosRange(code, posRange);
