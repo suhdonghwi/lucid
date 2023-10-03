@@ -66,7 +66,6 @@ class HighlightPluginValue implements PluginValue {
   }
 
   update(vu: ViewUpdate) {
-    console.log(vu);
     if (this.highlightElement === undefined) {
       const elems = vu.view.dom.getElementsByClassName(
         LINE_RANGE_HIGHLIGHT_LAYER_CLASS

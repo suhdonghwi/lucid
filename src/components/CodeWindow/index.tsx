@@ -51,7 +51,7 @@ export function CodeWindow({
 
     theme,
     extensions: basicExtensions(posRange),
-    readOnly: posRange !== undefined || onCodeChange === undefined,
+    readOnly: onCodeChange === undefined,
 
     onChange: onCodeChange,
   });
@@ -70,17 +70,17 @@ export function CodeWindow({
         });
         break;
       case "eval": {
-        const newPosRange: PosRange =
+        const adjustedPosRange: PosRange =
           posRange === undefined
             ? mode.range
             : {
               ...mode.range,
               lineno: mode.range.lineno - posRange.lineno + 1,
-              endLineno: mode.range.lineno - posRange.lineno + 1,
+              endLineno: mode.range.endLineno - posRange.lineno + 1,
             };
 
         view.dispatch({
-          effects: [setLineRange.of(newPosRange), clearError.of(null)],
+          effects: [setLineRange.of(adjustedPosRange), clearError.of(null)],
         });
         break;
       }
