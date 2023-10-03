@@ -51,6 +51,7 @@ class FrameContext:
 
             js_callbacks.frame_enter(
                 js_object(
+                    id=id(frame),
                     codeObjectId=id(frame.f_code),
                     posRange=pos_range,
                     callerPosRange=caller_pos_range,
