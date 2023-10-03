@@ -3,12 +3,12 @@ import { useRef, useEffect, useMemo } from "react";
 import { githubLightInit } from "@uiw/codemirror-theme-github";
 import { useCodeMirror } from "./useCodeMirror";
 
-import { getBasicExtensions } from "./extensions";
 import { lineRangeHighlight } from "./extensions/lineRangeHighlight";
 
 import * as cls from "./index.css";
 import { cropPosRange, PosRange } from "@/schemas/PosRange";
 import type { ExecError } from "@/schemas/ExecError";
+import { useBasicExtensions } from "./hooks";
 
 const theme = githubLightInit({
   theme: "light",
@@ -41,10 +41,7 @@ export function CodeWindow({
 }: CodeWindowProps) {
   const editorDiv = useRef<HTMLDivElement | null>(null);
 
-  const basicExtensions = useMemo(
-    () => getBasicExtensions({ startLineno: posRange?.lineno }),
-    [posRange]
-  );
+  const basicExtensions = useBasicExtensions(posRange?.lineno);
 
   const [
     setEvalHighlightRange,

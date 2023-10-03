@@ -53,14 +53,14 @@ export function lineRangeHighlight({
           return;
         }
 
-        range = {
+        const adjustedRange = {
           ...range,
           lineno: range.lineno - startLineno + 1,
           endLineno: range.endLineno - startLineno + 1,
         };
 
-        const startLine = view.state.doc.line(range.lineno);
-        const endLine = view.state.doc.line(range.endLineno);
+        const startLine = view.state.doc.line(adjustedRange.lineno);
+        const endLine = view.state.doc.line(adjustedRange.endLineno);
 
         const startLineBlock = view.lineBlockAt(startLine.from);
         const endLineBlock = view.lineBlockAt(endLine.from);
