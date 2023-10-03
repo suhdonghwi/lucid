@@ -39,6 +39,8 @@ export function SpaceController() {
     });
 
     console.log("runPython result: ", result);
+    setCurrentPosRange(undefined);
+    setCallstack([]);
   }
 
   return (
