@@ -19,7 +19,7 @@ def run(code: str):
 
         return js_object(range=error_range, message=message)
     except BaseException as e:
-        if hasattr(e, 'name') and e.name == "InterruptError":
+        if hasattr(e, "name") and e.name == "InterruptError":
             return None
 
         tb = e.__traceback__.tb_next.tb_next  # type: ignore
@@ -33,5 +33,5 @@ def run(code: str):
         assert isinstance(tb, TracebackType)
 
         error_range = js_object(lineno=tb.tb_lineno, endLineno=tb.tb_lineno)
-        message = f"${type(e).__name__}: ${e}"
+        message = f"{type(e).__name__}: {e}"
         return js_object(range=error_range, message=message)

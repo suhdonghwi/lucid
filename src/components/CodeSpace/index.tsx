@@ -1,36 +1,29 @@
 import { CodeWindow, CodeWindowMode } from "@/components/CodeWindow";
+import { CallGraph } from "../SpaceController/CallGraph";
 import * as cls from "./index.css";
-
-import type { Frame } from "@/schemas/Frame";
 
 type CodeSpaceProps = {
   mainCode: string;
   onMainCodeChange: (mainCode: string) => void;
 
-  callstack: Frame[];
-  windowMode: CodeWindowMode;
+  callGraph: CallGraph;
 };
 
 export function CodeSpace({
   mainCode,
   onMainCodeChange,
-  callstack,
-  windowMode,
+  callGraph,
 }: CodeSpaceProps) {
   return (
     <div className={cls.rootContainer}>
       <div className={cls.windowsContainer}>
-        <CodeWindow
-          code={mainCode}
-          onCodeChange={onMainCodeChange}
-          mode={windowMode}
-        />
-        {callstack.map(({ posRange }, index) => (
+        {callGraph.map(({ event }, index) => (
           <CodeWindow
             key={index}
             code={mainCode}
-            posRange={posRange}
-            mode={windowMode}
+            onCodeChange={index === 0 ? onMainCodeChange : undefined}
+            posRange={event?.posRange}
+            mode={{ type: "normal" }}
           />
         ))}
       </div>

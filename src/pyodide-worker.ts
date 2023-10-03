@@ -6,8 +6,9 @@ import * as Comlink from "comlink";
 import { syncExpose, SyncExtras } from "comsync";
 
 import { ExecError, execErrorSchema } from "./schemas/ExecError";
-import { PosRange, posRangeSchema } from "./schemas/PosRange";
 import { Frame, frameSchema } from "./schemas/Frame";
+import { EvalEvent, evalEventSchema } from "./schemas/EvalEvent";
+import { FrameEvent, frameEventSchema } from "./schemas/FrameEvent";
 
 async function initializePyodide(): Promise<PyodideInterface> {
   const indexURL = "https://cdn.jsdelivr.net/pyodide/v0.23.4/full/";
@@ -27,31 +28,39 @@ async function initializePyodide(): Promise<PyodideInterface> {
 const pyodidePromise = initializePyodide();
 
 export type Callbacks = {
-  onStmtExit: (args: { stmtPosRange: PosRange }) => void;
+  onStmtEnter: (event: EvalEvent) => void;
+  onStmtExit: (event: EvalEvent) => void;
 
-  onFrameEnter: (frame: Frame) => void;
-  onFrameExit: () => void;
+  onFrameEnter: (event: FrameEvent) => void;
+  onFrameExit: (event: FrameEvent) => void;
 };
 
 const makeCallbacksForPython = (
   syncExtras: SyncExtras,
   callbacks: Callbacks
 ) => ({
-  stmt_exit: (maybePosRange: PyProxy) => {
-    const stmtPosRange = posRangeSchema.parse(maybePosRange);
-    callbacks.onStmtExit({ stmtPosRange });
+  stmt_enter: (maybeEvalEvent: PyProxy) => {
+    const event = evalEventSchema.parse(maybeEvalEvent);
+
+    callbacks.onStmtEnter(event);
+  },
+
+  stmt_exit: (maybeEvalEvent: PyProxy) => {
+    const event = evalEventSchema.parse(maybeEvalEvent);
+    callbacks.onStmtExit(event);
 
     return syncExtras.readMessage();
   },
 
-  frame_enter: (maybeFrame: PyProxy) => {
-    const frame = frameSchema.parse(maybeFrame);
-    callbacks.onFrameEnter(frame);
+  frame_enter: (maybeFrameEvent: PyProxy) => {
+    const frameEvent = frameEventSchema.parse(maybeFrameEvent);
+    callbacks.onFrameEnter(frameEvent);
   },
 
   // TODO: add frame info
-  frame_exit: () => {
-    callbacks.onFrameExit();
+  frame_exit: (maybeFrameEvent: PyProxy) => {
+    const frameEvent = frameEventSchema.parse(maybeFrameEvent);
+    callbacks.onFrameExit(frameEvent);
   },
 });
 

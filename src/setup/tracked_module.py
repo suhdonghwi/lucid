@@ -1,6 +1,5 @@
 import sys
 import ast
-from types import FrameType
 
 import tracker_identifier as IDENT
 from tracker_attacher import TrackerAttacher
@@ -15,47 +14,25 @@ if IS_PYODIDE:
 FrameNode = ast.FunctionDef | ast.Lambda | ast.Module
 
 
-# TODO: rename into more intuitive one
-class FrameWrapper:
-    def __init__(self, frame: FrameType):
-        self.frame = frame
-        self.stack: list[ast.expr | ast.stmt] = []
-
-    def push(self, node: ast.expr | ast.stmt):
-        self.stack.append(node)
-
-    def pop(self) -> ast.expr | ast.stmt:
-        return self.stack.pop()
-
-    def top(self) -> ast.expr | ast.stmt:
-        return self.stack[-1]
-
-
 class FrameContext:
-    def __init__(self, node: FrameNode, callstack: list[FrameWrapper]):
+    def __init__(self, node: FrameNode):
         self.node = node
-        self.callstack = callstack
 
     def __enter__(self):
-        frame = sys._getframe(1)
-        frame_wrapper = FrameWrapper(frame)
-
-        self.callstack.append(frame_wrapper)
+        self.frame = sys._getframe(1)
 
         if IS_PYODIDE:
             match self.node:
                 case ast.FunctionDef():
-                    caller_pos_range = js_range_object(self.callstack[-2].top())
                     pos_range = js_range_object(self.node)
                 case _:
                     return
 
             js_callbacks.frame_enter(
                 js_object(
-                    id=id(frame),
-                    codeObjectId=id(frame.f_code),
+                    id=id(self.frame),
+                    codeObjectId=id(self.frame.f_code),
                     posRange=pos_range,
-                    callerPosRange=caller_pos_range,
                 )
             )
 
@@ -63,33 +40,42 @@ class FrameContext:
         if exc_type is not None:
             return False
 
-        self.callstack.pop()
-
         if IS_PYODIDE:
             match self.node:
                 case ast.FunctionDef():
-                    js_callbacks.frame_exit()
+                    pos_range = js_range_object(self.node)
                 case _:
-                    pass
+                    return
+
+            js_callbacks.frame_exit(
+                js_object(
+                    id=id(self.frame),
+                    codeObjectId=id(self.frame.f_code),
+                    posRange=pos_range,
+                )
+            )
 
 
 class StmtContext:
-    def __init__(self, node: ast.stmt, frame_wrapper: FrameWrapper):
+    def __init__(self, node: ast.stmt):
         self.node = node
-        self.frame_wrapper = frame_wrapper
 
     def __enter__(self):
-        self.frame_wrapper.push(self.node)
+        self.frame = sys._getframe(1)
+
+        if IS_PYODIDE:
+            js_callbacks.stmt_enter(
+                frameId=id(self.frame), posRange=js_range_object(self.node)
+            )
 
     def __exit__(self, exc_type, exc_value, exc_tb):
         if exc_type is not None:
             return False
 
-        popped = self.frame_wrapper.pop()
-        assert self.node == popped
-
         if IS_PYODIDE:
-            js_callbacks.stmt_exit(js_range_object(self.node))
+            js_callbacks.stmt_exit(
+                frameId=id(self.frame), posRange=js_range_object(self.node)
+            )
 
 
 class TrackedModule:
@@ -108,25 +94,21 @@ class TrackedModule:
         )
 
     def exec(self):
-        callstack: list[FrameWrapper] = []
-
         def track_before_expr(node_index: int):
             node: ast.expr = self.tree_nodes[node_index]
-            callstack[-1].push(node)
             return node_index
 
-        def track_after_expr(_: int, value: object):
-            callstack[-1].pop()
+        def track_after_expr(node_index: int, value: object):
             return value
 
         def track_stmt(node_index: int):
             node: ast.stmt = self.tree_nodes[node_index]
-            return StmtContext(node, callstack[-1])
+            return StmtContext(node)
 
         # TODO: Handle lambda expression
         def track_frame(node_index: int):
             node: FrameNode = self.tree_nodes[node_index]
-            return FrameContext(node, callstack)
+            return FrameContext(node)
 
         namespace = {
             IDENT.TRACKER_BEFORE_EXPR: track_before_expr,
