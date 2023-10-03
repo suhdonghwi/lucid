@@ -1,14 +1,13 @@
-import { useRef, useEffect, useMemo } from "react";
+import { useRef, useEffect } from "react";
 
 import { githubLightInit } from "@uiw/codemirror-theme-github";
 import { useCodeMirror } from "./useCodeMirror";
 
-import { lineRangeHighlight } from "./extensions/lineRangeHighlight";
-
 import * as cls from "./index.css";
 import { cropPosRange, PosRange } from "@/schemas/PosRange";
 import type { ExecError } from "@/schemas/ExecError";
-import { useBasicExtensions } from "./hooks";
+
+import { useBasicExtensions, useLineRangeHighlight } from "./hooks";
 
 const theme = githubLightInit({
   theme: "light",
@@ -41,21 +40,13 @@ export function CodeWindow({
 }: CodeWindowProps) {
   const editorDiv = useRef<HTMLDivElement | null>(null);
 
-  const basicExtensions = useBasicExtensions(posRange?.lineno);
-
-  const [
+  const startLineno = posRange?.lineno ?? 1;
+  const basicExtensions = useBasicExtensions(startLineno);
+  const {
     setEvalHighlightRange,
     clearEvalHighlightRange,
     rangeHighlightExtension,
-  ] = useMemo(
-    () =>
-      lineRangeHighlight({
-        startLineno: posRange?.lineno,
-        highlightColor: "#fff3bf",
-        id: "eval",
-      }),
-    [posRange]
-  );
+  } = useLineRangeHighlight(startLineno);
 
   const croppedCode =
     posRange === undefined ? code : cropPosRange(code, posRange);

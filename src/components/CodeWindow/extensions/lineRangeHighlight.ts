@@ -15,11 +15,11 @@ const HIGHLIGHT_LAYER_CLASS_PREFIX = "cm-line-range-highlight-layer";
 const ANIMATE_DURATION = 0.25;
 
 export function lineRangeHighlight({
-  startLineno = 1,
+  startLineno,
   highlightColor,
   id,
 }: {
-  startLineno?: number;
+  startLineno: number;
   highlightColor: string;
   id: string;
 }) {

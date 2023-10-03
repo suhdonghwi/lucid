@@ -25,18 +25,22 @@ const cssTheme = View.EditorView.theme({
 
 import errorDisplay from "./errorDisplay";
 
-export const getBasicExtensions = ({ startLineno = 1 }) => [
-  View.keymap.of(Commands.defaultKeymap),
-  View.lineNumbers({
-    formatNumber: (line) => (line + startLineno - 1).toString(),
-  }),
-  // View.EditorView.lineWrapping,
-  Commands.history(),
-  View.drawSelection(),
-  View.dropCursor(),
-  Language.indentOnInput(),
-  Autocomplete.closeBrackets(),
-  python(),
-  cssTheme,
-  errorDisplay,
-];
+export const getBasicExtensions = ({
+  startLineno,
+}: {
+  startLineno: number;
+}) => [
+    View.keymap.of(Commands.defaultKeymap),
+    View.lineNumbers({
+      formatNumber: (line) => (line + startLineno - 1).toString(),
+    }),
+    // View.EditorView.lineWrapping,
+    Commands.history(),
+    View.drawSelection(),
+    View.dropCursor(),
+    Language.indentOnInput(),
+    Autocomplete.closeBrackets(),
+    python(),
+    cssTheme,
+    errorDisplay,
+  ];
