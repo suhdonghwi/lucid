@@ -11,37 +11,52 @@ import gsap from "gsap";
 
 import type { PosRange } from "@/schemas/PosRange";
 
-const LINE_RANGE_HIGHLIGHT_LAYER_CLASS = "cm-line-range-highlight-layer";
-
+const HIGHLIGHT_LAYER_CLASS_PREFIX = "cm-line-range-highlight-layer";
 const ANIMATE_DURATION = 0.25;
 
-export const setLineRange = StateEffect.define<PosRange>();
-export const clearLineRange = StateEffect.define();
+export function lineRangeHighlight({
+  startLineno = 1,
+  highlightColor,
+  id,
+}: {
+  startLineno?: number;
+  highlightColor: string;
+  id: string;
+}) {
+  const setHighlightRange = StateEffect.define<PosRange>();
+  const clearHighlight = StateEffect.define();
 
-const highlightLayer = layer({
-  class: LINE_RANGE_HIGHLIGHT_LAYER_CLASS,
-  above: false,
-  update: () => false,
-  markers: () => [],
-});
+  const layerClassName = `${HIGHLIGHT_LAYER_CLASS_PREFIX}_${id}`;
 
-function highlightPlugin(startLine: number) {
+  const highlightLayer = layer({
+    class: layerClassName,
+    above: false,
+    update: () => false,
+    markers: () => [],
+  });
+
+  const highlightLayerTheme = EditorView.theme({
+    [`& .${layerClassName}`]: {
+      backgroundColor: highlightColor,
+      opacity: 0,
+    },
+  });
+
   const viewPlugin = ViewPlugin.fromClass(
     class implements PluginValue {
-      highlightElement?: Element = undefined;
+      highlightLayerElement?: Element = undefined;
       visible = false;
-      startLine = startLine;
 
       animateHighlight(range: PosRange, view: EditorView) {
-        if (this.highlightElement === undefined) {
-          console.error("highlight element is undefined");
+        if (this.highlightLayerElement === undefined) {
+          console.error("highlight layer element is undefined");
           return;
         }
 
         range = {
           ...range,
-          lineno: range.lineno - this.startLine + 1,
-          endLineno: range.endLineno - this.startLine + 1,
+          lineno: range.lineno - startLineno + 1,
+          endLineno: range.endLineno - startLineno + 1,
         };
 
         const startLine = view.state.doc.line(range.lineno);
@@ -58,13 +73,13 @@ function highlightPlugin(startLine: number) {
         };
 
         if (!this.visible) {
-          gsap.set(this.highlightElement, rect);
-          gsap.to(this.highlightElement, {
+          gsap.set(this.highlightLayerElement, rect);
+          gsap.to(this.highlightLayerElement, {
             duration: ANIMATE_DURATION,
             opacity: 1,
           });
         } else {
-          gsap.to(this.highlightElement, {
+          gsap.to(this.highlightLayerElement, {
             duration: ANIMATE_DURATION,
             opacity: 1,
             ...rect,
@@ -75,26 +90,24 @@ function highlightPlugin(startLine: number) {
       }
 
       update(vu: ViewUpdate) {
-        if (this.highlightElement === undefined) {
-          const elems = vu.view.dom.getElementsByClassName(
-            LINE_RANGE_HIGHLIGHT_LAYER_CLASS
-          );
+        if (this.highlightLayerElement === undefined) {
+          const elems = vu.view.dom.getElementsByClassName(layerClassName);
 
           if (elems.length === 0) {
-            console.error("highlight element not found");
+            console.error("highlight layer element not found");
             return;
           }
-          this.highlightElement = elems[0];
+          this.highlightLayerElement = elems[0];
         }
 
         for (const transaction of vu.transactions) {
           for (const effect of transaction.effects) {
-            if (effect.is(setLineRange)) {
+            if (effect.is(setHighlightRange)) {
               vu.view.requestMeasure({
                 read: (view) => this.animateHighlight(effect.value, view),
               });
-            } else if (effect.is(clearLineRange)) {
-              gsap.to(this.highlightElement, {
+            } else if (effect.is(clearHighlight)) {
+              gsap.to(this.highlightLayerElement, {
                 duration: ANIMATE_DURATION,
                 opacity: 0,
               });
@@ -106,18 +119,9 @@ function highlightPlugin(startLine: number) {
     }
   );
 
-  return viewPlugin;
+  return [
+    setHighlightRange,
+    clearHighlight,
+    [highlightLayer, highlightLayerTheme, viewPlugin.extension],
+  ] as const;
 }
-
-const highlightTheme = EditorView.theme({
-  [`& .${LINE_RANGE_HIGHLIGHT_LAYER_CLASS}`]: {
-    backgroundColor: "#fff3bf",
-    opacity: 0,
-  },
-});
-
-export const lineRangeHighlight = (startLine: number) => [
-  highlightLayer,
-  highlightPlugin(startLine),
-  highlightTheme,
-];

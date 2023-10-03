@@ -3,9 +3,8 @@ import { useRef, useEffect, useMemo } from "react";
 import { githubLightInit } from "@uiw/codemirror-theme-github";
 import { useCodeMirror } from "./useCodeMirror";
 
-import { basicExtensions } from "./extensions";
-import { clearError, setError } from "./extensions/errorDisplay";
-import { clearLineRange, setLineRange } from "./extensions/lineRangeHighlight";
+import { getBasicExtensions } from "./extensions";
+import { lineRangeHighlight } from "./extensions/lineRangeHighlight";
 
 import * as cls from "./index.css";
 import { cropPosRange, PosRange } from "@/schemas/PosRange";
@@ -41,8 +40,23 @@ export function CodeWindow({
   posRange,
 }: CodeWindowProps) {
   const editorDiv = useRef<HTMLDivElement | null>(null);
-  const extensions = useMemo(
-    () => basicExtensions({ startLine: posRange?.lineno }),
+
+  const basicExtensions = useMemo(
+    () => getBasicExtensions({ startLineno: posRange?.lineno }),
+    [posRange]
+  );
+
+  const [
+    setEvalHighlightRange,
+    clearEvalHighlightRange,
+    rangeHighlightExtension,
+  ] = useMemo(
+    () =>
+      lineRangeHighlight({
+        startLineno: posRange?.lineno,
+        highlightColor: "#fff3bf",
+        id: "eval",
+      }),
     [posRange]
   );
 
@@ -55,7 +69,7 @@ export function CodeWindow({
     value: croppedCode,
 
     theme,
-    extensions,
+    extensions: [...basicExtensions, rangeHighlightExtension],
     readOnly: onCodeChange === undefined,
 
     onChange: onCodeChange,
@@ -70,23 +84,20 @@ export function CodeWindow({
 
     switch (mode.type) {
       case "error":
-        view.dispatch({
-          effects: [setError.of(mode.error), clearLineRange.of(null)],
-        });
         break;
       case "eval": {
         view.dispatch({
-          effects: [setLineRange.of(mode.range), clearError.of(null)],
+          effects: [setEvalHighlightRange.of(mode.range)],
         });
         break;
       }
       default:
         view.dispatch({
-          effects: [clearLineRange.of(null), clearError.of(null)],
+          effects: [clearEvalHighlightRange.of(null)],
         });
         break;
     }
-  }, [view, mode, posRange]);
+  }, [view, mode, posRange, clearEvalHighlightRange, setEvalHighlightRange]);
 
   return <div className={cls.rootContainer} ref={editorDiv} />;
 }

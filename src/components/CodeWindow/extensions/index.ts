@@ -24,12 +24,11 @@ const cssTheme = View.EditorView.theme({
 });
 
 import errorDisplay from "./errorDisplay";
-import { lineRangeHighlight } from "./lineRangeHighlight";
 
-export const basicExtensions = ({ startLine = 1 }) => [
+export const getBasicExtensions = ({ startLineno = 1 }) => [
   View.keymap.of(Commands.defaultKeymap),
   View.lineNumbers({
-    formatNumber: (line) => (line + startLine - 1).toString(),
+    formatNumber: (line) => (line + startLineno - 1).toString(),
   }),
   // View.EditorView.lineWrapping,
   Commands.history(),
@@ -40,5 +39,4 @@ export const basicExtensions = ({ startLine = 1 }) => [
   python(),
   cssTheme,
   errorDisplay,
-  lineRangeHighlight(startLine),
 ];
