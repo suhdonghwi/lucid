@@ -63,5 +63,5 @@ const api = {
   ),
 };
 
-Comlink.expose(api);
 export type PyodideWorkerAPI = typeof api;
+Comlink.expose(api);

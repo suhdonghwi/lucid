@@ -13,11 +13,13 @@ export async function run(
 ): Promise<RunPythonResult> {
   const client = await clientPromise;
 
-  let interruptBuffer = undefined;
+  let interruptBuffer: Uint8Array | undefined = undefined;
   if (client.channel?.type === "atomics") {
     interruptBuffer = new Uint8Array(new SharedArrayBuffer(1));
     client.interrupter = () => {
-      interruptBuffer[0] = 2;
+      if (interruptBuffer !== undefined) {
+        interruptBuffer[0] = 2;
+      }
     };
   }
 
