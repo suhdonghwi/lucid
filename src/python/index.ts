@@ -1,14 +1,15 @@
 import * as Comlink from "comlink";
 
-import type { RunPythonResult, Callbacks } from "./worker";
+import type { RunPythonResult } from "./worker";
 
 import { initializeSyncClient } from "./initialize";
+import { PythonCallbacks } from "./PythonCallbacks";
 
 const clientPromise = initializeSyncClient();
 
 export async function run(
   code: string,
-  callbacks: Callbacks
+  callbacks: PythonCallbacks
 ): Promise<RunPythonResult> {
   const client = await clientPromise;
 

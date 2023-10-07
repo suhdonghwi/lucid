@@ -4,7 +4,7 @@ import { syncExpose } from "comsync";
 import { initializePyodide } from "./initialize";
 
 import { ExecError, execErrorSchema } from "@/schemas/ExecError";
-import { PythonCallbacks, makePythonCallbacks } from "./PythonCallbacks";
+import { PythonCallbacks, convertCallbacksForPyodide } from "./PythonCallbacks";
 
 const pyodidePromise = initializePyodide();
 
@@ -23,7 +23,7 @@ const api = {
       const pyodide = await pyodidePromise;
       pyodide.setInterruptBuffer(interruptBuffer);
 
-      const pythonCallbacks = makePythonCallbacks(syncExtras, callbacks);
+      const pythonCallbacks = convertCallbacksForPyodide(callbacks);
 
       pyodide.registerJsModule("callbacks", {});
       const callbacksModule = pyodide.pyimport("callbacks");

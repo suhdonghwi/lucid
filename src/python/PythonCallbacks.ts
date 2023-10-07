@@ -1,5 +1,3 @@
-import { SyncExtras } from "comsync";
-
 import type { PyProxy } from "pyodide/ffi";
 
 import { EvalEvent, evalEventSchema } from "@/schemas/EvalEvent";
@@ -13,18 +11,13 @@ export type PythonCallbacks = {
   onFrameExit: (event: FrameEvent) => void;
 };
 
-export const makePythonCallbacks = (
-  extras: SyncExtras,
-  callbacks: PythonCallbacks
-) => ({
+export const convertCallbacksForPyodide = (callbacks: PythonCallbacks) => ({
   stmt_enter: (maybeEvalEvent: PyProxy) => {
     const event = evalEventSchema.parse(maybeEvalEvent);
     callbacks.onStmtEnter(event);
   },
 
   stmt_exit: (maybeEvalEvent: PyProxy) => {
-    extras.readMessage();
-
     const event = evalEventSchema.parse(maybeEvalEvent);
     callbacks.onStmtExit(event);
   },
