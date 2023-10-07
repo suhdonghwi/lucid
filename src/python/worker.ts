@@ -1,10 +1,28 @@
 import * as Comlink from "comlink";
 import { syncExpose } from "comsync";
 
-import { initializePyodide } from "./initialize";
+import type { PyodideInterface } from "pyodide";
+import { loadPyodide } from "pyodide";
 
-import { ExecError, execErrorSchema } from "@/schemas/ExecError";
+import { ExecError, execErrorSchema } from "../schemas/ExecError";
 import { RunCallbacks, convertCallbacksForPython } from "./RunCallbacks";
+
+export async function initializePyodide(): Promise<PyodideInterface> {
+  console.log("loading pyodide");
+
+  const indexURL = "https://cdn.jsdelivr.net/pyodide/v0.23.4/full/";
+  const pyodide = await loadPyodide({ indexURL });
+  pyodide.registerComlink(Comlink);
+
+  console.log("pyodide load complete.");
+
+  for (const { name, code } of PYTHON_SETUP_FILES) {
+    pyodide.FS.writeFile(name, code);
+  }
+
+  console.log("python setup files written.");
+  return pyodide;
+}
 
 const pyodidePromise = initializePyodide();
 

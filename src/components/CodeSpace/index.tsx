@@ -1,5 +1,5 @@
 import { CodeWindow } from "@/components/CodeWindow";
-import { CallGraph } from "../SpaceController/CallGraph";
+import { CallGraph } from "@/CallGraph";
 import * as cls from "./index.css";
 
 type CodeSpaceProps = {
