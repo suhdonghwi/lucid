@@ -7,7 +7,7 @@ import * as cls from "./index.css";
 
 import type { EvalEvent } from "@/schemas/EvalEvent";
 import type { FrameEvent } from "@/schemas/FrameEvent";
-import { CallGraph, CallNode } from "./CallGraph";
+import { CallGraph, CallNode } from "@/CallGraph";
 
 const exampleCode = `def add1(x):
   x = x + 1
