@@ -7,9 +7,9 @@ import fs from "fs";
 import path from "path";
 
 const PYTHON_SETUP_FILES = [];
-const SETUP_PATH = "./src/setup";
+const PYTHON_PATH = "./src/python";
 
-fs.readdir(SETUP_PATH, (err, files) => {
+fs.readdir(PYTHON_PATH, (err, files) => {
   if (err) {
     console.log("Error reading directory: ", err);
     return;
@@ -18,7 +18,7 @@ fs.readdir(SETUP_PATH, (err, files) => {
   for (const file of files) {
     if (!file.endsWith(".py")) continue;
 
-    const file_path = path.join(SETUP_PATH, file);
+    const file_path = path.join(PYTHON_PATH, file);
     fs.readFile(file_path, "utf8", (_, data) => {
       PYTHON_SETUP_FILES.push({ name: file, code: data });
     });
