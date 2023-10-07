@@ -1,28 +1,13 @@
-import type { PyodideInterface } from "pyodide";
 import type { PyProxy } from "pyodide/ffi";
-import { loadPyodide } from "pyodide";
 
 import * as Comlink from "comlink";
 import { syncExpose, SyncExtras } from "comsync";
 
-import { ExecError, execErrorSchema } from "./schemas/ExecError";
-import { EvalEvent, evalEventSchema } from "./schemas/EvalEvent";
-import { FrameEvent, frameEventSchema } from "./schemas/FrameEvent";
+import { initializePyodide } from "./initialize";
 
-async function initializePyodide(): Promise<PyodideInterface> {
-  const indexURL = "https://cdn.jsdelivr.net/pyodide/v0.23.4/full/";
-  const pyodide = await loadPyodide({ indexURL });
-  pyodide.registerComlink(Comlink);
-
-  console.log("[worker] pyodide load complete.");
-
-  for (const { name, code } of PYTHON_SETUP_FILES) {
-    pyodide.FS.writeFile(name, code);
-  }
-
-  console.log("[worker] python setup files written.");
-  return pyodide;
-}
+import { ExecError, execErrorSchema } from "@/schemas/ExecError";
+import { EvalEvent, evalEventSchema } from "@/schemas/EvalEvent";
+import { FrameEvent, frameEventSchema } from "@/schemas/FrameEvent";
 
 const pyodidePromise = initializePyodide();
 

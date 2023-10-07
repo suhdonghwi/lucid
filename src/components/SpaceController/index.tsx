@@ -1,9 +1,8 @@
 import { useRef, useState } from "react";
 
-import { runPython, writeMessage, interrupt } from "@/pyodide-helper";
+import * as python from "@/python";
 
 import { CodeSpace } from "@/components/CodeSpace";
-
 import * as cls from "./index.css";
 
 import type { EvalEvent } from "@/schemas/EvalEvent";
@@ -17,10 +16,8 @@ const exampleCode = `def add1(x):
 add1(10)`;
 
 function useForceUpdate() {
-  const [value, setValue] = useState(0); // integer state
-  return () => setValue((value) => value + 1); // update state to force render
-  // A function that increment 👆🏻 the previous state like here
-  // is better than directly setting `setValue(value + 1)`
+  const [value, setValue] = useState(0);
+  return () => setValue((value) => value + 1);
 }
 
 export function SpaceController() {
@@ -30,7 +27,7 @@ export function SpaceController() {
   const forceUpdate = useForceUpdate();
 
   async function runCode() {
-    const result = await runPython(mainCode, {
+    const result = await python.run(mainCode, {
       onStmtEnter: (evalEvent: EvalEvent) => {
         callGraphRef.current.top().push(evalEvent.posRange);
         forceUpdate();
@@ -63,8 +60,8 @@ export function SpaceController() {
     <div className={cls.rootContainer}>
       <div className={cls.buttonContainer}>
         <input type="button" value="Run" onClick={runCode} />
-        <input type="button" value="Next" onClick={writeMessage} />
-        <input type="button" value="Interrupt" onClick={interrupt} />
+        <input type="button" value="Next" onClick={python.resume} />
+        <input type="button" value="Interrupt" onClick={python.interrupt} />
       </div>
 
       <div className={cls.spaceContainer}>
