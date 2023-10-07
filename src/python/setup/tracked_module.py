@@ -7,7 +7,7 @@ from tracker_attacher import TrackerAttacher
 IS_PYODIDE = "pyodide" in sys.modules
 
 if IS_PYODIDE:
-    import js_callbacks
+    import callbacks
     from util import js_object, js_range_object
 
 
@@ -28,7 +28,7 @@ class FrameContext:
                 case _:
                     return
 
-            js_callbacks.frame_enter(
+            callbacks.frame_enter(
                 js_object(
                     id=id(self.frame),
                     codeObjectId=id(self.frame.f_code),
@@ -47,7 +47,7 @@ class FrameContext:
                 case _:
                     return
 
-            js_callbacks.frame_exit(
+            callbacks.frame_exit(
                 js_object(
                     id=id(self.frame),
                     codeObjectId=id(self.frame.f_code),
@@ -64,7 +64,7 @@ class StmtContext:
         self.frame = sys._getframe(1)
 
         if IS_PYODIDE:
-            js_callbacks.stmt_enter(
+            callbacks.stmt_enter(
                 frameId=id(self.frame), posRange=js_range_object(self.node)
             )
 
@@ -73,7 +73,7 @@ class StmtContext:
             return False
 
         if IS_PYODIDE:
-            js_callbacks.stmt_exit(
+            callbacks.stmt_exit(
                 frameId=id(self.frame), posRange=js_range_object(self.node)
             )
 
