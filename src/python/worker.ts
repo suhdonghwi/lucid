@@ -4,7 +4,7 @@ import { syncExpose } from "comsync";
 import { initializePyodide } from "./initialize";
 
 import { ExecError, execErrorSchema } from "@/schemas/ExecError";
-import { PythonCallbacks, convertCallbacksForPyodide } from "./PythonCallbacks";
+import { RunCallbacks, convertCallbacksForPython } from "./RunCallbacks";
 
 const pyodidePromise = initializePyodide();
 
@@ -18,17 +18,17 @@ const api = {
       syncExtras,
       interruptBuffer: Uint8Array,
       code: string,
-      callbacks: PythonCallbacks
+      callbacks: RunCallbacks
     ): Promise<RunPythonResult> => {
       const pyodide = await pyodidePromise;
       pyodide.setInterruptBuffer(interruptBuffer);
 
-      const pythonCallbacks = convertCallbacksForPyodide(callbacks);
+      const callbacksForPython = convertCallbacksForPython(callbacks);
 
       pyodide.registerJsModule("callbacks", {});
       const callbacksModule = pyodide.pyimport("callbacks");
 
-      for (const [name, func] of Object.entries(pythonCallbacks)) {
+      for (const [name, func] of Object.entries(callbacksForPython)) {
         callbacksModule[name] = func;
       }
 

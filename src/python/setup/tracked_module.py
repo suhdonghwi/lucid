@@ -28,7 +28,7 @@ class FrameContext:
                 case _:
                     return
 
-            callbacks.frame_enter(
+            callbacks.onFrameEnter(
                 js_object(
                     id=id(self.frame),
                     codeObjectId=id(self.frame.f_code),
@@ -47,7 +47,7 @@ class FrameContext:
                 case _:
                     return
 
-            callbacks.frame_exit(
+            callbacks.onFrameExit(
                 js_object(
                     id=id(self.frame),
                     codeObjectId=id(self.frame.f_code),
@@ -64,7 +64,7 @@ class StmtContext:
         self.frame = sys._getframe(1)
 
         if IS_PYODIDE:
-            callbacks.stmt_enter(
+            callbacks.onStmtEnter(
                 frameId=id(self.frame), posRange=js_range_object(self.node)
             )
 
@@ -73,7 +73,7 @@ class StmtContext:
             return False
 
         if IS_PYODIDE:
-            callbacks.stmt_exit(
+            callbacks.onStmtExit(
                 frameId=id(self.frame), posRange=js_range_object(self.node)
             )
 
