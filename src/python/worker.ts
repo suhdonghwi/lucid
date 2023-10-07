@@ -4,7 +4,7 @@ import { syncExpose } from "comsync";
 import type { PyodideInterface } from "pyodide";
 import { loadPyodide } from "pyodide";
 
-import { ExecError, execErrorSchema } from "../schemas/ExecError";
+import { ExecError, execErrorSchema } from "@/schemas/ExecError";
 import { RunCallbacks, convertCallbacksForPython } from "./RunCallbacks";
 
 export async function initializePyodide(): Promise<PyodideInterface> {

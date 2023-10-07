@@ -2,7 +2,7 @@ import * as Comlink from "comlink";
 
 import type { RunPythonResult } from "./worker";
 
-import { initializeSyncClient } from "./syncClient";
+import { initializeSyncClient } from "./sync-client";
 import { RunCallbacks } from "./RunCallbacks";
 
 const clientPromise = initializeSyncClient();
