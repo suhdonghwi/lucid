@@ -24,6 +24,9 @@ export function makeExecPointCallbacks(
       callGraph.at(-1)?.evalStack.pop();
     },
     onFrameEnter: (frameEvent: FrameEvent) => {
+      onBreak(callGraph);
+      syncExtras.readMessage();
+
       callGraph.push({ event: frameEvent, evalStack: [] });
     },
     onFrameExit: (frameEvent: FrameEvent) => {
