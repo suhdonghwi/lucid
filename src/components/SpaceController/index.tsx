@@ -5,9 +5,7 @@ import * as python from "@/python";
 import { CodeSpace } from "@/components/CodeSpace";
 import * as cls from "./index.css";
 
-import type { EvalEvent } from "@/schemas/EvalEvent";
-import type { FrameEvent } from "@/schemas/FrameEvent";
-import { CallGraph, CallNode } from "@/CallGraph";
+import { CallGraph } from "@/CallGraph";
 
 const exampleCode = `def add1(x):
   x = x + 1
@@ -27,8 +25,9 @@ export function SpaceController() {
   const forceUpdate = useForceUpdate();
 
   async function runCode() {
-    const result = await python.run(mainCode, () => {
-      return;
+    const result = await python.run(mainCode, (callGraph: CallGraph) => {
+      callGraphRef.current = callGraph;
+      forceUpdate();
     });
 
     console.log("runPython result: ", result);
