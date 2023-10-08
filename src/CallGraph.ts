@@ -6,4 +6,4 @@ export type CallNode = {
   evalStack: PosRange[];
 };
 
-export type CallGraph = CallNode[];
+export type CallGraph = [CallNode, ...CallNode[]];

@@ -14,7 +14,7 @@ const exampleCode = `def add1(x):
 add1(10)`;
 
 function useForceUpdate() {
-  const [value, setValue] = useState(0);
+  const [_, setValue] = useState(0);
   return () => setValue((value) => value + 1);
 }
 
@@ -26,8 +26,6 @@ export function SpaceController() {
 
   async function runCode() {
     const result = await python.execute(mainCode, (callGraph: CallGraph) => {
-      console.log("brak?");
-
       callGraphRef.current = callGraph;
       forceUpdate();
     });

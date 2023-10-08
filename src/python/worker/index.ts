@@ -26,7 +26,13 @@ const api = {
       const execPointCallbacks = makeExecPointCallbacks(syncExtras, onBreak);
       const callbacksForPython =
         convertExecCallbacksForPython(execPointCallbacks);
-      pyodide.registerJsModule("callbacks", callbacksForPython);
+
+      pyodide.registerJsModule("callbacks", {});
+      const callbacksModule = pyodide.pyimport("callbacks");
+
+      for (const [name, func] of Object.entries(callbacksForPython)) {
+        callbacksModule[name] = func;
+      }
 
       const fullCode = `from runner import run\nrun(${JSON.stringify(code)})`;
       const pythonResult = await pyodide.runPythonAsync(fullCode);

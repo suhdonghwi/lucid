@@ -15,10 +15,7 @@ export function makeExecPointCallbacks(
 
   return {
     onStmtEnter: (evalEvent: EvalEvent) => {
-      const lastNode = callGraph.at(-1);
-      if (lastNode !== undefined) {
-        lastNode.evalStack.push(evalEvent.posRange);
-      }
+      callGraph.at(-1)?.evalStack.push(evalEvent.posRange);
     },
     onStmtExit: (evalEvent: EvalEvent) => {
       onBreak(callGraph);
