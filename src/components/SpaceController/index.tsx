@@ -1,11 +1,10 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 import * as python from "@/python";
+import type { CallGraph } from "@/CallGraph";
 
 import { CodeSpace } from "@/components/CodeSpace";
 import * as cls from "./index.css";
-
-import type { CallGraph } from "@/CallGraph";
 
 const exampleCode = `def add1(x):
   x = x + 1
@@ -13,27 +12,18 @@ const exampleCode = `def add1(x):
 
 add1(10)`;
 
-function useForceUpdate() {
-  const [_, setValue] = useState(0);
-  return () => setValue((value) => value + 1);
-}
-
 export function SpaceController() {
   const [mainCode, setMainCode] = useState(exampleCode);
 
-  const callGraphRef = useRef<CallGraph>([{ evalStack: [] }]);
-  const forceUpdate = useForceUpdate();
+  const [callGraph, setCallGraph] = useState<CallGraph>([{ evalStack: [] }]);
 
   async function runCode() {
-    const result = await python.execute(mainCode, (callGraph: CallGraph) => {
-      callGraphRef.current = callGraph;
-      forceUpdate();
+    const result = await python.execute(mainCode, (newCallGraph: CallGraph) => {
+      setCallGraph(newCallGraph);
     });
 
     console.log("runPython result: ", result);
-
-    callGraphRef.current = [{ evalStack: [] }];
-    forceUpdate();
+    setCallGraph([{ evalStack: [] }]);
   }
 
   return (
@@ -48,7 +38,7 @@ export function SpaceController() {
         <CodeSpace
           mainCode={mainCode}
           onMainCodeChange={setMainCode}
-          callGraph={callGraphRef.current}
+          callGraph={callGraph}
         />
       </div>
     </div>
