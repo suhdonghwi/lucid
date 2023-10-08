@@ -26,6 +26,8 @@ export function SpaceController() {
 
   async function runCode() {
     const result = await python.execute(mainCode, (callGraph: CallGraph) => {
+      console.log("brak?");
+
       callGraphRef.current = callGraph;
       forceUpdate();
     });

@@ -1,14 +1,16 @@
 import * as Comlink from "comlink";
 import { syncExpose } from "comsync";
 
+import { pyodidePromise } from "./initialize";
+
 import { execErrorSchema } from "@/schemas/ExecError";
 import { ExecResult } from "@/schemas/ExecResult";
-import {
-  ExecPointCallbacks,
-  convertExecCallbacksForPython,
-} from "@/python/ExecPointCallbacks";
+import { CallGraph } from "@/CallGraph";
 
-import { pyodidePromise } from "./initialize";
+import {
+  convertExecCallbacksForPython,
+  makeExecPointCallbacks,
+} from "./callbacks";
 
 const api = {
   run: syncExpose(
@@ -16,17 +18,17 @@ const api = {
       syncExtras,
       interruptBuffer: Uint8Array,
       code: string,
-      execPointCallbacks: ExecPointCallbacks
+      onBreak: (callGraph: CallGraph) => void
     ): Promise<ExecResult> => {
       const pyodide = await pyodidePromise;
       pyodide.setInterruptBuffer(interruptBuffer);
 
+      const execPointCallbacks = makeExecPointCallbacks(syncExtras, onBreak);
       const callbacksForPython =
         convertExecCallbacksForPython(execPointCallbacks);
       pyodide.registerJsModule("callbacks", callbacksForPython);
 
       const fullCode = `from runner import run\nrun(${JSON.stringify(code)})`;
-
       const pythonResult = await pyodide.runPythonAsync(fullCode);
 
       if (pythonResult !== undefined) {

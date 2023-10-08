@@ -1,29 +1,11 @@
 import * as Comlink from "comlink";
 
 import { initializeSyncClient } from "./sync-client";
-import { ExecPointCallbacks } from "./ExecPointCallbacks";
 
-import { CallGraph, CallNode } from "@/CallGraph";
-import type { EvalEvent } from "@/schemas/EvalEvent";
-import type { FrameEvent } from "@/schemas/FrameEvent";
+import { CallGraph } from "@/CallGraph";
 import type { ExecResult } from "@/schemas/ExecResult";
 
 const clientPromise = initializeSyncClient();
-
-const makeExecPointCallbacks = (callGraph: CallGraph): ExecPointCallbacks => ({
-  onStmtEnter: (evalEvent: EvalEvent) => {
-    callGraph.top().push(evalEvent.posRange);
-  },
-  onStmtExit: (evalEvent: EvalEvent) => {
-    callGraph.top().pop();
-  },
-  onFrameEnter: (frameEvent: FrameEvent) => {
-    callGraph.push(new CallNode(frameEvent));
-  },
-  onFrameExit: (frameEvent: FrameEvent) => {
-    callGraph.pop();
-  },
-});
 
 export async function execute(
   code: string,
@@ -41,14 +23,11 @@ export async function execute(
     };
   }
 
-  const callGraph = new CallGraph();
-  const execPointCallbacks = makeExecPointCallbacks(callGraph);
-
   return await client.call(
     client.workerProxy.run,
     interruptBuffer,
     code,
-    Comlink.proxy(execPointCallbacks)
+    Comlink.proxy(onBreak)
   );
 }
 
