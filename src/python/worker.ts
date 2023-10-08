@@ -5,17 +5,20 @@ import type { PyodideInterface } from "pyodide";
 import { loadPyodide } from "pyodide";
 
 import { ExecError, execErrorSchema } from "@/schemas/ExecError";
-import { RunCallbacks, convertCallbacksForPython } from "./RunCallbacks";
+import {
+  ExecPointCallbacks,
+  convertExecCallbacksForPython,
+} from "./ExecPointCallbacks";
 
 export async function initializePyodide(): Promise<PyodideInterface> {
   console.log("loading pyodide");
 
   const indexURL = "https://cdn.jsdelivr.net/pyodide/v0.23.4/full/";
   const pyodide = await loadPyodide({ indexURL });
-  pyodide.registerComlink(Comlink);
 
   console.log("pyodide load complete.");
 
+  pyodide.registerComlink(Comlink);
   for (const { name, code } of PYTHON_SETUP_FILES) {
     pyodide.FS.writeFile(name, code);
   }
@@ -26,22 +29,23 @@ export async function initializePyodide(): Promise<PyodideInterface> {
 
 const pyodidePromise = initializePyodide();
 
-export type RunPythonResult =
+export type RunResult =
   | { type: "success" }
   | { type: "error"; error: ExecError };
 
 const api = {
-  runPython: syncExpose(
+  run: syncExpose(
     async (
       syncExtras,
       interruptBuffer: Uint8Array,
       code: string,
-      callbacks: RunCallbacks
-    ): Promise<RunPythonResult> => {
+      execPointCallbacks: ExecPointCallbacks
+    ): Promise<RunResult> => {
       const pyodide = await pyodidePromise;
       pyodide.setInterruptBuffer(interruptBuffer);
 
-      const callbacksForPython = convertCallbacksForPython(callbacks);
+      const callbacksForPython =
+        convertExecCallbacksForPython(execPointCallbacks);
 
       pyodide.registerJsModule("callbacks", {});
       const callbacksModule = pyodide.pyimport("callbacks");

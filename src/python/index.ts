@@ -1,16 +1,35 @@
 import * as Comlink from "comlink";
 
-import type { RunPythonResult } from "./worker";
+import type { RunResult } from "./worker";
 
 import { initializeSyncClient } from "./sync-client";
-import { RunCallbacks } from "./RunCallbacks";
+import { ExecPointCallbacks } from "./ExecPointCallbacks";
+
+import { CallGraph, CallNode } from "@/CallGraph";
+import { EvalEvent } from "@/schemas/EvalEvent";
+import { FrameEvent } from "@/schemas/FrameEvent";
 
 const clientPromise = initializeSyncClient();
 
+const makeExecPointCallbacks = (callGraph: CallGraph): ExecPointCallbacks => ({
+  onStmtEnter: (evalEvent: EvalEvent) => {
+    callGraph.top().push(evalEvent.posRange);
+  },
+  onStmtExit: (evalEvent: EvalEvent) => {
+    callGraph.top().pop();
+  },
+  onFrameEnter: (frameEvent: FrameEvent) => {
+    callGraph.push(new CallNode(frameEvent));
+  },
+  onFrameExit: (frameEvent: FrameEvent) => {
+    callGraph.pop();
+  },
+});
+
 export async function run(
   code: string,
-  callbacks: RunCallbacks
-): Promise<RunPythonResult> {
+  onBreak: (callGraph: CallGraph) => void
+): Promise<RunResult> {
   const client = await clientPromise;
 
   let interruptBuffer: Uint8Array | undefined = undefined;
@@ -23,11 +42,14 @@ export async function run(
     };
   }
 
+  const callGraph = new CallGraph();
+  const execPointCallbacks = makeExecPointCallbacks(callGraph);
+
   return await client.call(
-    client.workerProxy.runPython,
+    client.workerProxy.run,
     interruptBuffer,
     code,
-    Comlink.proxy(callbacks)
+    Comlink.proxy(execPointCallbacks)
   );
 }
 

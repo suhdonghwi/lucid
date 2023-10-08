@@ -3,7 +3,7 @@ import type { PyProxy } from "pyodide/ffi";
 import { EvalEvent, evalEventSchema } from "@/schemas/EvalEvent";
 import { FrameEvent, frameEventSchema } from "@/schemas/FrameEvent";
 
-export type RunCallbacks = {
+export type ExecPointCallbacks = {
   onStmtEnter: (event: EvalEvent) => void;
   onStmtExit: (event: EvalEvent) => void;
 
@@ -11,13 +11,13 @@ export type RunCallbacks = {
   onFrameExit: (event: FrameEvent) => void;
 };
 
-type RunCallbacksForPython = {
-  [K in keyof RunCallbacks]: (event: PyProxy) => void;
+type ExecPointCallbacksForPython = {
+  [K in keyof ExecPointCallbacks]: (event: PyProxy) => void;
 };
 
-export const convertCallbacksForPython = (
-  callbacks: RunCallbacks
-): RunCallbacksForPython => ({
+export const convertExecCallbacksForPython = (
+  callbacks: ExecPointCallbacks
+): ExecPointCallbacksForPython => ({
   onStmtEnter: (maybeEvalEvent: PyProxy) => {
     const event = evalEventSchema.parse(maybeEvalEvent);
     callbacks.onStmtEnter(event);

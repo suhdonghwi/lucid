@@ -27,27 +27,8 @@ export function SpaceController() {
   const forceUpdate = useForceUpdate();
 
   async function runCode() {
-    const result = await python.run(mainCode, {
-      onStmtEnter: (evalEvent: EvalEvent) => {
-        callGraphRef.current.top().push(evalEvent.posRange);
-        forceUpdate();
-
-        console.log("stmt enter");
-      },
-      onStmtExit: (evalEvent: EvalEvent) => {
-        callGraphRef.current.top().pop();
-        console.log("stmt exit");
-      },
-      onFrameEnter: (frameEvent: FrameEvent) => {
-        callGraphRef.current.push(new CallNode(frameEvent));
-        console.log("frame enter");
-      },
-      onFrameExit: (frameEvent: FrameEvent) => {
-        callGraphRef.current.pop();
-        forceUpdate();
-
-        console.log("frame exit");
-      },
+    const result = await python.run(mainCode, () => {
+      return;
     });
 
     console.log("runPython result: ", result);
