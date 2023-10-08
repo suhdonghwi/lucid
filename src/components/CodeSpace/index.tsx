@@ -17,8 +17,9 @@ export function CodeSpace({
   return (
     <div className={cls.rootContainer}>
       <div className={cls.windowsContainer}>
-        {callGraph.nodes.map((callNode, index) => {
-          const latestRange = callNode.top();
+        {callGraph.map((callNode, index) => {
+          const latestRange = callNode.evalStack.at(-1);
+
           return (
             <CodeWindow
               key={index}

@@ -2,8 +2,8 @@ import { SyncExtras } from "comsync";
 
 import { PyProxy } from "pyodide/ffi";
 
-import { CallGraph, CallNode } from "@/CallGraph";
-import { ExecPointCallbacks } from "@/python/ExecPointCallbacks";
+import type { CallGraph } from "@/CallGraph";
+import type { ExecPointCallbacks } from "@/python/ExecPointCallbacks";
 import { EvalEvent, evalEventSchema } from "@/schemas/EvalEvent";
 import { FrameEvent, frameEventSchema } from "@/schemas/FrameEvent";
 
@@ -11,20 +11,23 @@ export function makeExecPointCallbacks(
   syncExtras: SyncExtras,
   onBreak: (callGraph: CallGraph) => void
 ): ExecPointCallbacks {
-  const callGraph = new CallGraph();
+  const callGraph: CallGraph = [{ evalStack: [] }];
 
   return {
     onStmtEnter: (evalEvent: EvalEvent) => {
-      callGraph.top().push(evalEvent.posRange);
+      const lastNode = callGraph.at(-1);
+      if (lastNode !== undefined) {
+        lastNode.evalStack.push(evalEvent.posRange);
+      }
     },
     onStmtExit: (evalEvent: EvalEvent) => {
       onBreak(callGraph);
       syncExtras.readMessage();
 
-      callGraph.top().pop();
+      callGraph.at(-1)?.evalStack.pop();
     },
     onFrameEnter: (frameEvent: FrameEvent) => {
-      callGraph.push(new CallNode(frameEvent));
+      callGraph.push({ event: frameEvent, evalStack: [] });
     },
     onFrameExit: (frameEvent: FrameEvent) => {
       callGraph.pop();
