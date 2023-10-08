@@ -19,6 +19,10 @@ export function SpaceController() {
 
   async function runCode() {
     const result = await python.execute(mainCode, (newCallGraph: CallGraph) => {
+      // NOTE:
+      // When `newCallGraph` is passed from web-worker to main thread,
+      // it is copied; therefore its reference is changed every time.
+      // Therefore it is fine to use `useState`, but we need to find better design.
       setCallGraph(newCallGraph);
     });
 
