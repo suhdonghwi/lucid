@@ -18,18 +18,18 @@ export function CodeSpace({
     <div className={cls.rootContainer}>
       <div className={cls.windowsContainer}>
         {callGraph.map((callNode, index) => {
-          const latestRange = callNode.evalStack.at(-1);
+          const latestEvalEvent = callNode.evalStack.at(-1);
 
           return (
             <CodeWindow
               key={index}
               code={mainCode}
               onCodeChange={index === 0 ? onMainCodeChange : undefined}
-              posRange={callNode.event?.posRange}
+              posRange={callNode.frameEvent?.posRange}
               mode={
-                latestRange === undefined
+                latestEvalEvent === undefined
                   ? { type: "normal" }
-                  : { type: "eval", range: latestRange }
+                  : { type: "eval", range: latestEvalEvent.posRange }
               }
             />
           );

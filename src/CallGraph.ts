@@ -1,9 +1,9 @@
 import { FrameEvent } from "@/schemas/FrameEvent";
-import { PosRange } from "@/schemas/PosRange";
+import { EvalEvent } from "./schemas/EvalEvent";
 
 export type CallNode = {
-  event?: FrameEvent;
-  evalStack: PosRange[];
+  frameEvent?: FrameEvent;
+  evalStack: EvalEvent[];
 };
 
 export type CallGraph = [CallNode, ...CallNode[]];
