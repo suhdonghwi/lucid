@@ -25,7 +25,7 @@ export function SpaceController() {
   const forceUpdate = useForceUpdate();
 
   async function runCode() {
-    const result = await python.run(mainCode, (callGraph: CallGraph) => {
+    const result = await python.execute(mainCode, (callGraph: CallGraph) => {
       callGraphRef.current = callGraph;
       forceUpdate();
     });

@@ -1,13 +1,12 @@
 import * as Comlink from "comlink";
 
-import type { RunResult } from "./worker";
-
 import { initializeSyncClient } from "./sync-client";
 import { ExecPointCallbacks } from "./ExecPointCallbacks";
 
 import { CallGraph, CallNode } from "@/CallGraph";
-import { EvalEvent } from "@/schemas/EvalEvent";
-import { FrameEvent } from "@/schemas/FrameEvent";
+import type { EvalEvent } from "@/schemas/EvalEvent";
+import type { FrameEvent } from "@/schemas/FrameEvent";
+import type { ExecResult } from "@/schemas/ExecResult";
 
 const clientPromise = initializeSyncClient();
 
@@ -26,10 +25,10 @@ const makeExecPointCallbacks = (callGraph: CallGraph): ExecPointCallbacks => ({
   },
 });
 
-export async function run(
+export async function execute(
   code: string,
   onBreak: (callGraph: CallGraph) => void
-): Promise<RunResult> {
+): Promise<ExecResult> {
   const client = await clientPromise;
 
   let interruptBuffer: Uint8Array | undefined = undefined;

@@ -1,17 +1,14 @@
 import * as Comlink from "comlink";
 import { syncExpose } from "comsync";
 
-import { ExecError, execErrorSchema } from "@/schemas/ExecError";
+import { execErrorSchema } from "@/schemas/ExecError";
+import { ExecResult } from "@/schemas/ExecResult";
 import {
   ExecPointCallbacks,
   convertExecCallbacksForPython,
 } from "@/python/ExecPointCallbacks";
 
 import { pyodidePromise } from "./initialize";
-
-export type RunResult =
-  | { type: "success" }
-  | { type: "error"; error: ExecError };
 
 const api = {
   run: syncExpose(
@@ -20,25 +17,20 @@ const api = {
       interruptBuffer: Uint8Array,
       code: string,
       execPointCallbacks: ExecPointCallbacks
-    ): Promise<RunResult> => {
+    ): Promise<ExecResult> => {
       const pyodide = await pyodidePromise;
       pyodide.setInterruptBuffer(interruptBuffer);
 
       const callbacksForPython =
         convertExecCallbacksForPython(execPointCallbacks);
-
-      pyodide.registerJsModule("callbacks", {});
-      const callbacksModule = pyodide.pyimport("callbacks");
-
-      for (const [name, func] of Object.entries(callbacksForPython)) {
-        callbacksModule[name] = func;
-      }
+      pyodide.registerJsModule("callbacks", callbacksForPython);
 
       const fullCode = `from runner import run\nrun(${JSON.stringify(code)})`;
 
-      const execResult = await pyodide.runPythonAsync(fullCode);
-      if (execResult !== undefined) {
-        const execError = execErrorSchema.parse(execResult);
+      const pythonResult = await pyodide.runPythonAsync(fullCode);
+
+      if (pythonResult !== undefined) {
+        const execError = execErrorSchema.parse(pythonResult);
         return { type: "error", error: execError };
       }
 
