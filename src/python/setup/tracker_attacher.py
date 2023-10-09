@@ -3,6 +3,7 @@ from typing import TypeVar
 
 import tracker_identifier as IDENT
 
+
 class TrackerAttacher(ast.NodeTransformer):
     @staticmethod
     def add_expr_tracker(node: ast.expr) -> ast.Call:
@@ -47,6 +48,7 @@ class TrackerAttacher(ast.NodeTransformer):
         return [ast.With(items=[ast.withitem(context_expr=tracker_call)], body=body)]
 
     NodeType = TypeVar("NodeType", bound=ast.AST)
+
     def visit(self, node: NodeType) -> NodeType:
         match node:
             case ast.Module():
@@ -55,6 +57,9 @@ class TrackerAttacher(ast.NodeTransformer):
                 return node
 
             case ast.Name(ctx=ast.Del()) | ast.Name(ctx=ast.Store()):
+                pass
+
+            case ast.Tuple(ctx=ast.Store()):
                 pass
 
             case ast.JoinedStr():

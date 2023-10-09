@@ -3,13 +3,7 @@ import ast
 from tracked_module import TrackedModule
 
 test_code = """
-def f():
-    print("hi")
-    print("hi")
-    print("hi")
-
-
-f()
+a, b = 1, 2
 """
 
 test_module = TrackedModule(test_code, "<code>")
