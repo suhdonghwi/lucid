@@ -3,7 +3,7 @@ from typing import Any
 import ast
 
 from pyodide.ffi import to_js, JsProxy
-import js
+import js  # type: ignore
 
 
 def js_object(**kwargs: Any) -> JsProxy:
