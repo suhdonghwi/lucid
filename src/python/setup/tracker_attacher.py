@@ -2,12 +2,13 @@ import ast
 from typing import TypeVar
 
 import tracker_identifier as IDENT
+from tracked_module.ast_index import get_index
 
 
 class TrackerAttacher(ast.NodeTransformer):
     @staticmethod
     def add_expr_tracker(node: ast.expr) -> ast.Call:
-        index_node = ast.Constant(value=node._index)
+        index_node = ast.Constant(value=get_index(node))
 
         before_call = ast.Call(
             func=ast.Name(id=IDENT.TRACKER_BEFORE_EXPR, ctx=ast.Load()),
@@ -25,7 +26,7 @@ class TrackerAttacher(ast.NodeTransformer):
 
     @staticmethod
     def add_stmt_tracker(node: ast.stmt) -> ast.With:
-        index_node = ast.Constant(value=node._index)
+        index_node = ast.Constant(value=get_index(node))
 
         tracker_call = ast.Call(
             func=ast.Name(id=IDENT.TRACKER_STMT, ctx=ast.Load()),
@@ -53,7 +54,7 @@ class TrackerAttacher(ast.NodeTransformer):
         match node:
             case ast.Module():
                 node.body = list(map(self.visit, node.body))
-                node.body = self.add_frame_tracker(node._index, node.body)
+                node.body = self.add_frame_tracker(get_index(node), node.body)
                 return node
 
             case ast.Name(ctx=ast.Del()) | ast.Name(ctx=ast.Store()):
@@ -73,7 +74,7 @@ class TrackerAttacher(ast.NodeTransformer):
 
             case ast.FunctionDef():
                 node.body = list(map(self.visit, node.body))
-                node.body = self.add_frame_tracker(node._index, node.body)
+                node.body = self.add_frame_tracker(get_index(node), node.body)
                 return self.add_stmt_tracker(node)
 
             case ast.stmt():

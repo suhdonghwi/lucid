@@ -5,6 +5,7 @@ from tracker_attacher import TrackerAttacher
 
 from .frame_context import FrameContext, FrameNode
 from .stmt_context import StmtContext
+from .ast_index import set_index
 
 
 class TrackedModule:
@@ -14,7 +15,7 @@ class TrackedModule:
 
         self.tree_nodes: list[ast.AST] = []
         for node in ast.walk(self.original_tree):
-            node._index = len(self.tree_nodes)
+            set_index(node, len(self.tree_nodes))
             self.tree_nodes.append(node)
 
         self.tracked_tree = TrackerAttacher().attach(self.original_tree)
@@ -24,19 +25,22 @@ class TrackedModule:
 
     def exec(self):
         def track_before_expr(node_index: int):
-            node: ast.expr = self.tree_nodes[node_index]
+            node = self.tree_nodes[node_index]
+            assert isinstance(node, ast.expr)
             return node_index
 
         def track_after_expr(node_index: int, value: object):
             return value
 
         def track_stmt(node_index: int):
-            node: ast.stmt = self.tree_nodes[node_index]
+            node = self.tree_nodes[node_index]
+            assert isinstance(node, ast.stmt)
             return StmtContext(node)
 
         # TODO: Handle lambda expression
         def track_frame(node_index: int):
-            node: FrameNode = self.tree_nodes[node_index]
+            node = self.tree_nodes[node_index]
+            assert isinstance(node, FrameNode)
             return FrameContext(node)
 
         namespace = {
