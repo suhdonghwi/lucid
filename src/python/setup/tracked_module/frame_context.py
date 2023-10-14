@@ -3,6 +3,7 @@ import ast
 
 IS_PYODIDE = "pyodide" in sys.modules
 
+
 if IS_PYODIDE:
     import callbacks  # type: ignore
     from util import js_object, js_range_object
