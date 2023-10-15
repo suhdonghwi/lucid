@@ -8,6 +8,7 @@ from tracking.callback import FrameNode
 
 test_code = """
 a, b = 1, 2
+print(a, b)
 """
 
 
