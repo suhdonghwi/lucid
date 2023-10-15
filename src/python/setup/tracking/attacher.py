@@ -1,8 +1,7 @@
 import ast
-from typing import TypeVar
 
-import tracker_identifier as IDENT
-from tracked_module.ast_index import get_index
+from . import identifiers
+from .node_index import get_index
 
 
 class TrackerAttacher(ast.NodeTransformer):
@@ -11,13 +10,13 @@ class TrackerAttacher(ast.NodeTransformer):
         index_node = ast.Constant(value=get_index(node))
 
         before_call = ast.Call(
-            func=ast.Name(id=IDENT.TRACKER_BEFORE_EXPR, ctx=ast.Load()),
+            func=ast.Name(id=identifiers.TRACKER_BEFORE_EXPR, ctx=ast.Load()),
             args=[index_node],
             keywords=[],
         )
 
         after_call = ast.Call(
-            func=ast.Name(id=IDENT.TRACKER_AFTER_EXPR, ctx=ast.Load()),
+            func=ast.Name(id=identifiers.TRACKER_AFTER_EXPR, ctx=ast.Load()),
             args=[before_call, node],
             keywords=[],
         )
@@ -29,7 +28,7 @@ class TrackerAttacher(ast.NodeTransformer):
         index_node = ast.Constant(value=get_index(node))
 
         tracker_call = ast.Call(
-            func=ast.Name(id=IDENT.TRACKER_STMT, ctx=ast.Load()),
+            func=ast.Name(id=identifiers.TRACKER_STMT, ctx=ast.Load()),
             args=[index_node],
             keywords=[],
         )
@@ -41,16 +40,14 @@ class TrackerAttacher(ast.NodeTransformer):
         index_node = ast.Constant(value=index)
 
         tracker_call = ast.Call(
-            func=ast.Name(id=IDENT.TRACKER_FRAME, ctx=ast.Load()),
+            func=ast.Name(id=identifiers.TRACKER_FRAME, ctx=ast.Load()),
             args=[index_node],
             keywords=[],
         )
 
         return [ast.With(items=[ast.withitem(context_expr=tracker_call)], body=body)]
 
-    NodeType = TypeVar("NodeType", bound=ast.AST)
-
-    def visit(self, node: NodeType) -> NodeType:
+    def visit[Node: ast.AST](self, node: Node) -> Node:
         match node:
             case ast.Module():
                 node.body = list(map(self.visit, node.body))

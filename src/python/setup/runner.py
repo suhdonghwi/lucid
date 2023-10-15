@@ -1,5 +1,6 @@
 from types import TracebackType
-from tracked_module import TrackedModule
+
+import tracking
 from util import js_object
 
 
@@ -7,8 +8,7 @@ def run(code: str):
     file_name = "<code>"
 
     try:
-        module = TrackedModule(code, file_name)
-        module.exec()
+        pass
     except SyntaxError as e:
         assert isinstance(e.lineno, int)
 
