@@ -1,5 +1,6 @@
 import ast
 import sys
+from typing import TypeVar
 
 from . import identifiers
 from .callback import TrackerCallbacks
@@ -51,7 +52,9 @@ class TrackerAttacher(ast.NodeTransformer):
             ast.With(items=[ast.withitem(context_expr=tracker_call)], body=node.body)
         ]
 
-    def visit[Node: ast.AST](self, node: Node) -> Node:
+    Node = TypeVar("Node", bound=ast.AST)
+
+    def visit(self, node: Node) -> Node:
         match node:
             case ast.Module():
                 node.body = list(map(self.visit, node.body))

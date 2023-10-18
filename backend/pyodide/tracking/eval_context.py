@@ -1,10 +1,14 @@
 import sys
 import ast
+from typing import TypeVar
 
 from .callback import CallbackType
 
 
-class EvalContext[Node: ast.AST]:
+Node = TypeVar("Node", bound=ast.AST)
+
+
+class EvalContext:
     def __init__(
         self,
         node: Node,

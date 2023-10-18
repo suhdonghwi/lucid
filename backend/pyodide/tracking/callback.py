@@ -1,11 +1,12 @@
 import ast
 
 from types import FrameType
-from typing import Callable, Concatenate, NamedTuple
+from typing import Callable, Concatenate, NamedTuple, ParamSpec
 
-type FrameNode = ast.FunctionDef | ast.Lambda | ast.Module
+FrameNode = ast.FunctionDef | ast.Lambda | ast.Module
 
-type CallbackType[**Params] = Callable[Concatenate[FrameType, Params], None]
+Params = ParamSpec("Params")
+CallbackType = Callable[Concatenate[FrameType, Params], None]
 
 
 class TrackerCallbacks(NamedTuple):
