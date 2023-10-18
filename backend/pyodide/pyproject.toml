@@ -1,0 +1,13 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "lucid-backend-pyodide"
+version = "0.0.1"
+authors = [
+  { name="Suh Donghwi", email="hwidongsuh@gmail.com" },
+]
+description = "Pyodide backend for lucid"
+readme = "README.md"
+requires-python = "==3.11.2"
