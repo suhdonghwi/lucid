@@ -34,10 +34,8 @@ const api = {
         callbacksModule[name] = func;
       }
 
-      const fullCode = `from lucid_backend_pyodide import execute\nexecute(${JSON.stringify(
-        code
-      )})`;
-      const pythonResult = await pyodide.runPythonAsync(fullCode);
+      const pyodideBackend = pyodide.pyimport("lucid_backend_pyodide");
+      const pythonResult = pyodideBackend.execute(code);
 
       if (pythonResult !== undefined) {
         const execError = execErrorSchema.parse(pythonResult);
