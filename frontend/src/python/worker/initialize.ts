@@ -12,9 +12,8 @@ async function initializePyodide(): Promise<PyodideInterface> {
   console.log("pyodide load complete.");
 
   pyodide.registerComlink(Comlink);
-  for (const { name, code } of PYTHON_SETUP_FILES) {
-    pyodide.FS.writeFile(name, code);
-  }
+
+  pyodide.loadPackage("/lucid_backend_pyodide-0.0.1--none-any.whl");
 
   console.log("python setup files written.");
   return pyodide;

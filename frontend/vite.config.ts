@@ -3,27 +3,7 @@ import react from "@vitejs/plugin-react";
 
 import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin";
 
-import fs from "fs";
 import path from "path";
-
-const PYTHON_SETUP_FILES = [];
-const PYTHON_SETUP_PATH = "./src/python/setup";
-
-fs.readdir(PYTHON_SETUP_PATH, (err, files) => {
-  if (err) {
-    console.log("Error reading directory: ", err);
-    return;
-  }
-
-  for (const file of files) {
-    if (!file.endsWith(".py")) continue;
-
-    const file_path = path.join(PYTHON_SETUP_PATH, file);
-    fs.readFile(file_path, "utf8", (_, data) => {
-      PYTHON_SETUP_FILES.push({ name: file, code: data });
-    });
-  }
-});
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -41,7 +21,6 @@ export default defineConfig({
       },
     },
   ],
-  define: { PYTHON_SETUP_FILES },
   resolve: {
     alias: [{ find: "@", replacement: path.resolve(__dirname, "src") }],
   },

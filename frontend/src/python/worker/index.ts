@@ -34,7 +34,9 @@ const api = {
         callbacksModule[name] = func;
       }
 
-      const fullCode = `from runner import run\nrun(${JSON.stringify(code)})`;
+      const fullCode = `from lucid_backend_pyodide import execute\nexecute(${JSON.stringify(
+        code
+      )})`;
       const pythonResult = await pyodide.runPythonAsync(fullCode);
 
       if (pythonResult !== undefined) {

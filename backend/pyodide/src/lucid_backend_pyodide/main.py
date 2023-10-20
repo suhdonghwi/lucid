@@ -1,14 +1,52 @@
-from types import TracebackType
+import ast
+from types import TracebackType, FrameType
 
-import tracking
-from util import js_object
+from . import tracking
+from .tracking.callback import FrameNode
+from .util import js_object
 
 
-def run(code: str):
+def before_expr(frame: FrameType, node: ast.expr):
+    pass
+
+
+def after_expr(frame: FrameType, node: ast.expr, value: object):
+    pass
+
+
+def before_stmt(frame: FrameType, node: ast.stmt):
+    pass
+
+
+def after_stmt(frame: FrameType, node: ast.stmt):
+    pass
+
+
+def before_frame(frame: FrameType, node: FrameNode):
+    print("Enter frame")
+    pass
+
+
+def after_frame(frame: FrameType, node: FrameNode):
+    print("Exit frame")
+    pass
+
+
+tracker_callbacks = tracking.TrackerCallbacks(
+    before_expr=before_expr,
+    after_expr=after_expr,
+    before_stmt=before_stmt,
+    after_stmt=after_stmt,
+    before_frame=before_frame,
+    after_frame=after_frame,
+)
+
+
+def execute(code: str):
     file_name = "<code>"
 
     try:
-        pass
+        tracking.execute(code, file_name, tracker_callbacks)
     except SyntaxError as e:
         assert isinstance(e.lineno, int)
 
