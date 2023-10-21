@@ -28,7 +28,7 @@ export function ExecutionController() {
         <input type="button" value="Interrupt" onClick={python.interrupt} />
       </div>
 
-      <div className={cls.spaceContainer}>
+      <div className={cls.windowContainer}>
         <CodeWindow code={code} onCodeChange={setCode} />
       </div>
     </div>

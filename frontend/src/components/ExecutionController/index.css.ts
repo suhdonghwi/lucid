@@ -10,7 +10,11 @@ export const buttonContainer = style({
   zIndex: 1,
 });
 
-export const spaceContainer = style({
+export const windowContainer = style({
   width: "100%",
   height: "100%",
+
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
 });
