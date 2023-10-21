@@ -23,8 +23,6 @@ const cssTheme = View.EditorView.theme({
   },
 });
 
-import errorDisplay from "./errorDisplay";
-
 export const getBasicExtensions = ({
   startLineno,
 }: {
@@ -42,5 +40,4 @@ export const getBasicExtensions = ({
     Autocomplete.closeBrackets(),
     python(),
     cssTheme,
-    errorDisplay,
   ];

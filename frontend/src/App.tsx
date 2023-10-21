@@ -1,11 +1,11 @@
 import { container } from "./App.css";
 
-import { SpaceController } from "./components/SpaceController";
+import { ExecutionController } from "./components/ExecutionController";
 
 function App() {
   return (
     <div className={container}>
-      <SpaceController />
+      <ExecutionController />
     </div>
   );
 }

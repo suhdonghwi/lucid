@@ -5,34 +5,16 @@ import { pyodidePromise } from "./initialize";
 
 import { execErrorSchema } from "@/schemas/ExecError";
 import { ExecResult } from "@/schemas/ExecResult";
-import { CallGraph } from "@/CallGraph";
-
-import {
-  convertExecCallbacksForPython,
-  makeExecPointCallbacks,
-} from "./callbacks";
 
 const api = {
   run: syncExpose(
     async (
-      syncExtras,
+      _syncExtras,
       interruptBuffer: Uint8Array,
-      code: string,
-      onBreak: (callGraph: CallGraph) => void
+      code: string
     ): Promise<ExecResult> => {
       const pyodide = await pyodidePromise;
       pyodide.setInterruptBuffer(interruptBuffer);
-
-      const execPointCallbacks = makeExecPointCallbacks(syncExtras, onBreak);
-      const callbacksForPython =
-        convertExecCallbacksForPython(execPointCallbacks);
-
-      pyodide.registerJsModule("callbacks", {});
-      const callbacksModule = pyodide.pyimport("callbacks");
-
-      for (const [name, func] of Object.entries(callbacksForPython)) {
-        callbacksModule[name] = func;
-      }
 
       const pyodideBackend = pyodide.pyimport("lucid_backend_pyodide");
       const pythonResult = pyodideBackend.execute(code);
