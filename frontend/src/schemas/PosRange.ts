@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 const posNumber = z.number().int().nonnegative();
-const exclude = z.never().optional();
+const never = z.never().optional();
 
 export const posRangeSchema = z.union([
   z.strictObject({
@@ -13,8 +13,8 @@ export const posRangeSchema = z.union([
   z.strictObject({
     lineno: posNumber,
     endLineno: posNumber,
-    col: exclude,
-    endCol: exclude,
+    col: never,
+    endCol: never,
   }),
 ]);
 
