@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import * as python from "@/python";
+import * as python from "@/bridge/pyodide";
 
 import { CodeWindow } from "@/components/CodeWindow";
 import * as cls from "./index.css";

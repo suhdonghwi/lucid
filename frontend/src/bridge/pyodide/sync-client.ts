@@ -7,8 +7,6 @@ import type { PyodideWorkerAPI } from "./worker";
 export async function initializeSyncClient(): Promise<
   SyncClient<PyodideWorkerAPI>
 > {
-  console.log("creating sync client");
-
   await navigator.serviceWorker.register(
     new URL("./service-worker.ts", import.meta.url),
     { type: "module" }
@@ -16,5 +14,6 @@ export async function initializeSyncClient(): Promise<
 
   const channel = makeChannel();
   console.log("created sync client :", channel);
+
   return new SyncClient(() => new PyodideWorker(), channel);
 }
