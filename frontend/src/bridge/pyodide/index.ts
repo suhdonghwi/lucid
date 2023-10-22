@@ -1,32 +1,31 @@
 import { initializeSyncClient } from "./sync-client";
 
-import type { ExecResult } from "@/schemas/ExecResult";
+import { BridgeInterface } from "@/bridge";
 
 const clientPromise = initializeSyncClient();
 
-export async function execute(code: string): Promise<ExecResult> {
-  const client = await clientPromise;
+const bridge: BridgeInterface = {
+  execute: async (code: string) => {
+    const client = await clientPromise;
 
-  let interruptBuffer: Uint8Array | undefined = undefined;
-  if (client.channel?.type === "atomics") {
-    interruptBuffer = new Uint8Array(new SharedArrayBuffer(1));
+    let interruptBuffer: Uint8Array | undefined = undefined;
+    if (client.channel?.type === "atomics") {
+      interruptBuffer = new Uint8Array(new SharedArrayBuffer(1));
 
-    client.interrupter = () => {
-      if (interruptBuffer !== undefined) {
-        interruptBuffer[0] = 2;
-      }
-    };
-  }
+      client.interrupter = () => {
+        if (interruptBuffer !== undefined) {
+          interruptBuffer[0] = 2;
+        }
+      };
+    }
 
-  return await client.call(client.workerProxy.run, interruptBuffer, code);
-}
+    return client.call(client.workerProxy.run, interruptBuffer, code);
+  },
 
-export async function resume() {
-  const client = await clientPromise;
-  await client.writeMessage("Hello");
-}
+  interrupt: async () => {
+    const client = await clientPromise;
+    await client.interrupt();
+  },
+};
 
-export async function interrupt() {
-  const client = await clientPromise;
-  await client.interrupt();
-}
+export default bridge;

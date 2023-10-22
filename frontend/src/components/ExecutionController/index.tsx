@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import * as python from "@/bridge/pyodide";
+import pyodideBridge from "@/bridge/pyodide";
 
 import { CodeWindow } from "@/components/CodeWindow";
 import * as cls from "./index.css";
@@ -15,7 +15,7 @@ export function ExecutionController() {
   const [code, setCode] = useState(exampleCode);
 
   async function runCode() {
-    const result = await python.execute(code);
+    const result = await pyodideBridge.execute(code);
 
     console.log("runPython result: ", result);
   }
@@ -24,8 +24,11 @@ export function ExecutionController() {
     <div className={cls.rootContainer}>
       <div className={cls.buttonContainer}>
         <input type="button" value="Run" onClick={runCode} />
-        <input type="button" value="Next" onClick={python.resume} />
-        <input type="button" value="Interrupt" onClick={python.interrupt} />
+        <input
+          type="button"
+          value="Interrupt"
+          onClick={pyodideBridge.interrupt}
+        />
       </div>
 
       <div className={cls.windowContainer}>
