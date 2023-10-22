@@ -19,7 +19,7 @@ const bridge: BridgeInterface = {
       };
     }
 
-    return client.call(client.workerProxy.run, interruptBuffer, code);
+    return client.call(client.workerProxy.execute, interruptBuffer, code);
   },
 
   interrupt: async () => {

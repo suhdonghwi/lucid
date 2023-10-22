@@ -7,11 +7,11 @@ import { execErrorSchema } from "@/schemas/ExecError";
 import { ExecResult } from "@/schemas/ExecResult";
 
 const api = {
-  run: syncExpose(
+  execute: syncExpose(
     async (
       _syncExtras,
       interruptBuffer: Uint8Array,
-      code: string
+      code: string,
     ): Promise<ExecResult> => {
       const pyodide = await pyodidePromise;
       pyodide.setInterruptBuffer(interruptBuffer);
@@ -25,7 +25,7 @@ const api = {
       }
 
       return { type: "success" };
-    }
+    },
   ),
 };
 
