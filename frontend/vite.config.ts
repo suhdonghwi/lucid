@@ -1,9 +1,13 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin";
-
 import path from "path";
+
+import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin";
+// NOTE:
+// This is a workaround for externalizing `node-fetch` in vite dev server.
+// https://github.com/vitejs/vite/issues/6582
+import externalize from "vite-plugin-externalize-dependencies";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -20,11 +24,15 @@ export default defineConfig({
         });
       },
     },
+    externalize({ externals: ["node-fetch"] }),
   ],
   resolve: {
     alias: [{ find: "@", replacement: path.resolve(__dirname, "src") }],
   },
   worker: {
     format: "es",
+    rollupOptions: {
+      external: ["node-fetch"],
+    },
   },
 });
