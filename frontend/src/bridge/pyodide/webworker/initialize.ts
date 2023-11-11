@@ -1,7 +1,6 @@
 import * as Comlink from "comlink";
 
-import type { PyodideInterface } from "pyodide";
-import { loadPyodide } from "pyodide";
+import { loadPyodide, PyodideInterface } from "pyodide";
 
 import pyodideBackendUrl from "./lucid_backend_pyodide.whl?url";
 

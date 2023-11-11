@@ -2,7 +2,7 @@ import ast
 import sys
 from typing import TypeVar
 
-from . import identifiers
+from . import identifier
 from .callback import TrackerCallbacks
 from .eval_context import EvalContext
 from .linearized_ast import LinearizedAST
@@ -30,23 +30,23 @@ class TrackerAttacher(ast.NodeTransformer):
         index_node = self.create_index_node(node)
 
         before_call = self.create_call_node(
-            identifiers.TRACKER_BEFORE_EXPR, [index_node]
+            identifier.TRACKER_BEFORE_EXPR, [index_node]
         )
         after_call = self.create_call_node(
-            identifiers.TRACKER_AFTER_EXPR, [before_call, node]
+            identifier.TRACKER_AFTER_EXPR, [before_call, node]
         )
 
         return after_call
 
     def add_stmt_tracker(self, node: ast.stmt) -> ast.With:
         index_node = self.create_index_node(node)
-        tracker_call = self.create_call_node(identifiers.TRACKER_STMT, [index_node])
+        tracker_call = self.create_call_node(identifier.TRACKER_STMT, [index_node])
 
         return ast.With(items=[ast.withitem(context_expr=tracker_call)], body=[node])
 
     def add_frame_tracker(self, node: ast.FunctionDef | ast.Module) -> list[ast.stmt]:
         index_node = self.create_index_node(node)
-        tracker_call = self.create_call_node(identifiers.TRACKER_FRAME, [index_node])
+        tracker_call = self.create_call_node(identifier.TRACKER_FRAME, [index_node])
 
         return [
             ast.With(items=[ast.withitem(context_expr=tracker_call)], body=node.body)
@@ -124,8 +124,8 @@ class TrackerAttacher(ast.NodeTransformer):
             return EvalContext(node, callbacks.before_frame, callbacks.after_frame)
 
         return {
-            identifiers.TRACKER_BEFORE_EXPR: tracker_before_expr,
-            identifiers.TRACKER_AFTER_EXPR: tracker_after_expr,
-            identifiers.TRACKER_STMT: tracker_stmt,
-            identifiers.TRACKER_FRAME: tracker_frame,
+            identifier.TRACKER_BEFORE_EXPR: tracker_before_expr,
+            identifier.TRACKER_AFTER_EXPR: tracker_after_expr,
+            identifier.TRACKER_STMT: tracker_stmt,
+            identifier.TRACKER_FRAME: tracker_frame,
         }
