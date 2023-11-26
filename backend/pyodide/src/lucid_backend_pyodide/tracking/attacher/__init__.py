@@ -3,8 +3,8 @@ import sys
 from typing import TypeVar
 
 from . import identifier
-from .callback import TrackerCallbacks
-from .eval_context import EvalContext
+from ..callback import TrackerCallbacks
+from ..eval_context import EvalContext
 from .linearized_ast import LinearizedAST
 
 
