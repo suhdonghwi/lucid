@@ -2,6 +2,7 @@ from types import ModuleType
 from typing import Callable, Sequence
 
 import os.path
+import sys
 
 from importlib.abc import Loader, MetaPathFinder
 from importlib.util import spec_from_file_location
