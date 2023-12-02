@@ -50,4 +50,9 @@ tracker_callbacks = tracking.TrackerCallbacks(
 def execute(code: str, filename: str):
     TrackingLoader = create_tracking_loader_class(tracker_callbacks)
     tracking_path_finder = CustomLoaderPathFinder(TrackingLoader)
+
     install_path_finder(tracking_path_finder)
+
+    compiled_code, tracker_mappings = tracking.tracked_compile(
+        code, filename, tracker_callbacks
+    )

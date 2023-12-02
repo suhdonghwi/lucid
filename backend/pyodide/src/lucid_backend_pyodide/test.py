@@ -7,8 +7,6 @@ import tracking
 from tracking.callback import FrameNode
 
 
-logging.basicConfig(level=logging.DEBUG)
-
 test_code = """
 a, b = 1, 2
 print(a, b)
@@ -47,4 +45,4 @@ tracker_callbacks = tracking.TrackerCallbacks(
     before_frame=before_frame,
     after_frame=after_frame,
 )
-tracking.execute(test_code, "<code>", tracker_callbacks)
+# tracking.execute(test_code, "<code>", tracker_callbacks)
