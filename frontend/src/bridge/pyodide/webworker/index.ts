@@ -16,8 +16,14 @@ const api = {
       const pyodide = await pyodidePromise;
       pyodide.setInterruptBuffer(interruptBuffer);
 
+      pyodide.FS.writeFile("hello.py", `print("this is from hello")`, {
+        encoding: "utf8",
+      });
+
       const pyodideBackend = pyodide.pyimport("lucid_backend_pyodide");
       const pythonResult = pyodideBackend.execute(code, "main.py");
+
+      pyodide.runPython("import sys; del sys.modules['hello']");
 
       if (pythonResult !== undefined) {
         const execError = execErrorSchema.parse(pythonResult);
