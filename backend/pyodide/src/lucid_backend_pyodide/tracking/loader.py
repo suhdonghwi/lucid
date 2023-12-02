@@ -3,9 +3,47 @@ from importlib.machinery import ModuleSpec
 
 import ast
 
-from types import ModuleType
+from types import ModuleType, FrameType
 
-from lucid_backend_pyodide.tracking.attacher import TrackerAttacher
+import tracking
+from tracking.callback import FrameNode
+from tracking.attacher import TrackerAttacher
+
+
+def before_expr(frame: FrameType, node: ast.expr):
+    pass
+
+
+def after_expr(frame: FrameType, node: ast.expr, value: object):
+    pass
+
+
+def before_stmt(frame: FrameType, node: ast.stmt):
+    print("before_stmt")
+    pass
+
+
+def after_stmt(frame: FrameType, node: ast.stmt):
+    print("after")
+    pass
+
+
+def before_frame(frame: FrameType, node: FrameNode):
+    pass
+
+
+def after_frame(frame: FrameType, node: FrameNode):
+    pass
+
+
+tracker_callbacks = tracking.TrackerCallbacks(
+    before_expr=before_expr,
+    after_expr=after_expr,
+    before_stmt=before_stmt,
+    after_stmt=after_stmt,
+    before_frame=before_frame,
+    after_frame=after_frame,
+)
 
 
 class TrackingLoader(Loader):
