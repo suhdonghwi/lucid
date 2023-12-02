@@ -1,14 +1,14 @@
 import ast
 from types import FrameType
 
-from custom_loader_path_finder import (
+from .custom_loader_path_finder import (
     CustomLoaderPathFinder,
     install_path_finder,
 )
 
-import tracking
-from tracking.callback import FrameNode
-from tracking.loader import create_tracking_loader_class
+from . import tracking
+from .tracking.callback import FrameNode
+from .tracking.loader import create_tracking_loader_class
 
 
 def before_expr(frame: FrameType, node: ast.expr):
@@ -56,3 +56,5 @@ def execute(code: str, filename: str):
     compiled_code, tracker_mappings = tracking.tracked_compile(
         code, filename, tracker_callbacks
     )
+
+    exec(compiled_code, tracker_mappings)

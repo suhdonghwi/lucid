@@ -17,7 +17,7 @@ const api = {
       pyodide.setInterruptBuffer(interruptBuffer);
 
       const pyodideBackend = pyodide.pyimport("lucid_backend_pyodide");
-      const pythonResult = pyodideBackend.execute(code);
+      const pythonResult = pyodideBackend.execute(code, "main.py");
 
       if (pythonResult !== undefined) {
         const execError = execErrorSchema.parse(pythonResult);

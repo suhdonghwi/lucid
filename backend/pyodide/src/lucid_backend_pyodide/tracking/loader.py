@@ -3,10 +3,10 @@ from importlib.machinery import ModuleSpec
 
 from types import ModuleType
 
-import tracking
+from . import tracked_compile, TrackerCallbacks
 
 
-def create_tracking_loader_class(tracker_callbacks: tracking.TrackerCallbacks):
+def create_tracking_loader_class(tracker_callbacks: TrackerCallbacks):
     class TrackingLoader(Loader):
         def __init__(self, filename: str):
             self.filename = filename
@@ -18,7 +18,7 @@ def create_tracking_loader_class(tracker_callbacks: tracking.TrackerCallbacks):
             with open(self.filename) as file:
                 source = file.read()
 
-            compiled_code, tracker_mappings = tracking.tracked_compile(
+            compiled_code, tracker_mappings = tracked_compile(
                 source, self.filename, tracker_callbacks
             )
 
