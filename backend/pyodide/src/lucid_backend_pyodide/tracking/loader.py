@@ -2,53 +2,19 @@ from importlib.abc import Loader
 from importlib.machinery import ModuleSpec
 
 import ast
-
-from types import ModuleType, FrameType
+from types import ModuleType
 
 import tracking
-from tracking.callback import FrameNode
 from tracking.attacher import TrackerAttacher
 
 
-def before_expr(frame: FrameType, node: ast.expr):
-    pass
-
-
-def after_expr(frame: FrameType, node: ast.expr, value: object):
-    pass
-
-
-def before_stmt(frame: FrameType, node: ast.stmt):
-    print("before_stmt")
-    pass
-
-
-def after_stmt(frame: FrameType, node: ast.stmt):
-    print("after")
-    pass
-
-
-def before_frame(frame: FrameType, node: FrameNode):
-    pass
-
-
-def after_frame(frame: FrameType, node: FrameNode):
-    pass
-
-
-tracker_callbacks = tracking.TrackerCallbacks(
-    before_expr=before_expr,
-    after_expr=after_expr,
-    before_stmt=before_stmt,
-    after_stmt=after_stmt,
-    before_frame=before_frame,
-    after_frame=after_frame,
-)
-
-
 class TrackingLoader(Loader):
-    def __init__(self, filename: str):
+    def __init__(self, tracker_callbacks: tracking.TrackerCallbacks):
+        self.tracker_callbacks = tracker_callbacks
+
+    def __call__(self, filename: str):
         self.filename = filename
+        return self
 
     def create_module(self, spec: ModuleSpec):
         return None  # use default module creation semantics
@@ -61,7 +27,8 @@ class TrackingLoader(Loader):
 
         attacher = TrackerAttacher(raw_ast)
         tracked_ast = attacher.attach()
+        tracker_mappings = attacher.create_tracker_mappings(self.tracker_callbacks)
 
         compiled_code = compile(tracked_ast, filename=self.filename, mode="exec")
 
-        exec(compiled_code, vars(module))
+        exec(compiled_code, vars(module) | tracker_mappings)

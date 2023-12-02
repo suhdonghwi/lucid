@@ -1,6 +1,7 @@
 from types import ModuleType
 from typing import Callable, Sequence
 
+import sys
 import os.path
 
 from importlib.abc import Loader, MetaPathFinder
@@ -42,3 +43,7 @@ class CustomLoaderPathFinder(MetaPathFinder):
             )
 
         return None  # we don't know how to import this
+
+
+def install_path_finder(path_finder: MetaPathFinder):
+    sys.meta_path.insert(0, path_finder)
