@@ -8,7 +8,7 @@ from custom_loader_path_finder import (
 
 import tracking
 from tracking.callback import FrameNode
-from tracking.loader import TrackingLoader
+from tracking.loader import create_tracking_loader_class
 
 
 def before_expr(frame: FrameType, node: ast.expr):
@@ -48,6 +48,6 @@ tracker_callbacks = tracking.TrackerCallbacks(
 
 
 def execute(code: str, filename: str):
-    tracking_loader = TrackingLoader(tracker_callbacks)
-    tracking_path_finder = CustomLoaderPathFinder(tracking_loader)
+    TrackingLoader = create_tracking_loader_class(tracker_callbacks)
+    tracking_path_finder = CustomLoaderPathFinder(TrackingLoader)
     install_path_finder(tracking_path_finder)
