@@ -6,44 +6,11 @@ from . import identifier
 from ..callback import TrackerCallbacks
 from ..eval_context import EvalContext
 from .indexed_ast import IndexedAST, NodeIndex
-
-
-def create_index_node(index: NodeIndex) -> ast.Constant:
-    index_node = ast.Constant(value=index)
-    return index_node
-
-
-def create_call_node(func_name: str, args: list[ast.expr]) -> ast.Call:
-    return ast.Call(
-        func=ast.Name(id=func_name, ctx=ast.Load()),
-        args=args,
-        keywords=[],
-    )
-
-
-def add_expr_tracker(node: ast.expr, index: NodeIndex) -> ast.Call:
-    index_node = create_index_node(index)
-
-    before_call = create_call_node(identifier.TRACKER_BEFORE_EXPR, [index_node])
-    after_call = create_call_node(identifier.TRACKER_AFTER_EXPR, [before_call, node])
-
-    return after_call
-
-
-def add_stmt_tracker(node: ast.stmt, index: NodeIndex) -> ast.With:
-    index_node = create_index_node(index)
-    tracker_call = create_call_node(identifier.TRACKER_STMT, [index_node])
-
-    return ast.With(items=[ast.withitem(context_expr=tracker_call)], body=[node])
-
-
-def add_frame_tracker(
-    node: ast.FunctionDef | ast.Module, index: NodeIndex
-) -> list[ast.stmt]:
-    index_node = create_index_node(index)
-    tracker_call = create_call_node(identifier.TRACKER_FRAME, [index_node])
-
-    return [ast.With(items=[ast.withitem(context_expr=tracker_call)], body=node.body)]
+from .node_util import (
+    make_tracked_expr,
+    make_tracked_stmt,
+    make_tracked_frame,
+)
 
 
 class TrackerAttacher(ast.NodeTransformer):
@@ -59,7 +26,7 @@ class TrackerAttacher(ast.NodeTransformer):
         match node:
             case ast.Module():
                 node.body = list(map(self.visit, node.body))
-                node.body = add_frame_tracker(node, index)
+                node.body = [make_tracked_frame(node, index)]
                 return node
 
             case ast.Name(ctx=ast.Del()) | ast.Name(ctx=ast.Store()):
@@ -75,16 +42,16 @@ class TrackerAttacher(ast.NodeTransformer):
 
             case ast.expr():
                 self.generic_visit(node)
-                return add_expr_tracker(node, index)
+                return make_tracked_expr(node, index)
 
             case ast.FunctionDef():
                 node.body = list(map(self.visit, node.body))
-                node.body = add_frame_tracker(node, index)
-                return add_stmt_tracker(node, index)
+                node.body = [make_tracked_frame(node, index)]
+                return make_tracked_stmt(node, index)
 
             case ast.stmt():
                 self.generic_visit(node)
-                return add_stmt_tracker(node, index)
+                return make_tracked_stmt(node, index)
 
             case _:
                 self.generic_visit(node)
