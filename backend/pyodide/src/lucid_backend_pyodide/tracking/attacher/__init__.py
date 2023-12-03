@@ -35,6 +35,10 @@ class TrackerAttacher(ast.NodeTransformer):
             case ast.Tuple(ctx=ast.Store()):
                 pass
 
+            case ast.Attribute(ctx=ast.Store()):
+                self.generic_visit(node)
+                pass
+
             case ast.JoinedStr():
                 for value in node.values:
                     if isinstance(value, ast.FormattedValue):

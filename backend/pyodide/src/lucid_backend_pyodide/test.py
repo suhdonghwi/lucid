@@ -1,5 +1,4 @@
 import ast
-import logging
 
 from types import FrameType
 
@@ -8,8 +7,8 @@ from tracking.callback import FrameNode
 
 
 test_code = """
-a, b = 1, 2
-print(a, b)
+import hello
+hello.a = 10
 """
 
 
@@ -45,4 +44,14 @@ tracker_callbacks = tracking.TrackerCallbacks(
     before_frame=before_frame,
     after_frame=after_frame,
 )
-# tracking.execute(test_code, "<code>", tracker_callbacks)
+
+raw_ast = ast.parse(test_code, "<code>")
+print(ast.dump(raw_ast, indent=2))
+
+attacher = tracking.TrackerAttacher(raw_ast)
+attached_ast = attacher.attach()
+
+print()
+print(ast.dump(attached_ast, indent=2))
+print()
+print(ast.unparse(attached_ast))
