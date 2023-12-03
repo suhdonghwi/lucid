@@ -22,6 +22,7 @@ def create_tracking_loader_class(tracker_callbacks: TrackerCallbacks):
                 source, self.filename, tracker_callbacks
             )
 
-            exec(compiled_code, vars(module) | tracker_mappings)
+            vars(module).update(tracker_mappings)
+            exec(compiled_code, vars(module))
 
     return TrackingLoader
