@@ -14,4 +14,8 @@ async function initializePyodide(): Promise<PyodideInterface> {
   return pyodide;
 }
 
-export const pyodidePromise = initializePyodide();
+export let pyodidePromise = initializePyodide();
+
+export async function reloadPyodide() {
+  pyodidePromise = initializePyodide();
+}

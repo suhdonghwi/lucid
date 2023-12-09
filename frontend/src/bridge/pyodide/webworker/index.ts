@@ -1,7 +1,7 @@
 import * as Comlink from "comlink";
 import { syncExpose } from "comsync";
 
-import { pyodidePromise } from "./initialize";
+import { pyodidePromise, reloadPyodide } from "./initialize";
 
 import { execErrorSchema } from "@/schemas/ExecError";
 import { ExecResult } from "@/schemas/ExecResult";
@@ -23,7 +23,7 @@ const api = {
       const pyodideBackend = pyodide.pyimport("lucid_backend_pyodide");
       const pythonResult = pyodideBackend.execute(code, "main.py");
 
-      // pyodide.runPython("import sys; del sys.modules['hello']");
+      reloadPyodide();
 
       if (pythonResult !== undefined) {
         const execError = execErrorSchema.parse(pythonResult);
