@@ -4,13 +4,14 @@ import { loadPyodide, PyodideInterface } from "pyodide";
 
 import pyodideBackendUrl from "./lucid_backend_pyodide.whl?url";
 
+const INDEX_URL = "https://cdn.jsdelivr.net/pyodide/v0.24.1/full/";
+
 async function initializePyodide(): Promise<PyodideInterface> {
-  const indexURL = "https://cdn.jsdelivr.net/pyodide/v0.24.1/full/";
-  const pyodide = await loadPyodide({ indexURL });
+  const pyodide = await loadPyodide({ indexURL: INDEX_URL });
 
   pyodide.registerComlink(Comlink);
-
   await pyodide.loadPackage(pyodideBackendUrl);
+
   return pyodide;
 }
 
