@@ -4,7 +4,6 @@ import { githubLightInit } from "@uiw/codemirror-theme-github";
 import { useCodeMirror } from "./useCodeMirror";
 
 import * as cls from "./index.css";
-import { cropPosRange, PosRange } from "@/schemas/PosRange";
 
 import { useBasicExtensions } from "./hooks";
 
@@ -20,23 +19,16 @@ const theme = githubLightInit({
 type CodeWindowProps = {
   code: string;
   onCodeChange?: (code: string) => void;
-
-  posRange?: PosRange;
 };
 
-export function CodeWindow({ code, onCodeChange, posRange }: CodeWindowProps) {
+export function CodeWindow({ code, onCodeChange }: CodeWindowProps) {
   const editorDiv = useRef<HTMLDivElement | null>(null);
-
-  const startLineno = posRange?.lineno ?? 1;
-  const basicExtensions = useBasicExtensions(startLineno);
-
-  const croppedCode =
-    posRange === undefined ? code : cropPosRange(code, posRange);
+  const basicExtensions = useBasicExtensions();
 
   const { setContainer } = useCodeMirror({
     // NOTE: View dispatch does not occur if the value is same with view's internal state
     // (Refer "./useCodeMirror.ts")
-    value: croppedCode,
+    value: code,
 
     theme,
     extensions: basicExtensions,
