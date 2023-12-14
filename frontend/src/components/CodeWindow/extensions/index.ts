@@ -2,7 +2,7 @@ import * as View from "@codemirror/view";
 import * as Commands from "@codemirror/commands";
 import * as Language from "@codemirror/language";
 import * as Autocomplete from "@codemirror/autocomplete";
-import { python } from "@codemirror/lang-python";
+import { javascript } from "@codemirror/lang-javascript";
 
 const cssTheme = View.EditorView.theme({
   "&.cm-focused": {
@@ -32,6 +32,6 @@ export const getBasicExtensions = () => [
   View.dropCursor(),
   Language.indentOnInput(),
   Autocomplete.closeBrackets(),
-  python(),
+  javascript(),
   cssTheme,
 ];
