@@ -3,13 +3,15 @@ import { useState } from "react";
 import { CodeWindow } from "@/components/CodeWindow";
 import * as cls from "./index.css";
 
+import { backendWorker } from "@/backend";
+
 const exampleCode = `console.log("hi");`;
 
 export function ExecutionController() {
   const [code, setCode] = useState(exampleCode);
 
   async function runCode() {
-    eval(code);
+    backendWorker.executeCode(code);
   }
 
   return (
