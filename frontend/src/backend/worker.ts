@@ -1,11 +1,11 @@
 import * as Comlink from "comlink";
 
-const createCodeObjectURL = (input: string) =>
-  URL.createObjectURL(new Blob([input], { type: "text/javascript" }));
+const createCodeBlob = (input: string) =>
+  new Blob([input], { type: "text/javascript" });
 
 const api = {
   executeCode: (code: string) => {
-    const objectURL = createCodeObjectURL(code);
+    const objectURL = URL.createObjectURL(createCodeBlob(code));
     import(
       /* @vite-ignore */
       objectURL
