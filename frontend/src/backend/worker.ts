@@ -6,8 +6,10 @@ const createCodeObjectURL = (input: string) =>
 const api = {
   executeCode: (code: string) => {
     const objectURL = createCodeObjectURL(code);
-    import(objectURL);
-
+    import(
+      /* @vite-ignore */
+      objectURL
+    );
     URL.revokeObjectURL(objectURL);
   },
 };
