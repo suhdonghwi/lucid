@@ -19,11 +19,8 @@
     "@vanilla-extract/css": "^1.13.0",
     "codemirror": "^6.0.1",
     "comlink": "^4.4.1",
-    "comsync": "^0.0.9",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "sync-message": "^0.0.10",
-    "zod": "^3.22.4"
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@types/node": "^18.18.6",
@@ -39,7 +36,6 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "prettier": "^3.0.3",
     "typescript": "^5.3.3",
-    "vite": "^5.0.0",
-    "vite-plugin-externalize-dependencies": "^0.10.0"
+    "vite": "^5.0.0"
   }
 }
