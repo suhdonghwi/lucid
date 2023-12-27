@@ -1,8 +1,14 @@
 import * as Comlink from "comlink";
 
+const createCodeObjectURL = (input: string) =>
+  URL.createObjectURL(new Blob([input], { type: "text/javascript" }));
+
 const api = {
   executeCode: (code: string) => {
-    eval(code);
+    const objectURL = createCodeObjectURL(code);
+    import(objectURL);
+
+    URL.revokeObjectURL(objectURL);
   },
 };
 
