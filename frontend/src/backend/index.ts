@@ -1,10 +1,10 @@
 import * as Comlink from "comlink";
 
-import BackendWorker from "./worker?worker";
-import { BackendWorkerAPI } from "./worker";
+import ExecuteWorker from "./executeWorker?worker";
+import { ExecuteWorkerAPI } from "./executeWorker";
 
-let worker = new BackendWorker();
-let wrappedWorker = Comlink.wrap<BackendWorkerAPI>(worker);
+let worker = new ExecuteWorker();
+let wrappedWorker = Comlink.wrap<ExecuteWorkerAPI>(worker);
 
 export function executeCode(code: string) {
   return wrappedWorker.executeCode(code);
@@ -13,6 +13,6 @@ export function executeCode(code: string) {
 export function terminateWorker() {
   worker.terminate();
 
-  worker = new BackendWorker();
-  wrappedWorker = Comlink.wrap<BackendWorkerAPI>(worker);
+  worker = new ExecuteWorker();
+  wrappedWorker = Comlink.wrap<ExecuteWorkerAPI>(worker);
 }

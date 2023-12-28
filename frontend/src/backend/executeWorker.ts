@@ -3,7 +3,7 @@ import * as Comlink from "comlink";
 const createCodeBlob = (input: string) =>
   new Blob([input], { type: "text/javascript" });
 
-const workerAPI = {
+const api = {
   executeCode: (code: string) => {
     const objectURL = URL.createObjectURL(createCodeBlob(code));
     import(
@@ -14,5 +14,5 @@ const workerAPI = {
   },
 };
 
-export type BackendWorkerAPI = typeof workerAPI;
-Comlink.expose(workerAPI);
+export type ExecuteWorkerAPI = typeof api;
+Comlink.expose(api);

@@ -26,8 +26,5 @@ export default defineConfig({
   },
   worker: {
     format: "es",
-    rollupOptions: {
-      external: ["node-fetch"],
-    },
   },
 });
