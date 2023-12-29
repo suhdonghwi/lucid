@@ -23,6 +23,9 @@ dependencies:
   '@codemirror/view':
     specifier: ^6.21.3
     version: 6.21.3
+  '@types/estree':
+    specifier: ^1.0.5
+    version: 1.0.5
   '@uiw/codemirror-theme-github':
     specifier: ^4.21.20
     version: 4.21.20(@codemirror/language@6.9.1)(@codemirror/state@6.3.1)(@codemirror/view@6.21.3)

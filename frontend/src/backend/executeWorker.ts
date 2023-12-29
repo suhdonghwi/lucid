@@ -6,9 +6,11 @@ const createCodeBlob = (input: string) =>
 
 const api = {
   executeCode: (code: string) => {
-    instrument(code);
+    const instrumentedCode = instrument(code);
+    console.log(instrumentedCode);
 
-    const objectURL = URL.createObjectURL(createCodeBlob(code));
+    const codeBlob = createCodeBlob(instrumentedCode);
+    const objectURL = URL.createObjectURL(codeBlob);
     import(
       /* @vite-ignore */
       objectURL
