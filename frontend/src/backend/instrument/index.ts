@@ -1,48 +1,25 @@
 import * as acorn from "acorn";
 
 import { walk } from "estree-walker";
-import * as estree from "estree";
+import estree from "estree";
 
 import { generate } from "astring";
 
 import * as constants from "./constants";
+import * as utils from "./utils";
 
 const wrapBlockWithEnterLeaveCall = (
   block: estree.BlockStatement,
 ): estree.BlockStatement => ({
   type: "BlockStatement",
   body: [
-    {
-      type: "ExpressionStatement",
-      expression: {
-        type: "CallExpression",
-        callee: {
-          type: "Identifier",
-          name: constants.FUNCTION_ENTER,
-        },
-        arguments: [],
-        optional: false,
-      },
-    },
+    utils.makeCallExpressionStatement(constants.FUNCTION_ENTER, []),
     {
       type: "TryStatement",
       block,
       finalizer: {
         type: "BlockStatement",
-        body: [
-          {
-            type: "ExpressionStatement",
-            expression: {
-              type: "CallExpression",
-              callee: {
-                type: "Identifier",
-                name: constants.FUNCTION_LEAVE,
-              },
-              arguments: [],
-              optional: false,
-            },
-          },
-        ],
+        body: [utils.makeCallExpressionStatement(constants.FUNCTION_LEAVE, [])],
       },
     },
   ],
