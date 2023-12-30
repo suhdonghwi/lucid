@@ -5,7 +5,7 @@ import estree from "estree";
 
 import { generate } from "astring";
 
-import * as constants from "./constants";
+import * as events from "./events";
 import * as utils from "./utils";
 
 const wrapBlockWithEnterLeaveCall = (
@@ -13,22 +13,22 @@ const wrapBlockWithEnterLeaveCall = (
 ): estree.BlockStatement => ({
   type: "BlockStatement",
   body: [
-    utils.makeCallExpressionStatement(constants.FUNCTION_ENTER, []),
+    utils.makeCallExpressionStatement(events.FUNCTION_ENTER, []),
     {
       type: "TryStatement",
       block,
       finalizer: {
         type: "BlockStatement",
-        body: [utils.makeCallExpressionStatement(constants.FUNCTION_LEAVE, [])],
+        body: [utils.makeCallExpressionStatement(events.FUNCTION_LEAVE, [])],
       },
     },
   ],
 });
 
-export function instrument(code: string) {
-  const program = acorn.parse(code, { ecmaVersion: 2024 });
+export function instrument(code: string, eventCallbackModuleURL: string) {
+  const program = acorn.parse(code, { ecmaVersion: 2024 }) as estree.Program;
 
-  walk(program as estree.Node, {
+  walk(program, {
     leave(node) {
       if (
         node.type === "FunctionDeclaration" ||
@@ -51,6 +51,13 @@ export function instrument(code: string) {
       }
     },
   });
+
+  program.body.unshift(
+    utils.makeImportStatement({
+      identifiers: Object.values(events),
+      source: eventCallbackModuleURL,
+    }),
+  );
 
   return generate(program);
 }
