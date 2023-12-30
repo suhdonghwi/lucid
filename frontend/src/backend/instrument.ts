@@ -1,38 +1,64 @@
 import * as acorn from "acorn";
 
 import { walk } from "estree-walker";
-import type { Node, Statement } from "estree";
+import * as estree from "estree";
 
 import { generate } from "astring";
 
-// NOTE:
-// https://github.com/DefinitelyTyped/DefinitelyTyped/blob/ea1de09d62f7945dee2aac098fa3969ab60645a8/types/estree/index.d.ts#L103-L123
-function isStatement(node: Node): node is Statement {
-  return (
-    node.type.endsWith("Statement") ||
-    node.type === "ClassDeclaration" ||
-    node.type === "FunctionDeclaration" ||
-    node.type === "VariableDeclaration"
-  );
-}
+const trackBlockEnterLeave = (
+  block: estree.BlockStatement,
+): estree.BlockStatement => ({
+  type: "BlockStatement",
+  body: [
+    {
+      type: "TryStatement",
+      block,
+      finalizer: {
+        type: "BlockStatement",
+        body: [],
+      },
+    },
+  ],
+});
+
+const trackExpressionEnterLeave = (
+  expression: estree.Expression,
+): estree.BlockStatement => ({
+  type: "BlockStatement",
+  body: [
+    {
+      type: "TryStatement",
+      block: {
+        type: "BlockStatement",
+        body: [
+          {
+            type: "ReturnStatement",
+            argument: expression,
+          },
+        ],
+      },
+      finalizer: {
+        type: "BlockStatement",
+        body: [],
+      },
+    },
+  ],
+});
 
 export function instrument(code: string) {
   const program = acorn.parse(code, { ecmaVersion: 2024 });
 
-  walk(program as Node, {
+  walk(program as estree.Node, {
     leave(node) {
-      if (isStatement(node) && node.type !== "BlockStatement") {
-        this.replace({
-          type: "TryStatement",
-          block: {
-            type: "BlockStatement",
-            body: [node],
-          },
-          finalizer: {
-            type: "BlockStatement",
-            body: [],
-          },
-        });
+      if (
+        node.type === "FunctionDeclaration" ||
+        node.type === "FunctionExpression" ||
+        node.type === "ArrowFunctionExpression"
+      ) {
+        node.body =
+          node.body.type === "BlockStatement"
+            ? trackBlockEnterLeave(node.body)
+            : trackExpressionEnterLeave(node.body);
       }
     },
   });
