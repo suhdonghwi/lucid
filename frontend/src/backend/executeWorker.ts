@@ -1,7 +1,7 @@
 import * as Comlink from "comlink";
 import { instrument } from "./instrument";
 
-import { result } from "./instrument/eventCallbackModule";
+import { result } from "./instrument/eventCallbacks";
 
 const createCodeBlob = (input: string) =>
   new Blob([input], { type: "text/javascript" });

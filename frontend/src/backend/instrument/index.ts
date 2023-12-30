@@ -5,7 +5,7 @@ import estree from "estree";
 
 import { generate } from "astring";
 
-import events from "./events";
+import identifiers from "./identifiers";
 import * as utils from "./utils";
 
 const wrapBlockWithEnterLeaveCall = (
@@ -13,13 +13,15 @@ const wrapBlockWithEnterLeaveCall = (
 ): estree.BlockStatement => ({
   type: "BlockStatement",
   body: [
-    utils.makeCallExpressionStatement(events.FUNCTION_ENTER, []),
+    utils.makeEventCallStatement(identifiers.events.functionEnter, []),
     {
       type: "TryStatement",
       block,
       finalizer: {
         type: "BlockStatement",
-        body: [utils.makeCallExpressionStatement(events.FUNCTION_LEAVE, [])],
+        body: [
+          utils.makeEventCallStatement(identifiers.events.functionLeave, []),
+        ],
       },
     },
   ],

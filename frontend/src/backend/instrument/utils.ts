@@ -1,15 +1,26 @@
 import estree from "estree";
 
-export const makeCallExpressionStatement = (
-  functionName: string,
+import identifiers from "./identifiers";
+
+export const makeEventCallStatement = (
+  event: string,
   args: estree.Expression[],
 ): estree.ExpressionStatement => ({
   type: "ExpressionStatement",
   expression: {
     type: "CallExpression",
     callee: {
-      type: "Identifier",
-      name: functionName,
+      type: "MemberExpression",
+      object: {
+        type: "Identifier",
+        name: identifiers.callbackModule,
+      },
+      property: {
+        type: "Identifier",
+        name: event,
+      },
+      computed: false,
+      optional: false,
     },
     arguments: args,
     optional: false,
