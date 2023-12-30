@@ -5,7 +5,7 @@ import estree from "estree";
 
 import { generate } from "astring";
 
-import * as events from "./events";
+import events from "./events";
 import * as utils from "./utils";
 
 const wrapBlockWithEnterLeaveCall = (

@@ -1,2 +1,4 @@
-export const FUNCTION_ENTER = "functionEnter";
-export const FUNCTION_LEAVE = "functionLeave";
+export default {
+  FUNCTION_ENTER: "functionEnter",
+  FUNCTION_LEAVE: "functionLeave",
+};

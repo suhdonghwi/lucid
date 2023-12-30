@@ -6,9 +6,6 @@ const createCodeBlob = (input: string) =>
 
 const api = {
   executeCode: async (code: string) => {
-    const instrumentedCode = instrument(code);
-    console.log(instrumentedCode);
-
     const sharedModuleCodeBlob = createCodeBlob(`
       export const enterCount = [];
       export const enter = () => {
@@ -18,6 +15,9 @@ const api = {
       export const leave = () => console.log("leave");
     `);
     const sharedModuleObjectURL = URL.createObjectURL(sharedModuleCodeBlob);
+
+    const instrumentedCode = instrument(code, sharedModuleObjectURL);
+    console.log(instrumentedCode);
 
     const codeBlob = createCodeBlob(
       "import {enter,leave} from " +
