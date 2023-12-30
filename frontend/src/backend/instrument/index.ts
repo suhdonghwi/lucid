@@ -5,6 +5,8 @@ import * as estree from "estree";
 
 import { generate } from "astring";
 
+import * as constants from "./constants";
+
 const wrapBlockWithEnterLeaveCall = (
   block: estree.BlockStatement,
 ): estree.BlockStatement => ({
@@ -16,7 +18,7 @@ const wrapBlockWithEnterLeaveCall = (
         type: "CallExpression",
         callee: {
           type: "Identifier",
-          name: "enter",
+          name: constants.FUNCTION_ENTER,
         },
         arguments: [],
         optional: false,
@@ -34,7 +36,7 @@ const wrapBlockWithEnterLeaveCall = (
               type: "CallExpression",
               callee: {
                 type: "Identifier",
-                name: "leave",
+                name: constants.FUNCTION_LEAVE,
               },
               arguments: [],
               optional: false,
