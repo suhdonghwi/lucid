@@ -5,7 +5,7 @@ import * as estree from "estree";
 
 import { generate } from "astring";
 
-const trackBlockEnterLeave = (
+const wrapBlockWithEnterLeaveCall = (
   block: estree.BlockStatement,
 ): estree.BlockStatement => ({
   type: "BlockStatement",
@@ -13,30 +13,6 @@ const trackBlockEnterLeave = (
     {
       type: "TryStatement",
       block,
-      finalizer: {
-        type: "BlockStatement",
-        body: [],
-      },
-    },
-  ],
-});
-
-const trackExpressionEnterLeave = (
-  expression: estree.Expression,
-): estree.BlockStatement => ({
-  type: "BlockStatement",
-  body: [
-    {
-      type: "TryStatement",
-      block: {
-        type: "BlockStatement",
-        body: [
-          {
-            type: "ReturnStatement",
-            argument: expression,
-          },
-        ],
-      },
       finalizer: {
         type: "BlockStatement",
         body: [],
@@ -55,10 +31,19 @@ export function instrument(code: string) {
         node.type === "FunctionExpression" ||
         node.type === "ArrowFunctionExpression"
       ) {
-        node.body =
+        const blockizedBody: estree.BlockStatement =
           node.body.type === "BlockStatement"
-            ? trackBlockEnterLeave(node.body)
-            : trackExpressionEnterLeave(node.body);
+            ? node.body
+            : {
+                type: "BlockStatement",
+                body: [
+                  {
+                    type: "ReturnStatement",
+                    argument: node.body,
+                  },
+                ],
+              };
+        node.body = wrapBlockWithEnterLeaveCall(blockizedBody);
       }
     },
   });
