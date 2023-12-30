@@ -11,11 +11,36 @@ const wrapBlockWithEnterLeaveCall = (
   type: "BlockStatement",
   body: [
     {
+      type: "ExpressionStatement",
+      expression: {
+        type: "CallExpression",
+        callee: {
+          type: "Identifier",
+          name: "enter",
+        },
+        arguments: [],
+        optional: false,
+      },
+    },
+    {
       type: "TryStatement",
       block,
       finalizer: {
         type: "BlockStatement",
-        body: [],
+        body: [
+          {
+            type: "ExpressionStatement",
+            expression: {
+              type: "CallExpression",
+              callee: {
+                type: "Identifier",
+                name: "leave",
+              },
+              arguments: [],
+              optional: false,
+            },
+          },
+        ],
       },
     },
   ],
