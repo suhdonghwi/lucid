@@ -54,7 +54,7 @@ export function instrument(code: string, eventCallbackModuleURL: string) {
 
   program.body.unshift(
     utils.makeImportStatement({
-      identifiers: Object.values(events),
+      identifier: "eventCallback",
       source: eventCallbackModuleURL,
     }),
   );

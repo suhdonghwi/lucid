@@ -1,30 +1,26 @@
 import * as Comlink from "comlink";
 import { instrument } from "./instrument";
 
+import { result } from "./instrument/eventCallbackModule";
+
 const createCodeBlob = (input: string) =>
   new Blob([input], { type: "text/javascript" });
 
 const api = {
   executeCode: async (code: string) => {
-    const sharedModuleCodeBlob = createCodeBlob(`
-      export const enterCount = [];
-      export const enter = () => {
-        enterCount.push(1);
-        console.log("enter");
-      }
-      export const leave = () => console.log("leave");
-    `);
-    const sharedModuleObjectURL = URL.createObjectURL(sharedModuleCodeBlob);
+    const eventCallbackModuleURL = new URL(
+      "./instrument/eventCallbackModule",
+      import.meta.url,
+    );
+    console.log(eventCallbackModuleURL);
 
-    const instrumentedCode = instrument(code, sharedModuleObjectURL);
+    const instrumentedCode = instrument(
+      code,
+      eventCallbackModuleURL.toString(),
+    );
     console.log(instrumentedCode);
 
-    const codeBlob = createCodeBlob(
-      "import {enter,leave} from " +
-        JSON.stringify(sharedModuleObjectURL) +
-        ";\n" +
-        instrumentedCode,
-    );
+    const codeBlob = createCodeBlob(instrumentedCode);
     const objectURL = URL.createObjectURL(codeBlob);
     await import(
       /* @vite-ignore */
@@ -32,9 +28,7 @@ const api = {
     );
     URL.revokeObjectURL(objectURL);
 
-    import(sharedModuleObjectURL).then((module) => {
-      console.log(module);
-    });
+    console.log(result);
   },
 };
 

@@ -17,24 +17,22 @@ export const makeCallExpressionStatement = (
 });
 
 export const makeImportStatement = ({
-  identifiers,
+  identifier,
   source,
 }: {
-  identifiers: string[];
+  identifier: string;
   source: string;
 }): estree.ImportDeclaration => ({
   type: "ImportDeclaration",
-  specifiers: identifiers.map((identifier) => ({
-    type: "ImportSpecifier",
-    imported: {
-      type: "Identifier",
-      name: identifier,
+  specifiers: [
+    {
+      type: "ImportDefaultSpecifier",
+      local: {
+        type: "Identifier",
+        name: identifier,
+      },
     },
-    local: {
-      type: "Identifier",
-      name: identifier,
-    },
-  })),
+  ],
   source: {
     type: "Literal",
     value: source,
