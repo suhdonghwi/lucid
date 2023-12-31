@@ -1,9 +1,10 @@
 import estree from "estree";
 
-import identifiers from "./identifiers";
+import * as identifiers from "./identifiers";
+import { EventCallbacks } from "./eventCallbacks";
 
 export const makeEventCallStatement = (
-  event: string,
+  event: keyof EventCallbacks,
   args: estree.Expression[],
 ): estree.ExpressionStatement => ({
   type: "ExpressionStatement",
@@ -12,8 +13,17 @@ export const makeEventCallStatement = (
     callee: {
       type: "MemberExpression",
       object: {
-        type: "Identifier",
-        name: identifiers.callbackModule,
+        type: "MemberExpression",
+        object: {
+          type: "Identifier",
+          name: "globalThis",
+        },
+        property: {
+          type: "Identifier",
+          name: identifiers.eventCallbacks,
+        },
+        computed: false,
+        optional: false,
       },
       property: {
         type: "Identifier",
@@ -24,28 +34,5 @@ export const makeEventCallStatement = (
     },
     arguments: args,
     optional: false,
-  },
-});
-
-export const makeImportStatement = ({
-  identifier,
-  source,
-}: {
-  identifier: string;
-  source: string;
-}): estree.ImportDeclaration => ({
-  type: "ImportDeclaration",
-  specifiers: [
-    {
-      type: "ImportDefaultSpecifier",
-      local: {
-        type: "Identifier",
-        name: identifier,
-      },
-    },
-  ],
-  source: {
-    type: "Literal",
-    value: source,
   },
 });

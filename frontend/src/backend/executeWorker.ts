@@ -1,23 +1,20 @@
 import * as Comlink from "comlink";
 import { instrument } from "./instrument";
 
-import { result } from "./instrument/eventCallbacks";
+import * as identifiers from "./instrument/identifiers";
+import { EventCallbacks } from "./instrument/eventCallbacks";
 
 const createCodeBlob = (input: string) =>
   new Blob([input], { type: "text/javascript" });
 
 const api = {
   executeCode: async (code: string) => {
-    const eventCallbackModuleURL = new URL(
-      "./instrument/eventCallbackModule",
-      import.meta.url,
-    );
-    console.log(eventCallbackModuleURL);
+    globalThis[identifiers.eventCallbacks] = {
+      onFunctionEnter: () => console.log("onFunctionEnter"),
+      onFunctionLeave: () => console.log("onFunctionLeave"),
+    } as EventCallbacks;
 
-    const instrumentedCode = instrument(
-      code,
-      eventCallbackModuleURL.toString(),
-    );
+    const instrumentedCode = instrument(code);
     console.log(instrumentedCode);
 
     const codeBlob = createCodeBlob(instrumentedCode);
@@ -28,7 +25,7 @@ const api = {
     );
     URL.revokeObjectURL(objectURL);
 
-    console.log(result);
+    delete globalThis[identifiers.eventCallbacks];
   },
 };
 
