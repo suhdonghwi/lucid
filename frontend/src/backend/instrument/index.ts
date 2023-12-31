@@ -8,23 +8,38 @@ import { generate } from "astring";
 import * as utils from "./utils";
 
 const wrapBlockWithEnterLeaveCall = (
+  eventCallbacksIdentifier: string,
   block: estree.BlockStatement,
 ): estree.BlockStatement => ({
   type: "BlockStatement",
   body: [
-    utils.makeEventCallStatement("onFunctionEnter", []),
+    utils.makeEventCallStatement(
+      eventCallbacksIdentifier,
+      "onFunctionEnter",
+      [],
+    ),
     {
       type: "TryStatement",
       block,
       finalizer: {
         type: "BlockStatement",
-        body: [utils.makeEventCallStatement("onFunctionLeave", [])],
+        body: [
+          utils.makeEventCallStatement(
+            eventCallbacksIdentifier,
+            "onFunctionLeave",
+            [],
+          ),
+        ],
       },
     },
   ],
 });
 
-export function instrument(code: string) {
+type InstrumentOptions = {
+  eventCallbacksIdentifier: string;
+};
+
+export function instrument(code: string, options: InstrumentOptions) {
   const program = acorn.parse(code, { ecmaVersion: 2024 }) as estree.Program;
 
   walk(program, {
@@ -46,10 +61,16 @@ export function instrument(code: string) {
                   },
                 ],
               };
-        node.body = wrapBlockWithEnterLeaveCall(blockizedBody);
+
+        node.body = wrapBlockWithEnterLeaveCall(
+          options.eventCallbacksIdentifier,
+          blockizedBody,
+        );
       }
     },
   });
 
   return generate(program);
 }
+
+export type { EventCallbacks } from "./eventCallbacks";

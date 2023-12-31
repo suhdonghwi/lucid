@@ -1,9 +1,9 @@
 import estree from "estree";
 
-import * as identifiers from "./identifiers";
 import { EventCallbacks } from "./eventCallbacks";
 
 export const makeEventCallStatement = (
+  eventCallbacksIdentifier: string,
   event: keyof EventCallbacks,
   args: estree.Expression[],
 ): estree.ExpressionStatement => ({
@@ -20,7 +20,7 @@ export const makeEventCallStatement = (
         },
         property: {
           type: "Identifier",
-          name: identifiers.eventCallbacks,
+          name: eventCallbacksIdentifier,
         },
         computed: false,
         optional: false,
