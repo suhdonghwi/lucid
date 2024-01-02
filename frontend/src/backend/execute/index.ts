@@ -4,10 +4,13 @@ type GlobalThisWithEventCallbacks = typeof globalThis & {
   eventCallbacks?: EventCallbacks;
 };
 
-const createCodeBlob = (input: string) =>
-  new Blob([input], { type: "text/javascript" });
+const globalThisWithEventCallbacks = globalThis as GlobalThisWithEventCallbacks;
 
 const EVENT_CALLBACKS_IDENTIFIER = "eventCallbacks";
+
+function createCodeBlob(input: string) {
+  return new Blob([input], { type: "text/javascript" });
+}
 
 export async function execute(code: string) {
   const { result: instrumentedCode, indexedNodes } = instrument(code, {
@@ -15,7 +18,7 @@ export async function execute(code: string) {
   });
   console.log("instrumented code:\n", instrumentedCode);
 
-  (globalThis as GlobalThisWithEventCallbacks)[EVENT_CALLBACKS_IDENTIFIER] = {
+  globalThisWithEventCallbacks[EVENT_CALLBACKS_IDENTIFIER] = {
     onFunctionEnter: (nodeIndex: number) =>
       console.log("onFunctionEnter", indexedNodes[nodeIndex]),
     onFunctionLeave: (nodeIndex: number) =>
@@ -30,7 +33,5 @@ export async function execute(code: string) {
   );
   URL.revokeObjectURL(objectURL);
 
-  delete (globalThis as GlobalThisWithEventCallbacks)[
-    EVENT_CALLBACKS_IDENTIFIER
-  ];
+  delete globalThisWithEventCallbacks[EVENT_CALLBACKS_IDENTIFIER];
 }
