@@ -36,3 +36,10 @@ export const makeEventCallStatement = (
     optional: false,
   },
 });
+
+export const makeLiteral = (
+  value: string | number | boolean,
+): estree.Literal => ({
+  type: "Literal",
+  value,
+});

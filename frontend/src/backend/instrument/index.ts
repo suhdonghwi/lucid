@@ -10,14 +10,13 @@ import * as utils from "./utils";
 const wrapBlockWithEnterLeaveCall = (
   eventCallbacksIdentifier: string,
   block: estree.BlockStatement,
+  nodeIndex: number,
 ): estree.BlockStatement => ({
   type: "BlockStatement",
   body: [
-    utils.makeEventCallStatement(
-      eventCallbacksIdentifier,
-      "onFunctionEnter",
-      [],
-    ),
+    utils.makeEventCallStatement(eventCallbacksIdentifier, "onFunctionEnter", [
+      utils.makeLiteral(nodeIndex),
+    ]),
     {
       type: "TryStatement",
       block,
@@ -27,7 +26,7 @@ const wrapBlockWithEnterLeaveCall = (
           utils.makeEventCallStatement(
             eventCallbacksIdentifier,
             "onFunctionLeave",
-            [],
+            [utils.makeLiteral(nodeIndex)],
           ),
         ],
       },
@@ -40,9 +39,21 @@ type InstrumentOptions = {
 };
 
 export function instrument(code: string, options: InstrumentOptions) {
-  const program = acorn.parse(code, { ecmaVersion: 2024 }) as estree.Program;
+  const originalAST = acorn.parse(code, {
+    ecmaVersion: 2024,
+  }) as estree.Program;
 
-  walk(program, {
+  const indexedNodes: estree.Node[] = [];
+  walk(originalAST, {
+    leave(node) {
+      indexedNodes.push(node);
+    },
+  });
+
+  const instrumentedAST = JSON.parse(JSON.stringify(originalAST));
+
+  let leavingOrder = 0;
+  walk(instrumentedAST, {
     leave(node) {
       if (
         node.type === "FunctionDeclaration" ||
@@ -65,12 +76,18 @@ export function instrument(code: string, options: InstrumentOptions) {
         node.body = wrapBlockWithEnterLeaveCall(
           options.eventCallbacksIdentifier,
           blockizedBody,
+          leavingOrder,
         );
       }
+
+      leavingOrder += 1;
     },
   });
 
-  return generate(program);
+  return {
+    result: generate(instrumentedAST),
+    indexedNodes,
+  };
 }
 
 export type { EventCallbacks } from "./eventCallbacks";
