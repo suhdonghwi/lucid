@@ -7,32 +7,47 @@ import { generate } from "astring";
 
 import * as utils from "./utils";
 
-const wrapBlockWithEnterLeaveCall = (
+function wrapBlockWithEnterLeaveCall(
   eventCallbacksIdentifier: string,
   block: estree.BlockStatement,
   nodeIndex: number,
-): estree.BlockStatement => ({
-  type: "BlockStatement",
-  body: [
-    utils.makeEventCallStatement(eventCallbacksIdentifier, "onFunctionEnter", [
-      utils.makeLiteral(nodeIndex),
-    ]),
-    {
-      type: "TryStatement",
-      block,
-      finalizer: {
-        type: "BlockStatement",
-        body: [
-          utils.makeEventCallStatement(
-            eventCallbacksIdentifier,
-            "onFunctionLeave",
-            [utils.makeLiteral(nodeIndex)],
-          ),
-        ],
+): estree.BlockStatement {
+  return {
+    type: "BlockStatement",
+    body: [
+      utils.makeEventCallStatement(
+        eventCallbacksIdentifier,
+        "onFunctionEnter",
+        [utils.makeLiteral(nodeIndex)],
+      ),
+      {
+        type: "TryStatement",
+        block,
+        finalizer: {
+          type: "BlockStatement",
+          body: [
+            utils.makeEventCallStatement(
+              eventCallbacksIdentifier,
+              "onFunctionLeave",
+              [utils.makeLiteral(nodeIndex)],
+            ),
+          ],
+        },
       },
+    ],
+  };
+}
+
+function postOrderNodes(ast: estree.Program): estree.Node[] {
+  const nodes: estree.Node[] = [];
+  walk(ast, {
+    leave(node) {
+      nodes.push(node);
     },
-  ],
-});
+  });
+
+  return nodes;
+}
 
 type InstrumentOptions = {
   eventCallbacksIdentifier: string;
@@ -43,16 +58,11 @@ export function instrument(code: string, options: InstrumentOptions) {
     ecmaVersion: 2024,
   }) as estree.Program;
 
-  const indexedNodes: estree.Node[] = [];
-  walk(originalAST, {
-    leave(node) {
-      indexedNodes.push(node);
-    },
-  });
+  const postOrderedNodes = postOrderNodes(originalAST);
 
   const instrumentedAST = JSON.parse(JSON.stringify(originalAST));
 
-  let leavingOrder = 0;
+  let postOrderIndex = 0;
   walk(instrumentedAST, {
     leave(node) {
       if (
@@ -76,17 +86,17 @@ export function instrument(code: string, options: InstrumentOptions) {
         node.body = wrapBlockWithEnterLeaveCall(
           options.eventCallbacksIdentifier,
           blockizedBody,
-          leavingOrder,
+          postOrderIndex,
         );
       }
 
-      leavingOrder += 1;
+      postOrderIndex += 1;
     },
   });
 
   return {
     result: generate(instrumentedAST),
-    indexedNodes,
+    indexedNodes: postOrderedNodes,
   };
 }
 
