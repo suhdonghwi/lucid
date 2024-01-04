@@ -7,35 +7,40 @@ import { generate } from "astring";
 
 import * as utils from "./utils";
 
-function wrapBlockWithEnterLeaveCall({
+function wrapStatementsWithEnterLeaveCall({
   eventCallbacksIdentifier,
-  block,
+  statements,
   nodeIndex,
 }: {
   eventCallbacksIdentifier: string;
-  block: estree.BlockStatement;
+  statements: estree.Statement[];
   nodeIndex: number;
 }): estree.BlockStatement {
+  const enterCall = utils.makeEventCallStatement(
+    eventCallbacksIdentifier,
+    "onFunctionEnter",
+    [utils.makeLiteral(nodeIndex)],
+  );
+
+  const leaveCall = utils.makeEventCallStatement(
+    eventCallbacksIdentifier,
+    "onFunctionLeave",
+    [utils.makeLiteral(nodeIndex)],
+  );
+
   return {
     type: "BlockStatement",
     body: [
-      utils.makeEventCallStatement(
-        eventCallbacksIdentifier,
-        "onFunctionEnter",
-        [utils.makeLiteral(nodeIndex)],
-      ),
+      enterCall,
       {
         type: "TryStatement",
-        block,
+        block: {
+          type: "BlockStatement",
+          body: statements,
+        },
         finalizer: {
           type: "BlockStatement",
-          body: [
-            utils.makeEventCallStatement(
-              eventCallbacksIdentifier,
-              "onFunctionLeave",
-              [utils.makeLiteral(nodeIndex)],
-            ),
-          ],
+          body: [leaveCall],
         },
       },
     ],
@@ -74,22 +79,19 @@ export function instrument(code: string, options: InstrumentOptions) {
         node.type === "FunctionExpression" ||
         node.type === "ArrowFunctionExpression"
       ) {
-        const blockizedBody: estree.BlockStatement =
+        const functionBody: estree.Statement[] =
           node.body.type === "BlockStatement"
-            ? node.body
-            : {
-                type: "BlockStatement",
-                body: [
-                  {
-                    type: "ReturnStatement",
-                    argument: node.body,
-                  },
-                ],
-              };
+            ? node.body.body
+            : [
+                {
+                  type: "ReturnStatement",
+                  argument: node.body,
+                },
+              ];
 
-        node.body = wrapBlockWithEnterLeaveCall({
+        node.body = wrapStatementsWithEnterLeaveCall({
           eventCallbacksIdentifier: options.eventCallbacksIdentifier,
-          block: blockizedBody,
+          statements: functionBody,
           nodeIndex: postOrderIndex,
         });
       }
