@@ -7,11 +7,15 @@ import { generate } from "astring";
 
 import * as utils from "./utils";
 
-function wrapBlockWithEnterLeaveCall(
-  eventCallbacksIdentifier: string,
-  block: estree.BlockStatement,
-  nodeIndex: number,
-): estree.BlockStatement {
+function wrapBlockWithEnterLeaveCall({
+  eventCallbacksIdentifier,
+  block,
+  nodeIndex,
+}: {
+  eventCallbacksIdentifier: string;
+  block: estree.BlockStatement;
+  nodeIndex: number;
+}): estree.BlockStatement {
   return {
     type: "BlockStatement",
     body: [
@@ -83,11 +87,11 @@ export function instrument(code: string, options: InstrumentOptions) {
                 ],
               };
 
-        node.body = wrapBlockWithEnterLeaveCall(
-          options.eventCallbacksIdentifier,
-          blockizedBody,
-          postOrderIndex,
-        );
+        node.body = wrapBlockWithEnterLeaveCall({
+          eventCallbacksIdentifier: options.eventCallbacksIdentifier,
+          block: blockizedBody,
+          nodeIndex: postOrderIndex,
+        });
       }
 
       postOrderIndex += 1;
