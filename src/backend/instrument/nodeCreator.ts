@@ -10,7 +10,23 @@ export class NodeCreator {
     this.options = options;
   }
 
-  makeEventCallStatement(
+  private makeEventCallbacksExpression(): estree.MemberExpression {
+    return {
+      type: "MemberExpression",
+      object: {
+        type: "Identifier",
+        name: "globalThis",
+      },
+      property: {
+        type: "Identifier",
+        name: this.options.eventCallbacksIdentifier,
+      },
+      computed: false,
+      optional: false,
+    };
+  }
+
+  private makeEventCallStatement(
     event: keyof EventCallbacks,
     args: estree.Expression[],
   ): estree.ExpressionStatement {
@@ -20,19 +36,7 @@ export class NodeCreator {
         type: "CallExpression",
         callee: {
           type: "MemberExpression",
-          object: {
-            type: "MemberExpression",
-            object: {
-              type: "Identifier",
-              name: "globalThis",
-            },
-            property: {
-              type: "Identifier",
-              name: this.options.eventCallbacksIdentifier,
-            },
-            computed: false,
-            optional: false,
-          },
+          object: this.makeEventCallbacksExpression(),
           property: {
             type: "Identifier",
             name: event,
