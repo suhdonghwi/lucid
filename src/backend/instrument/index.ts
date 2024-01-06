@@ -47,6 +47,7 @@ export function instrument(code: string, options: InstrumentOptions) {
     leave(node) {
       if (skippingNodes.has(node)) {
         this.skip();
+        postOrderIndex += 1;
         return;
       }
 
