@@ -6,11 +6,9 @@ import estree from "estree";
 import { generate } from "astring";
 
 import { InstrumentOptions } from "./options";
-import { NodeCreator } from "./nodeCreator";
+import { wrapStatementsWithEnterLeaveCall } from "./nodeTransforms";
 
 export function instrument(code: string, options: InstrumentOptions) {
-  const nodeCreator = new NodeCreator(options);
-
   const originalAST = acorn.parse(code, {
     ecmaVersion: 2024,
   }) as estree.Program;
@@ -36,7 +34,10 @@ export function instrument(code: string, options: InstrumentOptions) {
                 },
               ];
 
-        node.body = nodeCreator.wrapStatementsWithEnterLeaveCall({
+        node.body = wrapStatementsWithEnterLeaveCall({
+          eventCallbacksIdentifier: options.eventCallbacksIdentifier,
+          sourceFileIndex: options.sourceFileIndex,
+
           statements: functionBody,
           nodeIndex: postOrderIndex,
         });
