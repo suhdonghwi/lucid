@@ -15,14 +15,15 @@ function createCodeBlob(input: string) {
 
 export async function execute(code: string) {
   const { result: instrumentedCode, indexedNodes } = instrument(code, {
+    sourceFileIndex: 0,
     eventCallbacksIdentifier: EVENT_CALLBACKS_IDENTIFIER,
   });
   console.log("instrumented code:\n", instrumentedCode);
 
   globalThisWithEventCallbacks[EVENT_CALLBACKS_IDENTIFIER] = {
-    onFunctionEnter: (nodeIndex: number) =>
+    onFunctionEnter: (sourceFileIndex: number, nodeIndex: number) =>
       console.log("onFunctionEnter", indexedNodes[nodeIndex]),
-    onFunctionLeave: (nodeIndex: number) =>
+    onFunctionLeave: (sourceFileIndex: number, nodeIndex: number) =>
       console.log("onFunctionLeave", indexedNodes[nodeIndex]),
   } as EventCallbacks;
 

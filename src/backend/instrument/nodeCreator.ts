@@ -44,7 +44,7 @@ export class NodeCreator {
           computed: false,
           optional: false,
         },
-        arguments: args,
+        arguments: [makeLiteral(this.options.sourceFileIndex), ...args],
         optional: false,
       },
     };
