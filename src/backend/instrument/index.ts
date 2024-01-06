@@ -5,98 +5,51 @@ import estree from "estree";
 
 import { generate } from "astring";
 
-import * as utils from "./utils";
+import { InstrumentOptions } from "./options";
+import { NodeCreator } from "./nodeCreator";
 
-type InstrumentOptions = {
-  eventCallbacksIdentifier: string;
-};
+export function instrument(code: string, options: InstrumentOptions) {
+  const nodeCreator = new NodeCreator(options);
 
-export class Instrumenter {
-  private options: InstrumentOptions;
+  const originalAST = acorn.parse(code, {
+    ecmaVersion: 2024,
+  }) as estree.Program;
+  const postOrderedNodes = postOrderNodes(originalAST);
 
-  constructor(options: InstrumentOptions) {
-    this.options = options;
-  }
+  const instrumentedAST = JSON.parse(JSON.stringify(originalAST));
 
-  private wrapStatementsWithEnterLeaveCall({
-    statements,
-    nodeIndex,
-  }: {
-    statements: estree.Statement[];
-    nodeIndex: number;
-  }): estree.BlockStatement {
-    const enterCall = utils.makeEventCallStatement(
-      this.options.eventCallbacksIdentifier,
-      "onFunctionEnter",
-      [utils.makeLiteral(nodeIndex)],
-    );
+  let postOrderIndex = 0;
+  walk(instrumentedAST, {
+    leave: (node) => {
+      if (
+        node.type === "FunctionDeclaration" ||
+        node.type === "FunctionExpression" ||
+        node.type === "ArrowFunctionExpression"
+      ) {
+        const functionBody: estree.Statement[] =
+          node.body.type === "BlockStatement"
+            ? node.body.body
+            : [
+                {
+                  type: "ReturnStatement",
+                  argument: node.body,
+                },
+              ];
 
-    const leaveCall = utils.makeEventCallStatement(
-      this.options.eventCallbacksIdentifier,
-      "onFunctionLeave",
-      [utils.makeLiteral(nodeIndex)],
-    );
+        node.body = nodeCreator.wrapStatementsWithEnterLeaveCall({
+          statements: functionBody,
+          nodeIndex: postOrderIndex,
+        });
+      }
 
-    return {
-      type: "BlockStatement",
-      body: [
-        enterCall,
-        {
-          type: "TryStatement",
-          block: {
-            type: "BlockStatement",
-            body: statements,
-          },
-          finalizer: {
-            type: "BlockStatement",
-            body: [leaveCall],
-          },
-        },
-      ],
-    };
-  }
+      postOrderIndex += 1;
+    },
+  });
 
-  instrument(code: string) {
-    const originalAST = acorn.parse(code, {
-      ecmaVersion: 2024,
-    }) as estree.Program;
-    const postOrderedNodes = postOrderNodes(originalAST);
-
-    const instrumentedAST = JSON.parse(JSON.stringify(originalAST));
-
-    let postOrderIndex = 0;
-    walk(instrumentedAST, {
-      leave: (node) => {
-        if (
-          node.type === "FunctionDeclaration" ||
-          node.type === "FunctionExpression" ||
-          node.type === "ArrowFunctionExpression"
-        ) {
-          const functionBody: estree.Statement[] =
-            node.body.type === "BlockStatement"
-              ? node.body.body
-              : [
-                  {
-                    type: "ReturnStatement",
-                    argument: node.body,
-                  },
-                ];
-
-          node.body = this.wrapStatementsWithEnterLeaveCall({
-            statements: functionBody,
-            nodeIndex: postOrderIndex,
-          });
-        }
-
-        postOrderIndex += 1;
-      },
-    });
-
-    return {
-      result: generate(instrumentedAST),
-      indexedNodes: postOrderedNodes,
-    };
-  }
+  return {
+    result: generate(instrumentedAST),
+    indexedNodes: postOrderedNodes,
+  };
 }
 
 function postOrderNodes(ast: estree.Program): estree.Node[] {

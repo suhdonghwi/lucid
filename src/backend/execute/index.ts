@@ -1,4 +1,5 @@
-import { Instrumenter, EventCallbacks } from "../instrument";
+import { EventCallbacks } from "../instrument";
+import { instrument } from "../instrument";
 
 type GlobalThisWithEventCallbacks = typeof globalThis & {
   eventCallbacks?: EventCallbacks;
@@ -13,11 +14,9 @@ function createCodeBlob(input: string) {
 }
 
 export async function execute(code: string) {
-  const instrumenter = new Instrumenter({
+  const { result: instrumentedCode, indexedNodes } = instrument(code, {
     eventCallbacksIdentifier: EVENT_CALLBACKS_IDENTIFIER,
   });
-  const { result: instrumentedCode, indexedNodes } =
-    instrumenter.instrument(code);
   console.log("instrumented code:\n", instrumentedCode);
 
   globalThisWithEventCallbacks[EVENT_CALLBACKS_IDENTIFIER] = {
