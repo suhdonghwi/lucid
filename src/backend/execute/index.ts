@@ -25,6 +25,18 @@ export async function execute(code: string) {
       console.log("onFunctionEnter", indexedNodes[nodeIndex]),
     onFunctionLeave: (sourceFileIndex: number, nodeIndex: number) =>
       console.log("onFunctionLeave", indexedNodes[nodeIndex]),
+
+    onExpressionEnter: (sourceFileIndex: number, nodeIndex: number) =>
+      console.log("onExpressionEnter", indexedNodes[nodeIndex]),
+
+    onExpressionLeave: (
+      sourceFileIndex: number,
+      nodeIndex: number,
+      expression: unknown,
+    ) => {
+      console.log("onExpressionLeave", indexedNodes[nodeIndex], expression);
+      return expression;
+    },
   } as EventCallbacks;
 
   const codeBlob = createCodeBlob(instrumentedCode);

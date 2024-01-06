@@ -1,4 +1,11 @@
 export type EventCallbacks = {
-  onFunctionEnter: (nodeIndex: number) => void;
-  onFunctionLeave: (nodeIndex: number) => void;
+  onFunctionEnter: (sourceFileIndex: number, nodeIndex: number) => void;
+  onFunctionLeave: (sourceFileIndex: number, nodeIndex: number) => void;
+
+  onExpressionEnter: (sourceFileIndex: number, nodeIndex: number) => void;
+  onExpressionLeave: (
+    sourceFileIndex: number,
+    nodeIndex: number,
+    expression: unknown,
+  ) => void;
 };

@@ -6,19 +6,50 @@ import estree from "estree";
 import { generate } from "astring";
 
 import { InstrumentOptions } from "./options";
-import { wrapStatementsWithEnterLeaveCall } from "./nodeTransforms";
+import {
+  wrapExpressionWithEnterLeaveCall,
+  wrapStatementsWithEnterLeaveCall,
+} from "./nodeTransforms";
+
+function isExpression(node: estree.Node): node is estree.Expression {
+  return (
+    node.type.endsWith("Expression") ||
+    node.type === "Identifier" ||
+    node.type === "Literal" ||
+    node.type === "TemplateLiteral"
+  );
+}
 
 export function instrument(code: string, options: InstrumentOptions) {
   const originalAST = acorn.parse(code, {
     ecmaVersion: 2024,
   }) as estree.Program;
-  const postOrderedNodes = postOrderNodes(originalAST);
+  const postOrderedNodes = sortNodesInPostOrder(originalAST);
 
-  const instrumentedAST = JSON.parse(JSON.stringify(originalAST));
+  const instrumentedAST: estree.Program = JSON.parse(
+    JSON.stringify(originalAST),
+  );
 
+  const skippingNodes = new Set<estree.Node>();
   let postOrderIndex = 0;
+
   walk(instrumentedAST, {
-    leave: (node) => {
+    enter(node) {
+      switch (node.type) {
+        case "VariableDeclarator":
+          skippingNodes.add(node.id);
+          break;
+        case "MemberExpression":
+          skippingNodes.add(node.property);
+          break;
+      }
+    },
+    leave(node) {
+      if (skippingNodes.has(node)) {
+        this.skip();
+        return;
+      }
+
       if (
         node.type === "FunctionDeclaration" ||
         node.type === "FunctionExpression" ||
@@ -38,9 +69,27 @@ export function instrument(code: string, options: InstrumentOptions) {
           eventCallbacksIdentifier: options.eventCallbacksIdentifier,
           sourceFileIndex: options.sourceFileIndex,
 
+          enterEvent: "onFunctionEnter",
+          leaveEvent: "onFunctionLeave",
+
           statements: functionBody,
           nodeIndex: postOrderIndex,
         });
+      }
+
+      if (isExpression(node)) {
+        this.replace(
+          wrapExpressionWithEnterLeaveCall({
+            eventCallbacksIdentifier: options.eventCallbacksIdentifier,
+            sourceFileIndex: options.sourceFileIndex,
+
+            enterEvent: "onExpressionEnter",
+            leaveEvent: "onExpressionLeave",
+
+            expression: node,
+            nodeIndex: postOrderIndex,
+          }),
+        );
       }
 
       postOrderIndex += 1;
@@ -53,7 +102,7 @@ export function instrument(code: string, options: InstrumentOptions) {
   };
 }
 
-function postOrderNodes(ast: estree.Program): estree.Node[] {
+function sortNodesInPostOrder(ast: estree.Program): estree.Node[] {
   const nodes: estree.Node[] = [];
   walk(ast, {
     leave(node) {

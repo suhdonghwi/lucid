@@ -25,7 +25,7 @@ function makeEventCallbacksExpression(
   };
 }
 
-function makeEventCallStatement({
+function makeEventCall({
   eventCallbacksIdentifier,
   event,
   args,
@@ -33,24 +33,21 @@ function makeEventCallStatement({
   eventCallbacksIdentifier: string;
   event: keyof EventCallbacks;
   args: estree.Expression[];
-}): estree.ExpressionStatement {
+}): estree.CallExpression {
   return {
-    type: "ExpressionStatement",
-    expression: {
-      type: "CallExpression",
-      callee: {
-        type: "MemberExpression",
-        object: makeEventCallbacksExpression(eventCallbacksIdentifier),
-        property: {
-          type: "Identifier",
-          name: event,
-        },
-        computed: false,
-        optional: false,
+    type: "CallExpression",
+    callee: {
+      type: "MemberExpression",
+      object: makeEventCallbacksExpression(eventCallbacksIdentifier),
+      property: {
+        type: "Identifier",
+        name: event,
       },
-      arguments: args,
+      computed: false,
       optional: false,
     },
+    arguments: args,
+    optional: false,
   };
 }
 
@@ -58,33 +55,45 @@ export function wrapStatementsWithEnterLeaveCall({
   eventCallbacksIdentifier,
   sourceFileIndex,
 
+  enterEvent,
+  leaveEvent,
+
   statements,
   nodeIndex,
 }: {
   eventCallbacksIdentifier: string;
   sourceFileIndex: number;
 
+  enterEvent: keyof EventCallbacks;
+  leaveEvent: keyof EventCallbacks;
+
   statements: estree.Statement[];
   nodeIndex: number;
 }): estree.BlockStatement {
   const callArgs = [makeLiteral(sourceFileIndex), makeLiteral(nodeIndex)];
 
-  const enterCall = makeEventCallStatement({
-    eventCallbacksIdentifier,
-    event: "onFunctionEnter",
-    args: callArgs,
-  });
+  const enterCallStatement: estree.ExpressionStatement = {
+    type: "ExpressionStatement",
+    expression: makeEventCall({
+      eventCallbacksIdentifier,
+      event: enterEvent,
+      args: callArgs,
+    }),
+  };
 
-  const leaveCall = makeEventCallStatement({
-    eventCallbacksIdentifier,
-    event: "onFunctionLeave",
-    args: callArgs,
-  });
+  const leaveCallStatement: estree.ExpressionStatement = {
+    type: "ExpressionStatement",
+    expression: makeEventCall({
+      eventCallbacksIdentifier,
+      event: leaveEvent,
+      args: callArgs,
+    }),
+  };
 
   return {
     type: "BlockStatement",
     body: [
-      enterCall,
+      enterCallStatement,
       {
         type: "TryStatement",
         block: {
@@ -93,9 +102,48 @@ export function wrapStatementsWithEnterLeaveCall({
         },
         finalizer: {
           type: "BlockStatement",
-          body: [leaveCall],
+          body: [leaveCallStatement],
         },
       },
     ],
+  };
+}
+
+export function wrapExpressionWithEnterLeaveCall({
+  eventCallbacksIdentifier,
+  sourceFileIndex,
+
+  enterEvent,
+  leaveEvent,
+
+  expression,
+  nodeIndex,
+}: {
+  eventCallbacksIdentifier: string;
+  sourceFileIndex: number;
+
+  enterEvent: keyof EventCallbacks;
+  leaveEvent: keyof EventCallbacks;
+
+  expression: estree.Expression;
+  nodeIndex: number;
+}): estree.Expression {
+  const callArgs = [makeLiteral(sourceFileIndex), makeLiteral(nodeIndex)];
+
+  const enterCall = makeEventCall({
+    eventCallbacksIdentifier,
+    event: enterEvent,
+    args: callArgs,
+  });
+
+  const leaveCall = makeEventCall({
+    eventCallbacksIdentifier,
+    event: leaveEvent,
+    args: [...callArgs, expression],
+  });
+
+  return {
+    type: "SequenceExpression",
+    expressions: [enterCall, leaveCall],
   };
 }
