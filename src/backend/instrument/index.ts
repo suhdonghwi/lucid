@@ -24,20 +24,18 @@ export function instrument(code: string, options: InstrumentOptions) {
   const originalAST = acorn.parse(code, {
     ecmaVersion: 2024,
   }) as estree.Program;
-  const postOrderedNodes = sortNodesInPostOrder(originalAST);
+  const indexedNodes = indexAST(originalAST);
 
   const instrumentedAST: estree.Program = JSON.parse(
     JSON.stringify(originalAST),
   );
 
   const skippingNodes = new Set<estree.Node>();
-  let postOrderIndex = 0;
 
   walk(instrumentedAST, {
     enter(node) {
       if (skippingNodes.has(node)) {
         this.skip();
-        postOrderIndex += 1;
         return;
       }
 
@@ -51,6 +49,9 @@ export function instrument(code: string, options: InstrumentOptions) {
       }
     },
     leave(node) {
+      // @ts-expect-error index is not a valid property on estree nodes
+      const nodeIndex: number = node.index;
+
       if (
         node.type === "FunctionDeclaration" ||
         node.type === "FunctionExpression" ||
@@ -74,7 +75,7 @@ export function instrument(code: string, options: InstrumentOptions) {
           leaveEvent: "onFunctionLeave",
 
           statements: functionBody,
-          nodeIndex: postOrderIndex,
+          nodeIndex,
         });
       }
 
@@ -88,25 +89,26 @@ export function instrument(code: string, options: InstrumentOptions) {
             leaveEvent: "onExpressionLeave",
 
             expression: node,
-            nodeIndex: postOrderIndex,
+            nodeIndex,
           }),
         );
       }
-
-      postOrderIndex += 1;
     },
   });
 
   return {
     result: generate(instrumentedAST),
-    indexedNodes: postOrderedNodes,
+    indexedNodes,
   };
 }
 
-function sortNodesInPostOrder(ast: estree.Program): estree.Node[] {
+function indexAST(ast: estree.Program): estree.Node[] {
   const nodes: estree.Node[] = [];
+
   walk(ast, {
-    leave(node) {
+    enter(node) {
+      // @ts-expect-error index is not a valid property on estree nodes
+      node.index = nodes.length;
       nodes.push(node);
     },
   });
