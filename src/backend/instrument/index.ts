@@ -35,6 +35,12 @@ export function instrument(code: string, options: InstrumentOptions) {
 
   walk(instrumentedAST, {
     enter(node) {
+      if (skippingNodes.has(node)) {
+        this.skip();
+        postOrderIndex += 1;
+        return;
+      }
+
       switch (node.type) {
         case "VariableDeclarator":
           skippingNodes.add(node.id);
@@ -45,12 +51,6 @@ export function instrument(code: string, options: InstrumentOptions) {
       }
     },
     leave(node) {
-      if (skippingNodes.has(node)) {
-        this.skip();
-        postOrderIndex += 1;
-        return;
-      }
-
       if (
         node.type === "FunctionDeclaration" ||
         node.type === "FunctionExpression" ||
