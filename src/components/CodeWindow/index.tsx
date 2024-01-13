@@ -1,11 +1,11 @@
 import { createCodeMirror } from "./createCodeMirror";
+import { basicExtensions } from "./extensions";
 
 export function CodeWindow() {
   const { ref: editorRef } = createCodeMirror({
-    value: "console.log('hello world!')",
+    initialValue: "console.log('hello world!')",
     onValueChange: (value) => console.log("value changed", value),
-    onModelViewUpdate: (modelView) =>
-      console.log("modelView updated", modelView),
+    extensions: basicExtensions,
   });
 
   return <div ref={editorRef} />;

@@ -3,6 +3,7 @@ import * as Commands from "@codemirror/commands";
 import * as Language from "@codemirror/language";
 import * as Autocomplete from "@codemirror/autocomplete";
 import { javascript } from "@codemirror/lang-javascript";
+import { githubLightInit } from "@uiw/codemirror-theme-github";
 
 const cssTheme = View.EditorView.theme({
   "&.cm-focused": {
@@ -23,15 +24,24 @@ const cssTheme = View.EditorView.theme({
   },
 });
 
+const githubLightTheme = githubLightInit({
+  theme: "light",
+  settings: {
+    background: "white",
+    gutterBackground: "transparent",
+    fontFamily: "JetBrains Mono, monospace",
+  },
+});
+
 export const basicExtensions = [
   View.keymap.of(Commands.defaultKeymap),
   View.lineNumbers(),
-  // View.EditorView.lineWrapping,
-  Commands.history(),
   View.drawSelection(),
   View.dropCursor(),
+  Commands.history(),
   Language.indentOnInput(),
   Autocomplete.closeBrackets(),
   javascript(),
   cssTheme,
+  githubLightTheme,
 ];
