@@ -18,14 +18,14 @@ type FunctionLog = {
 export type ExecutionLog = ModuleLog | FunctionLog;
 
 export class ExecutionLogManager {
-  private logStack: ExecutionLog[] = [
+  private readonly logStack: ExecutionLog[] = [
     {
       type: "module",
       innerLog: [],
     },
   ];
 
-  private currentLog() {
+  private getCurrentLog() {
     return this.logStack[this.logStack.length - 1];
   }
 
@@ -39,10 +39,10 @@ export class ExecutionLogManager {
       throw new Error("No log to finish");
     }
 
-    this.currentLog().innerLog.push(log);
+    this.getCurrentLog().innerLog.push(log);
   }
 
   getLog() {
-    return this.currentLog();
+    return this.getCurrentLog();
   }
 }
