@@ -10,7 +10,7 @@ export interface CreateCodeMirrorProps {
   /**
    * The initial value of the editor
    */
-  value?: string;
+  value: string;
   /**
    * Fired whenever the editor code value changes.
    */
@@ -24,13 +24,13 @@ export interface CreateCodeMirrorProps {
 /**
  * Creates a CodeMirror editor instance.
  */
-export function createCodeMirror(props?: CreateCodeMirrorProps) {
+export function createCodeMirror(props: CreateCodeMirrorProps) {
   const [ref, setRef] = createSignal<HTMLElement>();
   const [editorView, setEditorView] = createSignal<EditorView>();
 
   createEffect(
     on(ref, (ref) => {
-      const state = EditorState.create({ doc: props?.value ?? "" });
+      const state = EditorState.create({ doc: props.value });
       const currentView = new EditorView({
         state,
         parent: ref,
@@ -41,7 +41,7 @@ export function createCodeMirror(props?: CreateCodeMirrorProps) {
           if (transaction.docChanged) {
             const document = transaction.state.doc;
             const value = document.toString();
-            props?.onValueChange?.(value);
+            props.onValueChange?.(value);
           }
         },
       });
@@ -60,12 +60,12 @@ export function createCodeMirror(props?: CreateCodeMirrorProps) {
       editorView,
       (editorView) => {
         const localValue = editorView?.state.doc.toString();
-        if (localValue !== props?.value && editorView !== undefined) {
+        if (localValue !== props.value && editorView !== undefined) {
           editorView.dispatch({
             changes: {
               from: 0,
               to: localValue?.length,
-              insert: props?.value ?? "",
+              insert: props.value,
             },
           });
         }
