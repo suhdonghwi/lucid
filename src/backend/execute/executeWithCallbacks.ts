@@ -16,7 +16,7 @@ function createCodeBlob(input: string) {
 
 export async function executeWithCallbacks(
   code: string,
-  eventCallbacks: (indexedNodes: estree.Node[]) => EventCallbacks,
+  createEventCallbacks: (indexedNodes: estree.Node[]) => EventCallbacks,
 ) {
   const { result: instrumentedCode, indexedNodes } = instrument(code, {
     sourceFileIndex: 0,
@@ -25,7 +25,7 @@ export async function executeWithCallbacks(
   console.log("instrumented code:\n", instrumentedCode);
 
   globalThisWithEventCallbacks[EVENT_CALLBACKS_IDENTIFIER] =
-    eventCallbacks(indexedNodes);
+    createEventCallbacks(indexedNodes);
 
   const codeBlob = createCodeBlob(instrumentedCode);
   const objectURL = URL.createObjectURL(codeBlob);

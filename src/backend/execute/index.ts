@@ -4,7 +4,9 @@ import { executeWithCallbacks } from "./executeWithCallbacks";
 import { EventCallbacks } from "../instrument";
 
 export async function execute(code: string) {
-  const eventCallbacks = (indexedNodes: estree.Node[]): EventCallbacks => ({
+  const createEventCallbacks = (
+    indexedNodes: estree.Node[],
+  ): EventCallbacks => ({
     onFunctionEnter: (sourceFileIndex, nodeIndex) => {
       console.log("function enter", indexedNodes[nodeIndex]);
     },
@@ -20,5 +22,5 @@ export async function execute(code: string) {
     },
   });
 
-  return executeWithCallbacks(code, eventCallbacks);
+  return executeWithCallbacks(code, createEventCallbacks);
 }
