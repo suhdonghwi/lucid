@@ -6,11 +6,11 @@ import { createEffect, createSignal, on, onCleanup, onMount } from "solid-js";
 import { EditorView } from "@codemirror/view";
 import { EditorState, Extension } from "@codemirror/state";
 
-export interface CreateCodeMirrorProps {
+type CreateCodeMirrorProps = {
   initialValue: string;
   onValueChange?: (value: string) => void;
   extensions?: Extension[];
-}
+};
 
 export function createCodeMirror(props: CreateCodeMirrorProps) {
   const [ref, setRef] = createSignal<HTMLElement>();
