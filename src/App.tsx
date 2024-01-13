@@ -1,11 +1,7 @@
-import { CodeWindow } from "./components/CodeWindow";
+import { ExecutionController } from "./components/ExecutionController";
 
 function App() {
-  return (
-    <div>
-      <CodeWindow />
-    </div>
-  );
+  return <ExecutionController />;
 }
 
 export default App;

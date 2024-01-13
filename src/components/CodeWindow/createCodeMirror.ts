@@ -25,7 +25,6 @@ export function createCodeMirror(props: CreateCodeMirrorProps) {
       const currentView = new EditorView({
         state,
         parent: ref,
-        // Replace the old `updateListenerExtension`
         dispatch: (transaction) => {
           currentView.update([transaction]);
 

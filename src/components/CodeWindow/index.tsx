@@ -1,6 +1,8 @@
 import { createCodeMirror } from "./createCodeMirror";
 import { basicExtensions } from "./extensions";
 
+import * as styles from "./index.css";
+
 export function CodeWindow() {
   const { ref: editorRef } = createCodeMirror({
     initialValue: "console.log('hello world!')",
@@ -8,5 +10,5 @@ export function CodeWindow() {
     extensions: basicExtensions,
   });
 
-  return <div ref={editorRef} />;
+  return <div class={styles.rootContainer} ref={editorRef} />;
 }
