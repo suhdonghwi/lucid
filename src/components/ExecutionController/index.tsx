@@ -10,8 +10,10 @@ const exampleCode = `console.log("hi");`;
 export function ExecutionController() {
   const [code, setCode] = useState(exampleCode);
 
-  function runCode() {
-    executeCode(code);
+  async function runCode() {
+    const result = await executeCode(code);
+
+    console.log(result);
   }
 
   function terminate() {
