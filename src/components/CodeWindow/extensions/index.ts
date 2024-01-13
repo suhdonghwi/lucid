@@ -23,7 +23,7 @@ const cssTheme = View.EditorView.theme({
   },
 });
 
-export const getBasicExtensions = () => [
+export const basicExtensions = [
   View.keymap.of(Commands.defaultKeymap),
   View.lineNumbers(),
   // View.EditorView.lineWrapping,
