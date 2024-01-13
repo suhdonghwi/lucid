@@ -30,28 +30,10 @@ export function instrument(code: string, options: InstrumentOptions) {
     JSON.stringify(originalAST),
   );
 
-  const skippingNodes = new Set<estree.Node>();
-
   walk(instrumentedAST, {
     enter(node) {
-      if (skippingNodes.has(node)) {
+      if (node.type === "Literal" || node.type === "Identifier") {
         this.skip();
-        return;
-      }
-
-      switch (node.type) {
-        case "VariableDeclarator":
-          skippingNodes.add(node.id);
-          break;
-        case "FunctionDeclaration":
-          skippingNodes.add(node.id);
-          for (const param of node.params) {
-            skippingNodes.add(param);
-          }
-          break;
-        case "MemberExpression":
-          skippingNodes.add(node.property);
-          break;
       }
     },
     leave(node) {
@@ -63,7 +45,6 @@ export function instrument(code: string, options: InstrumentOptions) {
         node.type === "FunctionExpression" ||
         node.type === "ArrowFunctionExpression"
       ) {
-        console.log(node);
         const functionBody: estree.Statement[] =
           node.body.type === "BlockStatement"
             ? node.body.body
