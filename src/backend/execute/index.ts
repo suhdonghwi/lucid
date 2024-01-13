@@ -4,20 +4,32 @@ import { executeWithCallbacks } from "./executeWithCallbacks";
 import { EventCallbacks } from "../instrument";
 
 export async function execute(code: string) {
+  const expressionStack: estree.Node[] = [];
+
   const createEventCallbacks = (
     indexedNodes: estree.Node[],
   ): EventCallbacks => ({
     onFunctionEnter: (sourceFileIndex, nodeIndex) => {
-      console.log("function enter", indexedNodes[nodeIndex]);
+      const node = indexedNodes[nodeIndex];
+      console.log("function enter", node);
     },
     onFunctionLeave: (sourceFileIndex, nodeIndex) => {
-      console.log("function leave", indexedNodes[nodeIndex]);
+      const node = indexedNodes[nodeIndex];
+      console.log("function leave", node);
     },
+
     onExpressionEnter: (sourceFileIndex, nodeIndex) => {
-      console.log("expression enter", indexedNodes[nodeIndex]);
+      const node = indexedNodes[nodeIndex];
+      console.log("expression enter", node);
+
+      expressionStack.push(node);
     },
     onExpressionLeave: (sourceFileIndex, nodeIndex, value) => {
-      console.log("expression leave", indexedNodes[nodeIndex]);
+      const node = indexedNodes[nodeIndex];
+      console.log("expression leave", node);
+
+      expressionStack.pop();
+
       return value;
     },
   });
