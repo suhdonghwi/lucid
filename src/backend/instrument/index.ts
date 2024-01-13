@@ -43,6 +43,9 @@ export function instrument(code: string, options: InstrumentOptions) {
         case "VariableDeclarator":
           skippingNodes.add(node.id);
           break;
+        case "FunctionDeclaration":
+          skippingNodes.add(node.id);
+          break;
         case "MemberExpression":
           skippingNodes.add(node.property);
           break;
@@ -57,6 +60,7 @@ export function instrument(code: string, options: InstrumentOptions) {
         node.type === "FunctionExpression" ||
         node.type === "ArrowFunctionExpression"
       ) {
+        console.log(node);
         const functionBody: estree.Statement[] =
           node.body.type === "BlockStatement"
             ? node.body.body

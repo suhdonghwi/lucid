@@ -13,7 +13,7 @@ export async function execute(code: string) {
   ): EventCallbacks => ({
     onFunctionEnter: (sourceFileIndex, nodeIndex) => {
       const node = indexedNodes[nodeIndex];
-      console.log("function enter", node);
+      // console.log("function enter", node);
 
       logManager.startLog({
         type: "function",
@@ -25,21 +25,21 @@ export async function execute(code: string) {
 
     onFunctionLeave: (sourceFileIndex, nodeIndex) => {
       const node = indexedNodes[nodeIndex];
-      console.log("function leave", node);
+      // console.log("function leave", node);
 
       logManager.finishLog();
     },
 
     onExpressionEnter: (sourceFileIndex, nodeIndex) => {
       const node = indexedNodes[nodeIndex];
-      console.log("expression enter", node);
+      // console.log("expression enter", node);
 
       expressionStack.push(node);
     },
 
     onExpressionLeave: (sourceFileIndex, nodeIndex, value) => {
       const node = indexedNodes[nodeIndex];
-      console.log("expression leave", node);
+      // console.log("expression leave", node);
 
       expressionStack.pop();
 
