@@ -3,9 +3,9 @@ export type EventCallbacks = {
   onFunctionLeave: (sourceFileIndex: number, nodeIndex: number) => void;
 
   onExpressionEnter: (sourceFileIndex: number, nodeIndex: number) => void;
-  onExpressionLeave: (
+  onExpressionLeave: <T>(
     sourceFileIndex: number,
     nodeIndex: number,
-    expression: unknown,
-  ) => void;
+    expression: T,
+  ) => T;
 };
