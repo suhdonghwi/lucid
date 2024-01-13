@@ -45,6 +45,9 @@ export function instrument(code: string, options: InstrumentOptions) {
           break;
         case "FunctionDeclaration":
           skippingNodes.add(node.id);
+          for (const param of node.params) {
+            skippingNodes.add(param);
+          }
           break;
         case "MemberExpression":
           skippingNodes.add(node.property);

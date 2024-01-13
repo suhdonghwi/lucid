@@ -2,13 +2,13 @@ import estree from "estree";
 
 import { EventCallbacks, instrument } from "../instrument";
 
+const EVENT_CALLBACKS_IDENTIFIER = "evc";
+
 type GlobalThisWithEventCallbacks = typeof globalThis & {
-  eventCallbacks?: EventCallbacks;
+  [EVENT_CALLBACKS_IDENTIFIER]?: EventCallbacks;
 };
 
 const globalThisWithEventCallbacks = globalThis as GlobalThisWithEventCallbacks;
-
-const EVENT_CALLBACKS_IDENTIFIER = "eventCallbacks";
 
 function createCodeBlob(input: string) {
   return new Blob([input], { type: "text/javascript" });
