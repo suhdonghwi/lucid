@@ -14,12 +14,13 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx",
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js",
     "baseUrl": "./src",
     "paths": {
       "@/*": ["./*"]
     }
   },
-  "include": ["src", "./pyodide-service-worker.ts"],
+  "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
