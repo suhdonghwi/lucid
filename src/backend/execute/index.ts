@@ -1,12 +1,13 @@
 import estree from "estree";
 
+import { TraceManager } from "@/trace";
+
 import { executeWithCallbacks } from "./executeWithCallbacks";
 import { EventCallbacks } from "../instrument";
-import { ExecutionLogManager } from "./executionLog";
 
 export async function execute(code: string) {
   const expressionStack: estree.Node[] = [];
-  const logManager = new ExecutionLogManager();
+  const traceManager = new TraceManager();
 
   const createEventCallbacks = (
     indexedNodes: estree.Node[],
@@ -15,11 +16,11 @@ export async function execute(code: string) {
       const node = indexedNodes[nodeIndex];
       // console.log("function enter", node);
 
-      logManager.startLog({
+      traceManager.newTraceDepth({
         type: "function",
         caller: expressionStack[expressionStack.length - 1],
         callee: node,
-        innerLog: [],
+        innerTrace: [],
       });
     },
 
@@ -27,7 +28,7 @@ export async function execute(code: string) {
       const node = indexedNodes[nodeIndex];
       // console.log("function leave", node);
 
-      logManager.finishLog();
+      traceManager.finishDepth();
     },
 
     onExpressionEnter: (sourceFileIndex, nodeIndex) => {
@@ -49,5 +50,5 @@ export async function execute(code: string) {
 
   await executeWithCallbacks(code, createEventCallbacks);
 
-  return logManager.getLog();
+  return traceManager.getCurrentTrace();
 }
