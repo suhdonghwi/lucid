@@ -1,8 +1,8 @@
 import { TraceManager } from "@/trace";
-import { locRange } from "@/trace/LocRange";
 
 import { executeWithCallbacks } from "./executeWithCallbacks";
-import { EventCallbacks, IndexedNode } from "../instrument";
+import { EventCallbacks } from "../instrument";
+import { IndexedNode, locRange } from "../IndexedNode";
 
 export async function execute(code: string) {
   const expressionStack: IndexedNode[] = [];

@@ -1,4 +1,5 @@
-import { EventCallbacks, IndexedNode, instrument } from "../instrument";
+import { IndexedNode } from "../IndexedNode";
+import { EventCallbacks, instrument } from "../instrument";
 
 const EVENT_CALLBACKS_IDENTIFIER = "evc";
 

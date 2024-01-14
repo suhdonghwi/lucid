@@ -6,12 +6,11 @@ import estree from "estree";
 import { generate } from "astring";
 
 import { InstrumentOptions } from "./options";
+import { IndexedNode } from "../IndexedNode";
 import {
   wrapExpressionWithEnterLeaveCall,
   wrapStatementsWithEnterLeaveCall,
 } from "./nodeTransforms";
-
-export type IndexedNode = acorn.Node & { index: number; sourceIndex: number };
 
 export function instrument(code: string, options: InstrumentOptions) {
   const originalAST = acorn.parse(code, {

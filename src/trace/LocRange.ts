@@ -1,5 +1,3 @@
-import { IndexedNode } from "@/backend/js/instrument";
-
 /*
  * Location Range of a code
  *  `start` represents the starting byte index of the code
@@ -10,11 +8,3 @@ export type LocRange = {
   start: number;
   end: number;
 };
-
-export function locRange(node: IndexedNode): LocRange {
-  return {
-    sourceIndex: node.sourceIndex,
-    start: node.start,
-    end: node.end,
-  };
-}
