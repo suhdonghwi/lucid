@@ -1,10 +1,10 @@
 export type EventCallbacks = {
-  onFunctionEnter: (sourceFileIndex: number, nodeIndex: number) => void;
-  onFunctionLeave: (sourceFileIndex: number, nodeIndex: number) => void;
+  onFunctionEnter: (sourceIndex: number, nodeIndex: number) => void;
+  onFunctionLeave: (sourceIndex: number, nodeIndex: number) => void;
 
-  onExpressionEnter: (sourceFileIndex: number, nodeIndex: number) => void;
+  onExpressionEnter: (sourceIndex: number, nodeIndex: number) => void;
   onExpressionLeave: <T>(
-    sourceFileIndex: number,
+    sourceIndex: number,
     nodeIndex: number,
     expression: T,
   ) => T;

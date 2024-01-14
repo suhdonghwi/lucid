@@ -57,7 +57,7 @@ export function instrument(code: string, options: InstrumentOptions) {
 
         node.body = wrapStatementsWithEnterLeaveCall({
           eventCallbacksIdentifier: options.eventCallbacksIdentifier,
-          sourceFileIndex: options.sourceFileIndex,
+          sourceIndex: options.sourceIndex,
 
           enterEvent: "onFunctionEnter",
           leaveEvent: "onFunctionLeave",
@@ -71,7 +71,7 @@ export function instrument(code: string, options: InstrumentOptions) {
         this.replace(
           wrapExpressionWithEnterLeaveCall({
             eventCallbacksIdentifier: options.eventCallbacksIdentifier,
-            sourceFileIndex: options.sourceFileIndex,
+            sourceIndex: options.sourceIndex,
 
             enterEvent: "onExpressionEnter",
             leaveEvent: "onExpressionLeave",

@@ -13,7 +13,7 @@ export async function execute(code: string) {
   const createEventCallbacks = (
     indexedNodes: acorn.Node[],
   ): EventCallbacks => ({
-    onFunctionEnter: (sourceFileIndex, nodeIndex) => {
+    onFunctionEnter: (sourceIndex, nodeIndex) => {
       const node = indexedNodes[nodeIndex];
 
       const callerNode = expressionStack[expressionStack.length - 1];
@@ -21,27 +21,27 @@ export async function execute(code: string) {
 
       traceManager.newDepth({
         type: "function_call",
-        caller: locRange(callerNode),
-        callee: locRange(calleeNode),
+        caller: locRange(callerNode, sourceIndex),
+        callee: locRange(calleeNode, sourceIndex),
         innerTrace: [],
       });
     },
 
-    onFunctionLeave: (sourceFileIndex, nodeIndex) => {
+    onFunctionLeave: (sourceIndex, nodeIndex) => {
       const node = indexedNodes[nodeIndex];
       // console.log("function leave", node);
 
       traceManager.finishDepth();
     },
 
-    onExpressionEnter: (sourceFileIndex, nodeIndex) => {
+    onExpressionEnter: (sourceIndex, nodeIndex) => {
       const node = indexedNodes[nodeIndex];
       // console.log("expression enter", node);
 
       expressionStack.push(node);
     },
 
-    onExpressionLeave: (sourceFileIndex, nodeIndex, value) => {
+    onExpressionLeave: (sourceIndex, nodeIndex, value) => {
       const node = indexedNodes[nodeIndex];
       // console.log("expression leave", node);
 

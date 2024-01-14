@@ -19,7 +19,7 @@ export async function executeWithCallbacks(
   createEventCallbacks: (indexedNodes: acorn.Node[]) => EventCallbacks,
 ) {
   const { result: instrumentedCode, indexedNodes } = instrument(code, {
-    sourceFileIndex: 0,
+    sourceIndex: 0,
     eventCallbacksIdentifier: EVENT_CALLBACKS_IDENTIFIER,
   });
   console.log("instrumented code:\n", instrumentedCode);
