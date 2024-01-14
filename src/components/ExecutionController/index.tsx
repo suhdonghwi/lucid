@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js";
 
-import { executeCode, terminateWorker } from "@/backend/js";
+import { generateTrace, terminateWorker } from "@/backend/js";
 
 import { CodeWindow } from "@/components/CodeWindow";
 import * as styles from "./index.css";
@@ -15,7 +15,7 @@ export function ExecutionController() {
   const [code, setCode] = createSignal(INITIAL_CODE);
 
   async function handleRun() {
-    const result = await executeCode(code());
+    const result = await generateTrace(code());
     console.log(result);
   }
 

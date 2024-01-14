@@ -1,10 +1,10 @@
 import { TraceManager } from "@/trace";
 
-import { executeWithCallbacks } from "./executeWithCallbacks";
+import { execute } from "./execute";
 import { EventCallbacks } from "../instrument";
 import { IndexedNode, locRange } from "../IndexedNode";
 
-export async function execute(code: string) {
+export async function generateTrace(code: string) {
   const expressionStack: IndexedNode[] = [];
   const traceManager = new TraceManager();
 
@@ -49,7 +49,7 @@ export async function execute(code: string) {
     },
   });
 
-  await executeWithCallbacks(code, createEventCallbacks);
+  await execute(code, createEventCallbacks);
 
   return traceManager.getCurrentTrace();
 }

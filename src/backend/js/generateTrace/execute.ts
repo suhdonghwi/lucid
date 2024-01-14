@@ -13,7 +13,7 @@ function createCodeBlob(input: string) {
   return new Blob([input], { type: "text/javascript" });
 }
 
-export async function executeWithCallbacks(
+export async function execute(
   code: string,
   createEventCallbacks: (indexedNodes: IndexedNode[]) => EventCallbacks,
 ) {

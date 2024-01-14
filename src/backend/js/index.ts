@@ -1,18 +1,18 @@
 import * as Comlink from "comlink";
 
-import ExecuteWorker from "./executeWorker?worker";
-import { ExecuteWorkerAPI } from "./executeWorker";
+import Worker from "./worker?worker";
+import { WorkerAPI } from "./worker";
 
-let worker = new ExecuteWorker();
-let wrappedWorker = Comlink.wrap<ExecuteWorkerAPI>(worker);
+let worker = new Worker();
+let wrappedWorker = Comlink.wrap<WorkerAPI>(worker);
 
-export function executeCode(code: string) {
-  return wrappedWorker.executeCode(code);
+export function generateTrace(code: string) {
+  return wrappedWorker.generateTrace(code);
 }
 
 export function terminateWorker() {
   worker.terminate();
 
-  worker = new ExecuteWorker();
-  wrappedWorker = Comlink.wrap<ExecuteWorkerAPI>(worker);
+  worker = new Worker();
+  wrappedWorker = Comlink.wrap<WorkerAPI>(worker);
 }
