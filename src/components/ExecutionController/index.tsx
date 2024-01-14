@@ -5,7 +5,11 @@ import { executeCode, terminateWorker } from "@/backend/js";
 import { CodeWindow } from "@/components/CodeWindow";
 import * as styles from "./index.css";
 
-const INITIAL_CODE = `console.log("hello, world!");`;
+const INITIAL_CODE = `function foo() {
+  console.log("hi");
+}
+
+foo();`;
 
 export function ExecutionController() {
   const [code, setCode] = createSignal(INITIAL_CODE);

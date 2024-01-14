@@ -16,7 +16,7 @@ export async function execute(code: string) {
       const node = indexedNodes[nodeIndex];
       // console.log("function enter", node);
 
-      traceManager.newTraceDepth({
+      traceManager.newDepth({
         type: "function",
         caller: expressionStack[expressionStack.length - 1],
         callee: node,
