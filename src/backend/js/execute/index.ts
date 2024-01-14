@@ -11,7 +11,7 @@ export async function execute(code: string) {
   const createEventCallbacks = (
     indexedNodes: IndexedNode[],
   ): EventCallbacks => ({
-    onFunctionEnter: (sourceIndex, nodeIndex) => {
+    onFunctionEnter: (nodeIndex) => {
       const node = indexedNodes[nodeIndex];
 
       const callerNode = expressionStack[expressionStack.length - 1];
@@ -25,21 +25,21 @@ export async function execute(code: string) {
       });
     },
 
-    onFunctionLeave: (sourceIndex, nodeIndex) => {
+    onFunctionLeave: (nodeIndex) => {
       const node = indexedNodes[nodeIndex];
       // console.log("function leave", node);
 
       traceManager.finishDepth();
     },
 
-    onExpressionEnter: (sourceIndex, nodeIndex) => {
+    onExpressionEnter: (nodeIndex) => {
       const node = indexedNodes[nodeIndex];
       // console.log("expression enter", node);
 
       expressionStack.push(node);
     },
 
-    onExpressionLeave: (sourceIndex, nodeIndex, value) => {
+    onExpressionLeave: (nodeIndex, value) => {
       const node = indexedNodes[nodeIndex];
       // console.log("expression leave", node);
 
