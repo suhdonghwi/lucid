@@ -6,8 +6,8 @@ type ModuleTrace = {
   innerTrace: ExecutionTrace[];
 };
 
-type FunctionTrace = {
-  type: "function";
+type FunctionCallTrace = {
+  type: "function_call";
 
   caller: estree.Node;
   callee: estree.Node;
@@ -15,7 +15,7 @@ type FunctionTrace = {
   innerTrace: ExecutionTrace[];
 };
 
-export type ExecutionTrace = ModuleTrace | FunctionTrace;
+export type ExecutionTrace = ModuleTrace | FunctionCallTrace;
 
 export class TraceManager {
   private readonly traceStack: ExecutionTrace[] = [

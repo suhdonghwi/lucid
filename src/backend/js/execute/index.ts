@@ -17,7 +17,7 @@ export async function execute(code: string) {
       // console.log("function enter", node);
 
       traceManager.newDepth({
-        type: "function",
+        type: "function_call",
         caller: expressionStack[expressionStack.length - 1],
         callee: node,
         innerTrace: [],
