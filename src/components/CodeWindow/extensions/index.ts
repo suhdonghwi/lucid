@@ -28,7 +28,6 @@ const githubLightTheme = githubLightInit({
   theme: "light",
   settings: {
     background: "white",
-    gutterBackground: "transparent",
     fontFamily: "JetBrains Mono, monospace",
   },
 });
