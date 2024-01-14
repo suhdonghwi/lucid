@@ -1,8 +1,9 @@
 import { createSignal } from "solid-js";
 
-import { CodeWindow } from "../CodeWindow";
+import { executeCode, terminateWorker } from "@/backend/js";
+
+import { CodeWindow } from "@/components/CodeWindow";
 import * as styles from "./index.css";
-import { executeCode, terminateWorker } from "@/backend";
 
 const INITIAL_CODE = `console.log("hello, world!");`;
 
