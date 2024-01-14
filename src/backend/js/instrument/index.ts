@@ -23,14 +23,14 @@ function isExpression(node: estree.Node): node is estree.Expression {
 export function instrument(code: string, options: InstrumentOptions) {
   const originalAST = acorn.parse(code, {
     ecmaVersion: 2024,
-  }) as estree.Program;
+  });
   const indexedNodes = indexAST(originalAST);
 
-  const instrumentedAST: estree.Program = JSON.parse(
+  const instrumentedAST: acorn.Program = JSON.parse(
     JSON.stringify(originalAST),
   );
 
-  walk(instrumentedAST, {
+  walk(instrumentedAST as estree.Program, {
     enter(node) {
       if (node.type === "Literal" || node.type === "Identifier") {
         this.skip();
@@ -90,10 +90,10 @@ export function instrument(code: string, options: InstrumentOptions) {
   };
 }
 
-function indexAST(ast: estree.Program): estree.Node[] {
+function indexAST(ast: acorn.Program): acorn.Node[] {
   const nodes: estree.Node[] = [];
 
-  walk(ast, {
+  walk(ast as estree.Program, {
     enter(node) {
       // @ts-expect-error index is not a valid property on estree nodes
       node.index = nodes.length;
@@ -101,7 +101,7 @@ function indexAST(ast: estree.Program): estree.Node[] {
     },
   });
 
-  return nodes;
+  return nodes as acorn.Node[];
 }
 
 export type { EventCallbacks } from "./eventCallbacks";

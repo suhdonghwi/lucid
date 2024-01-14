@@ -1,4 +1,4 @@
-import estree from "estree";
+import * as acorn from "acorn";
 
 import { TraceManager } from "@/trace";
 
@@ -6,15 +6,14 @@ import { executeWithCallbacks } from "./executeWithCallbacks";
 import { EventCallbacks } from "../instrument";
 
 export async function execute(code: string) {
-  const expressionStack: estree.Node[] = [];
+  const expressionStack: acorn.Node[] = [];
   const traceManager = new TraceManager();
 
   const createEventCallbacks = (
-    indexedNodes: estree.Node[],
+    indexedNodes: acorn.Node[],
   ): EventCallbacks => ({
     onFunctionEnter: (sourceFileIndex, nodeIndex) => {
       const node = indexedNodes[nodeIndex];
-      // console.log("function enter", node);
 
       traceManager.newDepth({
         type: "function_call",

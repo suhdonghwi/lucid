@@ -1,4 +1,4 @@
-import estree from "estree";
+import * as acorn from "acorn";
 
 import { EventCallbacks, instrument } from "../instrument";
 
@@ -16,7 +16,7 @@ function createCodeBlob(input: string) {
 
 export async function executeWithCallbacks(
   code: string,
-  createEventCallbacks: (indexedNodes: estree.Node[]) => EventCallbacks,
+  createEventCallbacks: (indexedNodes: acorn.Node[]) => EventCallbacks,
 ) {
   const { result: instrumentedCode, indexedNodes } = instrument(code, {
     sourceFileIndex: 0,

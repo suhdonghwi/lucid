@@ -1,4 +1,4 @@
-import estree from "estree";
+import { LocRange } from "./LocRange";
 
 type ModuleTrace = {
   type: "module";
@@ -9,8 +9,8 @@ type ModuleTrace = {
 type FunctionCallTrace = {
   type: "function_call";
 
-  caller: estree.Node;
-  callee: estree.Node;
+  caller: LocRange;
+  callee: LocRange;
 
   innerTrace: ExecutionTrace[];
 };
