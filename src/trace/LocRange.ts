@@ -1,3 +1,5 @@
+import * as acorn from "acorn";
+
 /*
  * Location Range of a code
  *  `start` represents the starting byte index of the code
@@ -7,3 +9,10 @@ export type LocRange = {
   start: number;
   end: number;
 };
+
+export function locRange(node: acorn.Node): LocRange {
+  return {
+    start: node.start,
+    end: node.end,
+  };
+}

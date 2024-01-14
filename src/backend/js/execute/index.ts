@@ -1,6 +1,7 @@
 import * as acorn from "acorn";
 
 import { TraceManager } from "@/trace";
+import { locRange } from "@/trace/LocRange";
 
 import { executeWithCallbacks } from "./executeWithCallbacks";
 import { EventCallbacks } from "../instrument";
@@ -15,10 +16,13 @@ export async function execute(code: string) {
     onFunctionEnter: (sourceFileIndex, nodeIndex) => {
       const node = indexedNodes[nodeIndex];
 
+      const callerNode = expressionStack[expressionStack.length - 1];
+      const calleeNode = node;
+
       traceManager.newDepth({
         type: "function_call",
-        caller: expressionStack[expressionStack.length - 1],
-        callee: node,
+        caller: locRange(callerNode),
+        callee: locRange(calleeNode),
         innerTrace: [],
       });
     },
