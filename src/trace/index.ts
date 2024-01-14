@@ -29,8 +29,8 @@ export class TraceManager {
     return this.traceStack[this.traceStack.length - 1];
   }
 
-  newTraceDepth(log: ExecutionTrace) {
-    this.traceStack.push(log);
+  newDepth(trace: ExecutionTrace) {
+    this.traceStack.push(trace);
   }
 
   finishDepth() {
