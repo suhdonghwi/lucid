@@ -1,6 +1,4 @@
-import * as acorn from "acorn";
-
-import { EventCallbacks, instrument } from "../instrument";
+import { EventCallbacks, IndexedNode, instrument } from "../instrument";
 
 const EVENT_CALLBACKS_IDENTIFIER = "evc";
 
@@ -16,7 +14,7 @@ function createCodeBlob(input: string) {
 
 export async function executeWithCallbacks(
   code: string,
-  createEventCallbacks: (indexedNodes: acorn.Node[]) => EventCallbacks,
+  createEventCallbacks: (indexedNodes: IndexedNode[]) => EventCallbacks,
 ) {
   const { result: instrumentedCode, indexedNodes } = instrument(code, {
     sourceIndex: 0,

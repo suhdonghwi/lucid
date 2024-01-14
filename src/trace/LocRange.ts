@@ -1,4 +1,4 @@
-import * as acorn from "acorn";
+import { IndexedNode } from "@/backend/js/instrument";
 
 /*
  * Location Range of a code
@@ -11,9 +11,9 @@ export type LocRange = {
   end: number;
 };
 
-export function locRange(node: acorn.Node, sourceIndex: number): LocRange {
+export function locRange(node: IndexedNode): LocRange {
   return {
-    sourceIndex,
+    sourceIndex: node.sourceIndex,
     start: node.start,
     end: node.end,
   };

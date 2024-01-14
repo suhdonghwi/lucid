@@ -11,20 +11,13 @@ import {
   wrapStatementsWithEnterLeaveCall,
 } from "./nodeTransforms";
 
-function isExpression(node: estree.Node): node is estree.Expression {
-  return (
-    node.type.endsWith("Expression") ||
-    node.type === "Identifier" ||
-    node.type === "Literal" ||
-    node.type === "TemplateLiteral"
-  );
-}
+export type IndexedNode = acorn.Node & { index: number; sourceIndex: number };
 
 export function instrument(code: string, options: InstrumentOptions) {
   const originalAST = acorn.parse(code, {
     ecmaVersion: 2024,
   });
-  const indexedNodes = indexAST(originalAST);
+  const indexedNodes = indexAST(originalAST, options.sourceIndex);
 
   const instrumentedAST: acorn.Program = JSON.parse(
     JSON.stringify(originalAST),
@@ -90,18 +83,31 @@ export function instrument(code: string, options: InstrumentOptions) {
   };
 }
 
-function indexAST(ast: acorn.Program): acorn.Node[] {
-  const nodes: estree.Node[] = [];
+function indexAST(ast: acorn.Program, sourceIndex: number): IndexedNode[] {
+  const nodes: IndexedNode[] = [];
 
   walk(ast as estree.Program, {
     enter(node) {
       // @ts-expect-error index is not a valid property on estree nodes
       node.index = nodes.length;
-      nodes.push(node);
+
+      // @ts-expect-error sourceIndex is not a valid property on estree nodes
+      node.sourceIndex = sourceIndex;
+
+      nodes.push(node as IndexedNode);
     },
   });
 
-  return nodes as acorn.Node[];
+  return nodes;
+}
+
+function isExpression(node: estree.Node): node is estree.Expression {
+  return (
+    node.type.endsWith("Expression") ||
+    node.type === "Identifier" ||
+    node.type === "Literal" ||
+    node.type === "TemplateLiteral"
+  );
 }
 
 export type { EventCallbacks } from "./eventCallbacks";

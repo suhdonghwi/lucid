@@ -1,17 +1,15 @@
-import * as acorn from "acorn";
-
 import { TraceManager } from "@/trace";
 import { locRange } from "@/trace/LocRange";
 
 import { executeWithCallbacks } from "./executeWithCallbacks";
-import { EventCallbacks } from "../instrument";
+import { EventCallbacks, IndexedNode } from "../instrument";
 
 export async function execute(code: string) {
-  const expressionStack: acorn.Node[] = [];
+  const expressionStack: IndexedNode[] = [];
   const traceManager = new TraceManager();
 
   const createEventCallbacks = (
-    indexedNodes: acorn.Node[],
+    indexedNodes: IndexedNode[],
   ): EventCallbacks => ({
     onFunctionEnter: (sourceIndex, nodeIndex) => {
       const node = indexedNodes[nodeIndex];
@@ -21,8 +19,8 @@ export async function execute(code: string) {
 
       traceManager.newDepth({
         type: "function_call",
-        caller: locRange(callerNode, sourceIndex),
-        callee: locRange(calleeNode, sourceIndex),
+        caller: locRange(callerNode),
+        callee: locRange(calleeNode),
         innerTrace: [],
       });
     },
