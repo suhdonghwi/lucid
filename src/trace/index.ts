@@ -1,12 +1,12 @@
 import { LocRange } from "./LocRange";
 
-type ModuleTrace = {
+export type ModuleTrace = {
   type: "module";
 
   innerTrace: ExecutionTrace[];
 };
 
-type FunctionCallTrace = {
+export type FunctionCallTrace = {
   type: "function_call";
 
   caller: LocRange;
