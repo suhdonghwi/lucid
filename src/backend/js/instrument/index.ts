@@ -15,7 +15,7 @@ export function instrument(code: string, options: InstrumentOptions) {
   const originalAST = acorn.parse(code, {
     ecmaVersion: 2024,
   });
-  const indexedNodes = indexAST(originalAST, options.sourceIndex);
+  const indexedAST = indexAST(originalAST, options.sourceIndex);
 
   const instrumentedAST: acorn.Program = JSON.parse(
     JSON.stringify(originalAST),
@@ -75,7 +75,7 @@ export function instrument(code: string, options: InstrumentOptions) {
 
   return {
     result: generate(instrumentedAST),
-    indexedNodes,
+    indexedAST,
   };
 }
 

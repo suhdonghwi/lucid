@@ -15,16 +15,16 @@ function createCodeBlob(input: string) {
 
 export async function execute(
   code: string,
-  createEventCallbacks: (indexedNodes: NodeWithIndex[]) => EventCallbacks,
+  createEventCallbacks: (indexedAST: NodeWithIndex[]) => EventCallbacks,
 ) {
-  const { result: instrumentedCode, indexedNodes } = instrument(code, {
+  const { result: instrumentedCode, indexedAST } = instrument(code, {
     sourceIndex: 0,
     eventCallbacksIdentifier: EVENT_CALLBACKS_IDENTIFIER,
   });
   console.log("instrumented code:\n", instrumentedCode);
 
   globalThisWithEventCallbacks[EVENT_CALLBACKS_IDENTIFIER] =
-    createEventCallbacks(indexedNodes);
+    createEventCallbacks(indexedAST);
 
   const codeBlob = createCodeBlob(instrumentedCode);
   const objectURL = URL.createObjectURL(codeBlob);

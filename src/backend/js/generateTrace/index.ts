@@ -9,10 +9,10 @@ export async function generateTrace(code: string) {
   const traceManager = new TraceManager();
 
   const createEventCallbacks = (
-    indexedNodes: NodeWithIndex[],
+    indexedAST: NodeWithIndex[],
   ): EventCallbacks => ({
     onFunctionEnter: (nodeIndex) => {
-      const node = indexedNodes[nodeIndex];
+      const node = indexedAST[nodeIndex];
 
       const callerNode = expressionStack[expressionStack.length - 1];
       const calleeNode = node;
@@ -26,21 +26,21 @@ export async function generateTrace(code: string) {
     },
 
     onFunctionLeave: (nodeIndex) => {
-      const node = indexedNodes[nodeIndex];
+      const node = indexedAST[nodeIndex];
       // console.log("function leave", node);
 
       traceManager.finishDepth();
     },
 
     onExpressionEnter: (nodeIndex) => {
-      const node = indexedNodes[nodeIndex];
+      const node = indexedAST[nodeIndex];
       // console.log("expression enter", node);
 
       expressionStack.push(node);
     },
 
     onExpressionLeave: (nodeIndex, value) => {
-      const node = indexedNodes[nodeIndex];
+      const node = indexedAST[nodeIndex];
       // console.log("expression leave", node);
 
       expressionStack.pop();
