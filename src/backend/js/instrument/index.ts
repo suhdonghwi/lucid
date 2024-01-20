@@ -11,15 +11,13 @@ import {
   wrapStatementsWithEnterLeaveCall,
 } from "./nodeTransforms";
 
-export function instrument(code: string, options: InstrumentOptions) {
-  const originalAST = acorn.parse(code, {
-    ecmaVersion: 2024,
-  });
+export function instrument(
+  originalAST: acorn.Program,
+  options: InstrumentOptions,
+) {
   const indexedAST = indexAST(originalAST, options.sourceIndex);
 
-  const instrumentedAST: acorn.Program = JSON.parse(
-    JSON.stringify(originalAST),
-  );
+  const instrumentedAST: acorn.Program = structuredClone(originalAST);
 
   walk(instrumentedAST as estree.Program, {
     enter(node) {
