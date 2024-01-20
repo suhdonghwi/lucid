@@ -2,8 +2,10 @@ import * as acorn from "acorn";
 import { walk } from "estree-walker";
 import estree from "estree";
 
+import { assert } from "@/utils/assert";
+
 import { InstrumentOptions } from "./options";
-import { indexAST } from "../indexing";
+import { NodeWithIndex, indexAST } from "../indexing";
 import {
   wrapExpressionWithEnterLeaveCall,
   wrapStatementsWithEnterLeaveCall,
@@ -24,8 +26,10 @@ export function instrument(
       }
     },
     leave(node) {
-      // @ts-expect-error index is not a valid property on estree nodes
-      const nodeIndex: number = node.index;
+      const nodeWithIndex = node as NodeWithIndex;
+      assert(nodeWithIndex.index !== undefined, "AST is not indexed");
+
+      const nodeIndex = nodeWithIndex.index;
 
       if (
         node.type === "FunctionDeclaration" ||
