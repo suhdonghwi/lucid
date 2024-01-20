@@ -29,11 +29,7 @@ export function instrument(
 
       const nodeIndex = nodeWithIndex.index;
 
-      if (
-        node.type === "FunctionDeclaration" ||
-        node.type === "FunctionExpression" ||
-        node.type === "ArrowFunctionExpression"
-      ) {
+      if (isFunction(node)) {
         const functionBody: estree.Statement[] =
           node.body.type === "BlockStatement"
             ? node.body.body
@@ -72,6 +68,19 @@ export function instrument(
   });
 
   return instrumentedAST;
+}
+
+function isFunction(
+  node: estree.Node,
+): node is
+  | estree.FunctionDeclaration
+  | estree.FunctionExpression
+  | estree.ArrowFunctionExpression {
+  return (
+    node.type === "FunctionDeclaration" ||
+    node.type === "FunctionExpression" ||
+    node.type === "ArrowFunctionExpression"
+  );
 }
 
 function isExpression(node: estree.Node): node is estree.Expression {
