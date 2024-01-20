@@ -5,7 +5,7 @@ import estree from "estree";
 import { generate } from "astring";
 
 import { InstrumentOptions } from "./options";
-import { indexAST } from "../IndexedNode";
+import { indexAST } from "../indexing";
 import {
   wrapExpressionWithEnterLeaveCall,
   wrapStatementsWithEnterLeaveCall,

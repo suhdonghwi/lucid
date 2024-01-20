@@ -4,13 +4,17 @@ import { walk } from "estree-walker";
 
 import { LocRange } from "@/trace/LocRange";
 
-export type IndexedNode = acorn.Node & { index: number; sourceIndex: number };
+export type NodeWithIndex = acorn.Node & { index: number; sourceIndex: number };
 
+// 'Indexing' is the process of
+// - Walking the AST, while storing nodes in an array
+// - Adding an 'index' property to each node, which is the index of the node in the array
+// - Adding a 'sourceIndex' property to each node, which is the index of the source file
 export function indexAST(
   ast: acorn.Program,
   sourceIndex: number,
-): IndexedNode[] {
-  const nodes: IndexedNode[] = [];
+): NodeWithIndex[] {
+  const nodes: NodeWithIndex[] = [];
 
   walk(ast as estree.Program, {
     enter(node) {
@@ -20,14 +24,14 @@ export function indexAST(
       // @ts-expect-error sourceIndex is not a valid property on estree nodes
       node.sourceIndex = sourceIndex;
 
-      nodes.push(node as IndexedNode);
+      nodes.push(node as NodeWithIndex);
     },
   });
 
   return nodes;
 }
 
-export function locRange(node: IndexedNode): LocRange {
+export function locRange(node: NodeWithIndex): LocRange {
   return {
     sourceIndex: node.sourceIndex,
     start: node.start,

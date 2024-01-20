@@ -2,14 +2,14 @@ import { TraceManager } from "@/trace";
 
 import { execute } from "./execute";
 import { EventCallbacks } from "../instrument";
-import { IndexedNode, locRange } from "../IndexedNode";
+import { NodeWithIndex, locRange } from "../indexing";
 
 export async function generateTrace(code: string) {
-  const expressionStack: IndexedNode[] = [];
+  const expressionStack: NodeWithIndex[] = [];
   const traceManager = new TraceManager();
 
   const createEventCallbacks = (
-    indexedNodes: IndexedNode[],
+    indexedNodes: NodeWithIndex[],
   ): EventCallbacks => ({
     onFunctionEnter: (nodeIndex) => {
       const node = indexedNodes[nodeIndex];
