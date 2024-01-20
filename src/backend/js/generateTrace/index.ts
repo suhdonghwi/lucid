@@ -2,7 +2,7 @@ import { TraceManager } from "@/trace";
 
 import { execute } from "./execute";
 import { EventCallbacks } from "../instrument";
-import { NodeWithIndex, codeRange } from "../indexing";
+import { NodeWithIndex, locRange } from "../indexing";
 
 export async function generateTrace(code: string) {
   const expressionStack: NodeWithIndex[] = [];
@@ -19,8 +19,8 @@ export async function generateTrace(code: string) {
 
       traceManager.newDepth({
         type: "function_call",
-        caller: codeRange(callerNode),
-        callee: codeRange(calleeNode),
+        caller: locRange(callerNode),
+        callee: locRange(calleeNode),
         innerTrace: [],
       });
     },
