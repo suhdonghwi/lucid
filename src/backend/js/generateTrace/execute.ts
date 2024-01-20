@@ -1,4 +1,4 @@
-import { NodeWithIndex } from "../indexing";
+import { IndexedAST } from "../indexing";
 import { EventCallbacks, instrument } from "../instrument";
 
 const EVENT_CALLBACKS_IDENTIFIER = "evc";
@@ -15,7 +15,7 @@ function createCodeBlob(input: string) {
 
 export async function execute(
   code: string,
-  createEventCallbacks: (indexedAST: NodeWithIndex[]) => EventCallbacks,
+  createEventCallbacks: (indexedAST: IndexedAST) => EventCallbacks,
 ) {
   const { result: instrumentedCode, indexedAST } = instrument(code, {
     sourceIndex: 0,
