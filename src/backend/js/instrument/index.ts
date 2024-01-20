@@ -1,12 +1,11 @@
 import * as acorn from "acorn";
-
 import { walk } from "estree-walker";
 import estree from "estree";
 
 import { generate } from "astring";
 
 import { InstrumentOptions } from "./options";
-import { IndexedNode } from "../IndexedNode";
+import { indexAST } from "../IndexedNode";
 import {
   wrapExpressionWithEnterLeaveCall,
   wrapStatementsWithEnterLeaveCall,
@@ -78,24 +77,6 @@ export function instrument(code: string, options: InstrumentOptions) {
     result: generate(instrumentedAST),
     indexedNodes,
   };
-}
-
-function indexAST(ast: acorn.Program, sourceIndex: number): IndexedNode[] {
-  const nodes: IndexedNode[] = [];
-
-  walk(ast as estree.Program, {
-    enter(node) {
-      // @ts-expect-error index is not a valid property on estree nodes
-      node.index = nodes.length;
-
-      // @ts-expect-error sourceIndex is not a valid property on estree nodes
-      node.sourceIndex = sourceIndex;
-
-      nodes.push(node as IndexedNode);
-    },
-  });
-
-  return nodes;
 }
 
 function isExpression(node: estree.Node): node is estree.Expression {
