@@ -2,8 +2,6 @@ import * as acorn from "acorn";
 import { walk } from "estree-walker";
 import estree from "estree";
 
-import { generate } from "astring";
-
 import { InstrumentOptions } from "./options";
 import { indexAST } from "../indexing";
 import {
@@ -72,7 +70,7 @@ export function instrument(
   });
 
   return {
-    result: generate(instrumentedAST),
+    result: instrumentedAST,
     indexedAST,
   };
 }
