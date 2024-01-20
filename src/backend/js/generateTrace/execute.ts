@@ -21,7 +21,7 @@ export async function execute(
   createEventCallbacks: (indexedAST: IndexedAST) => EventCallbacks,
 ) {
   const originalAST = acorn.parse(code, { ecmaVersion: "latest" });
-  const indexedAST = indexAST(originalAST, 0);
+  const indexedAST = indexAST(originalAST);
 
   const instrumentedAST = instrument(originalAST, {
     sourceIndex: 0,
