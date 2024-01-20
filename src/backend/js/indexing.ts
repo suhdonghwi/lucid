@@ -6,7 +6,7 @@ import { LocRange } from "@/trace/LocRange";
 
 export type NodeWithIndex = acorn.Node & { index: number; sourceIndex: number };
 
-// 'Indexing' is the process of
+// 'Indexing an AST' is the process of...
 // - Walking the AST, while storing nodes in an array
 // - Adding an 'index' property to each node, which is the index of the node in the array
 // - Adding a 'sourceIndex' property to each node, which is the index of the source file
