@@ -5,6 +5,7 @@
  */
 export type LocRange = {
   sourceIndex: number;
+
   start: number;
   end: number;
 };
