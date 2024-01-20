@@ -5,7 +5,7 @@ import estree from "estree";
 import { assert } from "@/utils/assert";
 
 import { InstrumentOptions } from "./options";
-import { NodeWithIndex, indexAST } from "../indexing";
+import { NodeWithIndex } from "../indexing";
 import {
   wrapExpressionWithEnterLeaveCall,
   wrapStatementsWithEnterLeaveCall,
@@ -15,8 +15,6 @@ export function instrument(
   originalAST: acorn.Program,
   options: InstrumentOptions,
 ) {
-  const indexedAST = indexAST(originalAST, options.sourceIndex);
-
   const instrumentedAST: acorn.Program = structuredClone(originalAST);
 
   walk(instrumentedAST as estree.Program, {
@@ -73,10 +71,7 @@ export function instrument(
     },
   });
 
-  return {
-    result: instrumentedAST,
-    indexedAST,
-  };
+  return instrumentedAST;
 }
 
 function isExpression(node: estree.Node): node is estree.Expression {
