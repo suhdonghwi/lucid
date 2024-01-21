@@ -1,9 +1,6 @@
-import * as acorn from "acorn";
-import { generate } from "astring";
-
 import { Repository } from "@/repository";
 
-import { EventCallbacks, NodeWithIndex, instrument } from "../instrument";
+import { EventCallbacks } from "../instrument";
 
 const EVENT_CALLBACKS_IDENTIFIER = "evc";
 
@@ -17,39 +14,20 @@ function createCodeBlob(input: string) {
   return new Blob([input], { type: "text/javascript" });
 }
 
-function parseRepository(repo: Repository) {
-  const parsedRepo: Repository<acorn.Program> = new Map();
-
-  for (const [path, code] of repo.entries()) {
-    parsedRepo.set(path, acorn.parse(code, { ecmaVersion: "latest" }));
-  }
-
-  return parsedRepo;
-}
-
 export async function execute(
   repo: Repository,
-  createEventCallbacks: (
-    getNodeByIndex: (sourceIndex: number, nodeIndex: number) => NodeWithIndex,
-  ) => EventCallbacks,
+  eventCallbacks: EventCallbacks,
 ) {
-  const parsedRepo = parseRepository(repo);
-  const { result: instrumentedRepo, getNodeByIndex } = instrument(parsedRepo, {
-    eventCallbacksIdentifier: EVENT_CALLBACKS_IDENTIFIER,
-  });
-
-  const entryAST = instrumentedRepo.get("index.js");
-  if (entryAST === undefined) {
+  const entryCode = repo.get("index.js");
+  if (entryCode === undefined) {
     throw new Error("Entry file not found");
   }
 
-  const instrumentedCode = generate(entryAST);
-  console.log("instrumented code:\n", instrumentedCode);
+  console.log("entry code:\n", entryCode);
 
-  globalThisWithEventCallbacks[EVENT_CALLBACKS_IDENTIFIER] =
-    createEventCallbacks(getNodeByIndex);
+  globalThisWithEventCallbacks[EVENT_CALLBACKS_IDENTIFIER] = eventCallbacks;
 
-  const codeBlob = createCodeBlob(instrumentedCode);
+  const codeBlob = createCodeBlob(entryCode);
   const objectURL = URL.createObjectURL(codeBlob);
   await import(
     /* @vite-ignore */

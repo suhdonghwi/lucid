@@ -1,16 +1,37 @@
+import * as acorn from "acorn";
+import { generate } from "astring";
+
 import { TraceManager } from "@/trace";
+import { Repository } from "@/repository";
 
 import { execute } from "./execute";
-import { EventCallbacks, NodeWithIndex } from "../instrument";
-import { Repository } from "@/repository";
+import { EventCallbacks, NodeWithIndex, instrument } from "../instrument";
+
+function parseRepository(repo: Repository) {
+  const parsedRepo: Repository<acorn.Program> = new Map();
+
+  for (const [path, code] of repo.entries()) {
+    parsedRepo.set(path, acorn.parse(code, { ecmaVersion: "latest" }));
+  }
+
+  return parsedRepo;
+}
 
 export async function generateTrace(repo: Repository) {
   const expressionStack: NodeWithIndex[] = [];
   const traceManager = new TraceManager();
 
-  const createEventCallbacks = (
-    getNodeByIndex: (sourceIndex: number, nodeIndex: number) => NodeWithIndex,
-  ): EventCallbacks => ({
+  const parsedRepo = parseRepository(repo);
+  const { result: instrumentedRepo, getNodeByIndex } = instrument(parsedRepo, {
+    eventCallbacksIdentifier: "evc",
+  });
+
+  const generatedRepo: Repository = new Map();
+  for (const [path, ast] of instrumentedRepo.entries()) {
+    generatedRepo.set(path, generate(ast));
+  }
+
+  const eventCallbacks: EventCallbacks = {
     onFunctionEnter: (sourceIndex, nodeIndex) => {
       const node = getNodeByIndex(sourceIndex, nodeIndex);
 
@@ -55,9 +76,9 @@ export async function generateTrace(repo: Repository) {
 
       return value;
     },
-  });
+  };
 
-  await execute(repo, createEventCallbacks);
+  await execute(generatedRepo, eventCallbacks);
 
   return traceManager.getCurrentTrace();
 }
