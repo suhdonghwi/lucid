@@ -17,6 +17,27 @@ export type IndexedRepository = { path: string; indexedAST: IndexedAST }[];
 export type NodeWithIndex = acorn.Node & { index: number };
 export type IndexedAST = NodeWithIndex[];
 
+export function instrumentRepository(
+  parsedRepo: Repository<acorn.Program>,
+  options: InstrumentOptions,
+) {
+  const indexedRepo: IndexedRepository = [];
+  const instrumentedRepo: Repository<acorn.Program> = new Map();
+
+  for (const [path, parsedCode] of parsedRepo.entries()) {
+    const { result: instrumentedAST, indexedAST } = instrument(
+      parsedCode,
+      indexedRepo.length,
+      options,
+    );
+
+    indexedRepo.push({ path, indexedAST });
+    instrumentedRepo.set(path, instrumentedAST);
+  }
+
+  return { result: instrumentedRepo, indexedRepo };
+}
+
 function instrument(
   originalAST: acorn.Program,
   sourceIndex: number,
@@ -85,27 +106,6 @@ function instrument(
   });
 
   return { result: instrumentedAST, indexedAST };
-}
-
-export function instrumentRepository(
-  parsedRepo: Repository<acorn.Program>,
-  options: InstrumentOptions,
-) {
-  const indexedRepo: IndexedRepository = [];
-  const instrumentedRepo: Repository<acorn.Program> = new Map();
-
-  for (const [path, parsedCode] of parsedRepo.entries()) {
-    const { result: instrumentedAST, indexedAST } = instrument(
-      parsedCode,
-      indexedRepo.length,
-      options,
-    );
-
-    indexedRepo.push({ path, indexedAST });
-    instrumentedRepo.set(path, instrumentedAST);
-  }
-
-  return { result: instrumentedRepo, indexedRepo };
 }
 
 function isFunction(
