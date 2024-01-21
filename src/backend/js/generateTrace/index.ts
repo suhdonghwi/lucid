@@ -1,8 +1,7 @@
 import { TraceManager } from "@/trace";
 
 import { execute } from "./execute";
-import { EventCallbacks } from "../instrument";
-import { IndexedAST, NodeWithIndex, locRange } from "../indexing";
+import { EventCallbacks, IndexedAST, NodeWithIndex } from "../instrument";
 
 export async function generateTrace(code: string) {
   const expressionStack: NodeWithIndex[] = [];

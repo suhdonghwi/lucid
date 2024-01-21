@@ -5,27 +5,35 @@ import estree from "estree";
 import { assert } from "@/utils/assert";
 
 import { InstrumentOptions } from "./options";
-import { NodeWithIndex } from "../indexing";
 import {
   wrapExpressionWithEnterLeaveCall,
   wrapStatementsWithEnterLeaveCall,
 } from "./nodeTransforms";
 
+export type NodeWithIndex = acorn.Node & { index: number };
+export type IndexedAST = NodeWithIndex[];
+
 export function instrument(
   originalAST: acorn.Program,
   options: InstrumentOptions,
 ) {
+  const indexedAST: NodeWithIndex[] = [];
   const instrumentedAST: acorn.Program = structuredClone(originalAST);
 
   walk(instrumentedAST as estree.Program, {
     enter(node) {
       if (node.type === "Literal" || node.type === "Identifier") {
         this.skip();
+        return;
       }
+
+      // @ts-expect-error index is not a valid property on estree nodes
+      node.index = indexedAST.length;
+      indexedAST.push(node as NodeWithIndex);
     },
     leave(node) {
       const nodeWithIndex = node as NodeWithIndex;
-      assert(nodeWithIndex.index !== undefined, "AST is not indexed");
+      assert(nodeWithIndex.index !== undefined, "Node has no index property");
 
       const nodeIndex = nodeWithIndex.index;
 
@@ -67,7 +75,7 @@ export function instrument(
     },
   });
 
-  return instrumentedAST;
+  return { result: instrumentedAST, indexedAST };
 }
 
 function isFunction(

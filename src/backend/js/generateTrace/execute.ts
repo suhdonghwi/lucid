@@ -1,8 +1,7 @@
 import * as acorn from "acorn";
 import { generate } from "astring";
 
-import { IndexedAST, indexAST } from "../indexing";
-import { EventCallbacks, instrument } from "../instrument";
+import { EventCallbacks, IndexedAST, instrument } from "../instrument";
 
 const EVENT_CALLBACKS_IDENTIFIER = "evc";
 
@@ -21,9 +20,8 @@ export async function execute(
   createEventCallbacks: (indexedAST: IndexedAST) => EventCallbacks,
 ) {
   const originalAST = acorn.parse(code, { ecmaVersion: "latest" });
-  const indexedAST = indexAST(originalAST);
 
-  const instrumentedAST = instrument(originalAST, {
+  const { result: instrumentedAST, indexedAST } = instrument(originalAST, {
     sourceIndex: 0,
     eventCallbacksIdentifier: EVENT_CALLBACKS_IDENTIFIER,
   });
