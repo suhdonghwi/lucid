@@ -3,7 +3,11 @@ import { generate } from "astring";
 
 import { Repository } from "@/repository";
 
-import { EventCallbacks, IndexedAST, instrument } from "../instrument";
+import {
+  EventCallbacks,
+  IndexedRepository,
+  instrumentRepository,
+} from "../instrument";
 
 const EVENT_CALLBACKS_IDENTIFIER = "evc";
 
@@ -27,32 +31,17 @@ function parseRepository(repo: Repository) {
   return parsedRepo;
 }
 
-export type IndexedRepository = { path: string; indexedAST: IndexedAST }[];
-
-function instrumentRepository(parsedRepo: Repository<acorn.Program>) {
-  const indexedRepo: IndexedRepository = [];
-  const instrumentedRepo: Repository<acorn.Program> = new Map();
-
-  for (const [path, parsedCode] of parsedRepo.entries()) {
-    const { result: instrumentedAST, indexedAST } = instrument(parsedCode, {
-      sourceIndex: indexedRepo.length,
-      eventCallbacksIdentifier: EVENT_CALLBACKS_IDENTIFIER,
-    });
-
-    indexedRepo.push({ path, indexedAST });
-    instrumentedRepo.set(path, instrumentedAST);
-  }
-
-  return { result: instrumentedRepo, indexedRepo };
-}
-
 export async function execute(
   repo: Repository,
   createEventCallbacks: (indexedRepo: IndexedRepository) => EventCallbacks,
 ) {
   const parsedRepo = parseRepository(repo);
-  const { result: instrumentedRepo, indexedRepo } =
-    instrumentRepository(parsedRepo);
+  const { result: instrumentedRepo, indexedRepo } = instrumentRepository(
+    parsedRepo,
+    {
+      eventCallbacksIdentifier: EVENT_CALLBACKS_IDENTIFIER,
+    },
+  );
 
   const entryAST = instrumentedRepo.get("index.js");
   if (entryAST === undefined) {

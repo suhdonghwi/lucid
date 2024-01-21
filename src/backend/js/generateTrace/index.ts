@@ -1,7 +1,11 @@
 import { TraceManager } from "@/trace";
 
-import { IndexedRepository, execute } from "./execute";
-import { EventCallbacks, NodeWithIndex } from "../instrument";
+import { execute } from "./execute";
+import {
+  EventCallbacks,
+  IndexedRepository,
+  NodeWithIndex,
+} from "../instrument";
 import { Repository } from "@/repository";
 
 export async function generateTrace(repo: Repository) {
