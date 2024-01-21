@@ -17,8 +17,8 @@ export function instrument(
   originalAST: acorn.Program,
   options: InstrumentOptions,
 ) {
-  const indexedAST: NodeWithIndex[] = [];
   const instrumentedAST: acorn.Program = structuredClone(originalAST);
+  const indexedAST: NodeWithIndex[] = [];
 
   walk(instrumentedAST as estree.Program, {
     enter(node) {
@@ -55,6 +55,8 @@ export function instrument(
           leaveEvent: "onFunctionLeave",
 
           statements: functionBody,
+
+          sourceIndex: options.sourceIndex,
           nodeIndex,
         });
       }
@@ -68,6 +70,8 @@ export function instrument(
             leaveEvent: "onExpressionLeave",
 
             expression: node,
+
+            sourceIndex: options.sourceIndex,
             nodeIndex,
           }),
         );

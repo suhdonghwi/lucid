@@ -1,43 +1,54 @@
 import { TraceManager } from "@/trace";
 
-import { execute } from "./execute";
-import { EventCallbacks, IndexedAST, NodeWithIndex } from "../instrument";
+import { IndexedRepository, execute } from "./execute";
+import { EventCallbacks, NodeWithIndex } from "../instrument";
+import { Repository } from "@/repository";
 
-export async function generateTrace(code: string) {
+export async function generateTrace(repo: Repository) {
   const expressionStack: NodeWithIndex[] = [];
   const traceManager = new TraceManager();
 
-  const createEventCallbacks = (indexedAST: IndexedAST): EventCallbacks => ({
-    onFunctionEnter: (nodeIndex) => {
-      const node = indexedAST[nodeIndex];
+  const createEventCallbacks = (
+    indexedRepo: IndexedRepository,
+  ): EventCallbacks => ({
+    onFunctionEnter: (sourceIndex, nodeIndex) => {
+      const node = indexedRepo[sourceIndex].indexedAST[nodeIndex];
 
       const callerNode = expressionStack[expressionStack.length - 1];
       const calleeNode = node;
 
       traceManager.newDepth({
         type: "function_call",
-        caller: locRange(callerNode),
-        callee: locRange(calleeNode),
+        caller: {
+          sourceIndex,
+          start: callerNode.start,
+          end: callerNode.end,
+        },
+        callee: {
+          sourceIndex,
+          start: calleeNode.start,
+          end: calleeNode.end,
+        },
         innerTrace: [],
       });
     },
 
-    onFunctionLeave: (nodeIndex) => {
-      const node = indexedAST[nodeIndex];
+    onFunctionLeave: (sourceIndex, nodeIndex) => {
+      const node = indexedRepo[sourceIndex].indexedAST[nodeIndex];
       // console.log("function leave", node);
 
       traceManager.finishDepth();
     },
 
-    onExpressionEnter: (nodeIndex) => {
-      const node = indexedAST[nodeIndex];
+    onExpressionEnter: (sourceIndex, nodeIndex) => {
+      const node = indexedRepo[sourceIndex].indexedAST[nodeIndex];
       // console.log("expression enter", node);
 
       expressionStack.push(node);
     },
 
-    onExpressionLeave: (nodeIndex, value) => {
-      const node = indexedAST[nodeIndex];
+    onExpressionLeave: (sourceIndex, nodeIndex, value) => {
+      const node = indexedRepo[sourceIndex].indexedAST[nodeIndex];
       // console.log("expression leave", node);
 
       expressionStack.pop();
@@ -46,7 +57,7 @@ export async function generateTrace(code: string) {
     },
   });
 
-  await execute(code, createEventCallbacks);
+  await execute(repo, createEventCallbacks);
 
   return traceManager.getCurrentTrace();
 }

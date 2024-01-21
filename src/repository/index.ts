@@ -1,6 +1,4 @@
 export type Path = string;
 export type Code = string;
 
-export type Repository = Map<Path, Code>;
-
-export { indexRepository } from "./indexing";
+export type Repository<Content = Code> = Map<Path, Content>;

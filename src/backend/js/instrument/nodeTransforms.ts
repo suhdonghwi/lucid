@@ -58,6 +58,8 @@ export function wrapStatementsWithEnterLeaveCall({
   leaveEvent,
 
   statements,
+
+  sourceIndex,
   nodeIndex,
 }: {
   eventCallbacksIdentifier: string;
@@ -66,9 +68,11 @@ export function wrapStatementsWithEnterLeaveCall({
   leaveEvent: keyof EventCallbacks;
 
   statements: estree.Statement[];
+
+  sourceIndex: number;
   nodeIndex: number;
 }): estree.BlockStatement {
-  const callArgs = [makeLiteral(nodeIndex)];
+  const callArgs = [makeLiteral(sourceIndex), makeLiteral(nodeIndex)];
 
   const enterCallStatement: estree.ExpressionStatement = {
     type: "ExpressionStatement",
@@ -114,6 +118,8 @@ export function wrapExpressionWithEnterLeaveCall({
   leaveEvent,
 
   expression,
+
+  sourceIndex,
   nodeIndex,
 }: {
   eventCallbacksIdentifier: string;
@@ -122,9 +128,11 @@ export function wrapExpressionWithEnterLeaveCall({
   leaveEvent: keyof EventCallbacks;
 
   expression: estree.Expression;
+
+  sourceIndex: number;
   nodeIndex: number;
 }): estree.Expression {
-  const callArgs = [makeLiteral(nodeIndex)];
+  const callArgs = [makeLiteral(sourceIndex), makeLiteral(nodeIndex)];
 
   const enterCall = makeEventCall({
     eventCallbacksIdentifier,
