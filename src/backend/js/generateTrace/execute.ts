@@ -3,11 +3,7 @@ import { generate } from "astring";
 
 import { Repository } from "@/repository";
 
-import {
-  EventCallbacks,
-  IndexedRepository,
-  instrumentRepository,
-} from "../instrument";
+import { EventCallbacks, IndexedRepository, instrument } from "../instrument";
 
 const EVENT_CALLBACKS_IDENTIFIER = "evc";
 
@@ -36,12 +32,9 @@ export async function execute(
   createEventCallbacks: (indexedRepo: IndexedRepository) => EventCallbacks,
 ) {
   const parsedRepo = parseRepository(repo);
-  const { result: instrumentedRepo, indexedRepo } = instrumentRepository(
-    parsedRepo,
-    {
-      eventCallbacksIdentifier: EVENT_CALLBACKS_IDENTIFIER,
-    },
-  );
+  const { result: instrumentedRepo, indexedRepo } = instrument(parsedRepo, {
+    eventCallbacksIdentifier: EVENT_CALLBACKS_IDENTIFIER,
+  });
 
   const entryAST = instrumentedRepo.get("index.js");
   if (entryAST === undefined) {

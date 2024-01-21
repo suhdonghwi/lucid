@@ -17,16 +17,16 @@ export type IndexedRepository = { path: string; indexedAST: IndexedAST }[];
 export type NodeWithIndex = acorn.Node & { index: number };
 export type IndexedAST = NodeWithIndex[];
 
-export function instrumentRepository(
+export function instrument(
   parsedRepo: Repository<acorn.Program>,
   options: InstrumentOptions,
 ) {
   const indexedRepo: IndexedRepository = [];
   const instrumentedRepo: Repository<acorn.Program> = new Map();
 
-  for (const [path, parsedCode] of parsedRepo.entries()) {
-    const { result: instrumentedAST, indexedAST } = instrument(
-      parsedCode,
+  for (const [path, ast] of parsedRepo.entries()) {
+    const { result: instrumentedAST, indexedAST } = instrumentAST(
+      ast,
       indexedRepo.length,
       options,
     );
@@ -38,7 +38,7 @@ export function instrumentRepository(
   return { result: instrumentedRepo, indexedRepo };
 }
 
-function instrument(
+function instrumentAST(
   originalAST: acorn.Program,
   sourceIndex: number,
   options: InstrumentOptions,
