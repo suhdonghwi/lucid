@@ -1,11 +1,7 @@
 import { TraceManager } from "@/trace";
 
 import { execute } from "./execute";
-import {
-  EventCallbacks,
-  IndexedRepository,
-  NodeWithIndex,
-} from "../instrument";
+import { EventCallbacks, NodeWithIndex } from "../instrument";
 import { Repository } from "@/repository";
 
 export async function generateTrace(repo: Repository) {
@@ -13,10 +9,10 @@ export async function generateTrace(repo: Repository) {
   const traceManager = new TraceManager();
 
   const createEventCallbacks = (
-    indexedRepo: IndexedRepository,
+    getNodeByIndex: (sourceIndex: number, nodeIndex: number) => NodeWithIndex,
   ): EventCallbacks => ({
     onFunctionEnter: (sourceIndex, nodeIndex) => {
-      const node = indexedRepo[sourceIndex].indexedAST[nodeIndex];
+      const node = getNodeByIndex(sourceIndex, nodeIndex);
 
       const callerNode = expressionStack[expressionStack.length - 1];
       const calleeNode = node;
@@ -38,21 +34,21 @@ export async function generateTrace(repo: Repository) {
     },
 
     onFunctionLeave: (sourceIndex, nodeIndex) => {
-      const node = indexedRepo[sourceIndex].indexedAST[nodeIndex];
+      const node = getNodeByIndex(sourceIndex, nodeIndex);
       // console.log("function leave", node);
 
       traceManager.finishDepth();
     },
 
     onExpressionEnter: (sourceIndex, nodeIndex) => {
-      const node = indexedRepo[sourceIndex].indexedAST[nodeIndex];
+      const node = getNodeByIndex(sourceIndex, nodeIndex);
       // console.log("expression enter", node);
 
       expressionStack.push(node);
     },
 
     onExpressionLeave: (sourceIndex, nodeIndex, value) => {
-      const node = indexedRepo[sourceIndex].indexedAST[nodeIndex];
+      const node = getNodeByIndex(sourceIndex, nodeIndex);
       // console.log("expression leave", node);
 
       expressionStack.pop();

@@ -12,10 +12,12 @@ import {
   wrapStatementsWithEnterLeaveCall,
 } from "./nodeTransforms";
 
-export type IndexedRepository = { path: string; indexedAST: IndexedAST }[];
+type IndexedRepository = {
+  path: string;
+  getNode: (index: number) => NodeWithIndex;
+}[];
 
 export type NodeWithIndex = acorn.Node & { index: number };
-export type IndexedAST = NodeWithIndex[];
 
 export function instrument(
   parsedRepo: Repository<acorn.Program>,
@@ -25,17 +27,21 @@ export function instrument(
   const instrumentedRepo: Repository<acorn.Program> = new Map();
 
   for (const [path, ast] of parsedRepo.entries()) {
-    const { result: instrumentedAST, indexedAST } = instrumentAST(
+    const { result: instrumentedAST, getNodeByIndex } = instrumentAST(
       ast,
       indexedRepo.length,
       options,
     );
 
-    indexedRepo.push({ path, indexedAST });
+    indexedRepo.push({ path, getNode: getNodeByIndex });
     instrumentedRepo.set(path, instrumentedAST);
   }
 
-  return { result: instrumentedRepo, indexedRepo };
+  return {
+    result: instrumentedRepo,
+    getNodeByIndex: (sourceIndex: number, nodeIndex: number) =>
+      indexedRepo[sourceIndex].getNode(nodeIndex),
+  };
 }
 
 function instrumentAST(
@@ -105,7 +111,10 @@ function instrumentAST(
     },
   });
 
-  return { result: instrumentedAST, indexedAST };
+  return {
+    result: instrumentedAST,
+    getNodeByIndex: (index: number) => indexedAST[index],
+  };
 }
 
 function isFunction(

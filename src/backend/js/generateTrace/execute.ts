@@ -3,7 +3,7 @@ import { generate } from "astring";
 
 import { Repository } from "@/repository";
 
-import { EventCallbacks, IndexedRepository, instrument } from "../instrument";
+import { EventCallbacks, NodeWithIndex, instrument } from "../instrument";
 
 const EVENT_CALLBACKS_IDENTIFIER = "evc";
 
@@ -29,10 +29,12 @@ function parseRepository(repo: Repository) {
 
 export async function execute(
   repo: Repository,
-  createEventCallbacks: (indexedRepo: IndexedRepository) => EventCallbacks,
+  createEventCallbacks: (
+    getNodeByIndex: (sourceIndex: number, nodeIndex: number) => NodeWithIndex,
+  ) => EventCallbacks,
 ) {
   const parsedRepo = parseRepository(repo);
-  const { result: instrumentedRepo, indexedRepo } = instrument(parsedRepo, {
+  const { result: instrumentedRepo, getNodeByIndex } = instrument(parsedRepo, {
     eventCallbacksIdentifier: EVENT_CALLBACKS_IDENTIFIER,
   });
 
@@ -45,7 +47,7 @@ export async function execute(
   console.log("instrumented code:\n", instrumentedCode);
 
   globalThisWithEventCallbacks[EVENT_CALLBACKS_IDENTIFIER] =
-    createEventCallbacks(indexedRepo);
+    createEventCallbacks(getNodeByIndex);
 
   const codeBlob = createCodeBlob(instrumentedCode);
   const objectURL = URL.createObjectURL(codeBlob);
