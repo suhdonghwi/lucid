@@ -7,6 +7,8 @@ import { Repository } from "@/repository";
 import { execute } from "./execute";
 import { EventCallbacks, NodeWithIndex, instrument } from "../instrument";
 
+const EVENT_CALLBACKS_IDENTIFIER = "evc";
+
 function parseRepository(repo: Repository) {
   const parsedRepo: Repository<acorn.Program> = new Map();
 
@@ -23,7 +25,7 @@ export async function generateTrace(repo: Repository) {
 
   const parsedRepo = parseRepository(repo);
   const { result: instrumentedRepo, getNodeByIndex } = instrument(parsedRepo, {
-    eventCallbacksIdentifier: "evc",
+    eventCallbacksIdentifier: EVENT_CALLBACKS_IDENTIFIER,
   });
 
   const generatedRepo: Repository = new Map();
@@ -78,7 +80,7 @@ export async function generateTrace(repo: Repository) {
     },
   };
 
-  await execute(generatedRepo, eventCallbacks);
+  await execute(generatedRepo, eventCallbacks, EVENT_CALLBACKS_IDENTIFIER);
 
   return traceManager.getCurrentTrace();
 }

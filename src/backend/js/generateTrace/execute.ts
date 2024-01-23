@@ -2,14 +2,6 @@ import { Repository } from "@/repository";
 
 import { EventCallbacks } from "../instrument";
 
-const EVENT_CALLBACKS_IDENTIFIER = "evc";
-
-type GlobalThisWithEventCallbacks = typeof globalThis & {
-  [EVENT_CALLBACKS_IDENTIFIER]?: EventCallbacks;
-};
-
-const globalThisWithEventCallbacks = globalThis as GlobalThisWithEventCallbacks;
-
 function createCodeBlob(input: string) {
   return new Blob([input], { type: "text/javascript" });
 }
@@ -17,6 +9,7 @@ function createCodeBlob(input: string) {
 export async function execute(
   repo: Repository,
   eventCallbacks: EventCallbacks,
+  eventCallbacksIdentifier: string,
 ) {
   const entryCode = repo.get("index.js");
   if (entryCode === undefined) {
@@ -25,7 +18,8 @@ export async function execute(
 
   console.log("entry code:\n", entryCode);
 
-  globalThisWithEventCallbacks[EVENT_CALLBACKS_IDENTIFIER] = eventCallbacks;
+  // @ts-expect-error eventCallbacksIdentifier is not a valid property on globalThis
+  globalThis[eventCallbacksIdentifier] = eventCallbacks;
 
   const codeBlob = createCodeBlob(entryCode);
   const objectURL = URL.createObjectURL(codeBlob);
@@ -35,5 +29,6 @@ export async function execute(
   );
   URL.revokeObjectURL(objectURL);
 
-  delete globalThisWithEventCallbacks[EVENT_CALLBACKS_IDENTIFIER];
+  // @ts-expect-error eventCallbacksIdentifier is not a valid property on globalThis
+  delete globalThis[eventCallbacksIdentifier];
 }
