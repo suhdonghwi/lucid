@@ -18,7 +18,7 @@ export function ExecutionController() {
 
   async function handleRun() {
     const repo: Repository = new Repository();
-    repo.set("index.js", code());
+    repo.addFile({ path: "index.js", content: code() });
 
     const result = await generateTrace(repo);
     console.log(result);

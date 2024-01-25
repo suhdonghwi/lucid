@@ -1,27 +1,41 @@
-export type Path = string;
-export type Content = string;
+type Path = string;
+type Content = string;
+
+export type RepositoryFile = {
+  path: Path;
+  content: Content;
+};
 
 export type SerializedRepository = Map<Path, Content>;
 
 export class Repository {
-  private map: Map<Path, Content>;
+  private map: SerializedRepository;
 
   constructor() {
     this.map = new Map();
   }
 
-  public set(path: Path, content: Content) {
-    this.map.set(path, content);
+  public addFile(file: RepositoryFile) {
+    this.map.set(file.path, file.content);
   }
 
-  public get(path: Path) {
+  public getContent(path: Path) {
     return this.map.get(path);
   }
 
-  public entries() {
-    return this.map.entries();
+  public files() {
+    const result: RepositoryFile[] = [];
+
+    for (const [path, content] of this.map.entries()) {
+      result.push({ path, content });
+    }
+
+    return result;
   }
 
+  // NOTE:
+  // serialization and deserialization is required because
+  // we cannot pass an object with methods to a web worker.
   public serialize(): SerializedRepository {
     return this.map;
   }
