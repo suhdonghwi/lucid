@@ -13,13 +13,13 @@ function instrumentRepo(repo: Repository) {
   const instrumentedRepo = new Repository();
   const indexedRepo: {
     file: RepositoryFile;
-    getNodeByIndex: (nodeIndex: number) => NodeWithIndex;
+    indexedAST: NodeWithIndex[];
   }[] = [];
 
   for (const file of repo.files()) {
     const ast = acorn.parse(file.content, { ecmaVersion: "latest" });
 
-    const { result: instrumentedAST, getNodeByIndex } = instrument(ast, {
+    const { result: instrumentedAST, indexedAST } = instrument(ast, {
       sourceIndex: indexedRepo.length,
       eventCallbacksIdentifier: EVENT_CALLBACKS_IDENTIFIER,
     });
@@ -29,16 +29,13 @@ function instrumentRepo(repo: Repository) {
 
     indexedRepo.push({
       file,
-      getNodeByIndex,
+      indexedAST,
     });
   }
 
   return {
     result: instrumentedRepo,
-    getNodeByIndex: (sourceIndex: number, nodeIndex: number) => {
-      const { file, getNodeByIndex } = indexedRepo[sourceIndex];
-      return { file, node: getNodeByIndex(nodeIndex) };
-    },
+    indexedRepo,
   };
 }
 
@@ -46,11 +43,11 @@ export async function generateTrace(repo: Repository) {
   const expressionStack: NodeWithIndex[] = [];
   const traceManager = new TraceManager();
 
-  const { result: instrumentedRepo, getNodeByIndex } = instrumentRepo(repo);
+  const { result: instrumentedRepo, indexedRepo } = instrumentRepo(repo);
 
   const eventCallbacks: EventCallbacks = {
     onFunctionEnter: (sourceIndex, nodeIndex) => {
-      const { node } = getNodeByIndex(sourceIndex, nodeIndex);
+      const node = indexedRepo[sourceIndex].indexedAST[nodeIndex];
 
       const callerNode = expressionStack[expressionStack.length - 1];
       const calleeNode = node;
@@ -72,21 +69,21 @@ export async function generateTrace(repo: Repository) {
     },
 
     onFunctionLeave: (sourceIndex, nodeIndex) => {
-      const { node } = getNodeByIndex(sourceIndex, nodeIndex);
+      const node = indexedRepo[sourceIndex].indexedAST[nodeIndex];
       // console.log("function leave", node);
 
       traceManager.finishDepth();
     },
 
     onExpressionEnter: (sourceIndex, nodeIndex) => {
-      const { node } = getNodeByIndex(sourceIndex, nodeIndex);
+      const node = indexedRepo[sourceIndex].indexedAST[nodeIndex];
       // console.log("expression enter", node);
 
       expressionStack.push(node);
     },
 
     onExpressionLeave: (sourceIndex, nodeIndex, value) => {
-      const { node } = getNodeByIndex(sourceIndex, nodeIndex);
+      const node = indexedRepo[sourceIndex].indexedAST[nodeIndex];
       // console.log("expression leave", node);
 
       expressionStack.pop();
@@ -97,5 +94,6 @@ export async function generateTrace(repo: Repository) {
 
   await execute(instrumentedRepo, eventCallbacks, EVENT_CALLBACKS_IDENTIFIER);
 
-  return traceManager.getCurrentTrace();
+  return 1;
+  // return traceManager.getCurrentTrace();
 }

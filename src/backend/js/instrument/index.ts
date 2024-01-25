@@ -80,7 +80,7 @@ export function instrument(
 
   return {
     result: instrumentedAST,
-    getNodeByIndex: (index: number) => indexedAST[index],
+    indexedAST,
   };
 }
 
