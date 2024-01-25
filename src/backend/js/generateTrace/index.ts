@@ -5,7 +5,7 @@ import { TraceManager } from "@/trace";
 import { Repository, RepositoryFile } from "@/repository";
 
 import { execute } from "./execute";
-import { EventCallbacks, NodeWithIndex, instrument } from "../instrument";
+import { EventCallbacks, instrument } from "../instrument";
 
 const EVENT_CALLBACKS_IDENTIFIER = "evc";
 
@@ -13,7 +13,7 @@ function instrumentRepo(repo: Repository) {
   const instrumentedRepo = new Repository();
   const indexedRepo: {
     file: RepositoryFile;
-    indexedAST: NodeWithIndex[];
+    indexedAST: acorn.Node[];
   }[] = [];
 
   for (const file of repo.files()) {
@@ -40,7 +40,7 @@ function instrumentRepo(repo: Repository) {
 }
 
 export async function generateTrace(repo: Repository) {
-  const expressionStack: NodeWithIndex[] = [];
+  const expressionStack: acorn.Node[] = [];
   const traceManager = new TraceManager();
 
   const { result: instrumentedRepo, indexedRepo } = instrumentRepo(repo);

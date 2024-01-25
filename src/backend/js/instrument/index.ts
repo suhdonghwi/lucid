@@ -10,7 +10,7 @@ import {
   wrapStatementsWithEnterLeaveCall,
 } from "./nodeTransforms";
 
-export type NodeWithIndex = acorn.Node & { index: number };
+type NodeWithIndex = acorn.Node & { index: number };
 
 export function instrument(
   originalAST: acorn.Program,
