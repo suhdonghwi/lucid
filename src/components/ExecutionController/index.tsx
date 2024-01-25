@@ -3,6 +3,8 @@ import { createSignal } from "solid-js";
 import { generateTrace, terminateWorker } from "@/backend/js";
 
 import { CodeWindow } from "@/components/CodeWindow";
+import { Repository } from "@/repository";
+
 import * as styles from "./index.css";
 
 const INITIAL_CODE = `function foo() {
@@ -15,7 +17,8 @@ export function ExecutionController() {
   const [code, setCode] = createSignal(INITIAL_CODE);
 
   async function handleRun() {
-    const repo = new Map([["index.js", code()]]);
+    const repo: Repository = new Map();
+    repo.set("index.js", code());
 
     const result = await generateTrace(repo);
     console.log(result);

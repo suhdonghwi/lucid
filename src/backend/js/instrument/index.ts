@@ -4,49 +4,16 @@ import estree from "estree";
 
 import { assert } from "@/utils/assert";
 
-import { Repository } from "@/repository";
-
 import { InstrumentOptions } from "./options";
 import {
   wrapExpressionWithEnterLeaveCall,
   wrapStatementsWithEnterLeaveCall,
 } from "./nodeTransforms";
 
-type IndexedRepository = {
-  path: string;
-  getNode: (index: number) => NodeWithIndex;
-}[];
-
 export type NodeWithIndex = acorn.Node & { index: number };
 
 export function instrument(
-  parsedRepo: Repository<acorn.Program>,
-  options: InstrumentOptions,
-) {
-  const indexedRepo: IndexedRepository = [];
-  const instrumentedRepo: Repository<acorn.Program> = new Map();
-
-  for (const [path, ast] of parsedRepo.entries()) {
-    const { result: instrumentedAST, getNodeByIndex } = instrumentAST(
-      ast,
-      indexedRepo.length,
-      options,
-    );
-
-    indexedRepo.push({ path, getNode: getNodeByIndex });
-    instrumentedRepo.set(path, instrumentedAST);
-  }
-
-  return {
-    result: instrumentedRepo,
-    getNodeByIndex: (sourceIndex: number, nodeIndex: number) =>
-      indexedRepo[sourceIndex].getNode(nodeIndex),
-  };
-}
-
-function instrumentAST(
   originalAST: acorn.Program,
-  sourceIndex: number,
   options: InstrumentOptions,
 ) {
   const instrumentedAST: acorn.Program = structuredClone(originalAST);
@@ -88,7 +55,7 @@ function instrumentAST(
 
           statements: functionBody,
 
-          sourceIndex,
+          sourceIndex: options.sourceIndex,
           nodeIndex,
         });
       }
@@ -103,7 +70,7 @@ function instrumentAST(
 
             expression: node,
 
-            sourceIndex,
+            sourceIndex: options.sourceIndex,
             nodeIndex,
           }),
         );

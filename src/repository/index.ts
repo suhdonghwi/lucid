@@ -1,4 +1,4 @@
 export type Path = string;
-export type Code = string;
+export type Content = string;
 
-export type Repository<Content = Code> = Map<Path, Content>;
+export type Repository = Map<Path, Content>;

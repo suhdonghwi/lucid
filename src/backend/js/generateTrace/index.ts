@@ -9,33 +9,41 @@ import { EventCallbacks, NodeWithIndex, instrument } from "../instrument";
 
 const EVENT_CALLBACKS_IDENTIFIER = "evc";
 
-function parseRepository(repo: Repository) {
-  const parsedRepo: Repository<acorn.Program> = new Map();
+function instrumentRepo(repo: Repository) {
+  const instrumentedRepo: Repository = new Map();
+  const indexedRepo = [];
 
   for (const [path, code] of repo.entries()) {
-    parsedRepo.set(path, acorn.parse(code, { ecmaVersion: "latest" }));
+    const ast = acorn.parse(code, { ecmaVersion: "latest" });
+    const { result: instrumentedAST, getNodeByIndex } = instrument(ast, {
+      sourceIndex: indexedRepo.length,
+      eventCallbacksIdentifier: EVENT_CALLBACKS_IDENTIFIER,
+    });
+
+    const instrumentedCode = generate(instrumentedAST);
+    instrumentedRepo.set(path, instrumentedCode);
+
+    indexedRepo.push({
+      path,
+      getNodeByIndex,
+    });
   }
 
-  return parsedRepo;
+  return {
+    result: instrumentedRepo,
+    indexedRepo,
+  };
 }
 
 export async function generateTrace(repo: Repository) {
   const expressionStack: NodeWithIndex[] = [];
   const traceManager = new TraceManager();
 
-  const parsedRepo = parseRepository(repo);
-  const { result: instrumentedRepo, getNodeByIndex } = instrument(parsedRepo, {
-    eventCallbacksIdentifier: EVENT_CALLBACKS_IDENTIFIER,
-  });
-
-  const generatedRepo: Repository = new Map();
-  for (const [path, ast] of instrumentedRepo.entries()) {
-    generatedRepo.set(path, generate(ast));
-  }
+  const { result: instrumentedRepo, indexedRepo } = instrumentRepo(repo);
 
   const eventCallbacks: EventCallbacks = {
     onFunctionEnter: (sourceIndex, nodeIndex) => {
-      const node = getNodeByIndex(sourceIndex, nodeIndex);
+      const node = indexedRepo[sourceIndex].getNodeByIndex(nodeIndex);
 
       const callerNode = expressionStack[expressionStack.length - 1];
       const calleeNode = node;
@@ -57,21 +65,21 @@ export async function generateTrace(repo: Repository) {
     },
 
     onFunctionLeave: (sourceIndex, nodeIndex) => {
-      const node = getNodeByIndex(sourceIndex, nodeIndex);
+      const node = indexedRepo[sourceIndex].getNodeByIndex(nodeIndex);
       // console.log("function leave", node);
 
       traceManager.finishDepth();
     },
 
     onExpressionEnter: (sourceIndex, nodeIndex) => {
-      const node = getNodeByIndex(sourceIndex, nodeIndex);
+      const node = indexedRepo[sourceIndex].getNodeByIndex(nodeIndex);
       // console.log("expression enter", node);
 
       expressionStack.push(node);
     },
 
     onExpressionLeave: (sourceIndex, nodeIndex, value) => {
-      const node = getNodeByIndex(sourceIndex, nodeIndex);
+      const node = indexedRepo[sourceIndex].getNodeByIndex(nodeIndex);
       // console.log("expression leave", node);
 
       expressionStack.pop();
@@ -80,7 +88,7 @@ export async function generateTrace(repo: Repository) {
     },
   };
 
-  await execute(generatedRepo, eventCallbacks, EVENT_CALLBACKS_IDENTIFIER);
+  await execute(instrumentedRepo, eventCallbacks, EVENT_CALLBACKS_IDENTIFIER);
 
   return traceManager.getCurrentTrace();
 }
