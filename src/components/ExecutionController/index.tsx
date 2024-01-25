@@ -17,7 +17,7 @@ export function ExecutionController() {
   const [code, setCode] = createSignal(INITIAL_CODE);
 
   async function handleRun() {
-    const repo: Repository = new Map();
+    const repo: Repository = new Repository();
     repo.set("index.js", code());
 
     const result = await generateTrace(repo);

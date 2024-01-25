@@ -10,7 +10,7 @@ import { EventCallbacks, NodeWithIndex, instrument } from "../instrument";
 const EVENT_CALLBACKS_IDENTIFIER = "evc";
 
 function instrumentRepo(repo: Repository) {
-  const instrumentedRepo: Repository = new Map();
+  const instrumentedRepo = new Repository();
   const indexedRepo = [];
 
   for (const [path, code] of repo.entries()) {
