@@ -15,6 +15,7 @@ function instrumentRepo(repo: Repository) {
 
   for (const [path, code] of repo.entries()) {
     const ast = acorn.parse(code, { ecmaVersion: "latest" });
+
     const { result: instrumentedAST, getNodeByIndex } = instrument(ast, {
       sourceIndex: indexedRepo.length,
       eventCallbacksIdentifier: EVENT_CALLBACKS_IDENTIFIER,

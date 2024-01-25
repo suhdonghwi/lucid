@@ -1,9 +1,13 @@
 import * as Comlink from "comlink";
 
+import { Repository, SerializedRepository } from "@/repository";
+
 import { generateTrace } from "./generateTrace";
 
 const api = {
-  generateTrace,
+  generateTrace: (serializedRepo: SerializedRepository) => {
+    return generateTrace(Repository.deserialize(serializedRepo));
+  },
 };
 
 export type WorkerAPI = typeof api;
