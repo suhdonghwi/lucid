@@ -21,11 +21,6 @@ export function instrument(
 
   walk(instrumentedAST as estree.Program, {
     enter(node) {
-      if (node.type === "Literal" || node.type === "Identifier") {
-        this.skip();
-        return;
-      }
-
       // @ts-expect-error index is not a valid property on estree nodes
       node.index = indexedAST.length;
       indexedAST.push(node as NodeWithIndex);
@@ -97,6 +92,7 @@ function isFunction(
   );
 }
 
+// Non-trivial expressions are expressions that can (either directly or indirectly) call functions.
 function isNonTrivialExpression(
   node: estree.Node,
 ): node is
