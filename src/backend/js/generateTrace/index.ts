@@ -47,7 +47,8 @@ export async function generateTrace(repo: Repository) {
 
   const eventCallbacks: EventCallbacks = {
     onFunctionEnter: (sourceIndex, nodeIndex) => {
-      const node = indexedRepo[sourceIndex].indexedAST[nodeIndex];
+      const { file, indexedAST } = indexedRepo[sourceIndex];
+      const node = indexedAST[nodeIndex];
 
       const callerNode = expressionStack[expressionStack.length - 1];
       const calleeNode = node;
@@ -55,12 +56,12 @@ export async function generateTrace(repo: Repository) {
       traceManager.newDepth({
         type: "function_call",
         caller: {
-          sourceIndex,
+          file,
           start: callerNode.start,
           end: callerNode.end,
         },
         callee: {
-          sourceIndex,
+          file,
           start: calleeNode.start,
           end: calleeNode.end,
         },
@@ -69,7 +70,7 @@ export async function generateTrace(repo: Repository) {
     },
 
     onFunctionLeave: (sourceIndex, nodeIndex) => {
-      const node = indexedRepo[sourceIndex].indexedAST[nodeIndex];
+      // const node = indexedRepo[sourceIndex].indexedAST[nodeIndex];
       // console.log("function leave", node);
 
       traceManager.finishDepth();
@@ -83,7 +84,7 @@ export async function generateTrace(repo: Repository) {
     },
 
     onExpressionLeave: (sourceIndex, nodeIndex, value) => {
-      const node = indexedRepo[sourceIndex].indexedAST[nodeIndex];
+      // const node = indexedRepo[sourceIndex].indexedAST[nodeIndex];
       // console.log("expression leave", node);
 
       expressionStack.pop();
