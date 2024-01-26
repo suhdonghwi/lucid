@@ -60,7 +60,7 @@ export function instrument(
         });
       }
 
-      if (isExpression(node)) {
+      if (isNonTrivialExpression(node)) {
         this.replace(
           wrapExpressionWithEnterLeaveCall({
             eventCallbacksIdentifier: options.eventCallbacksIdentifier,
@@ -97,12 +97,20 @@ function isFunction(
   );
 }
 
-function isExpression(node: estree.Node): node is estree.Expression {
+function isNonTrivialExpression(
+  node: estree.Node,
+): node is
+  | estree.NewExpression
+  | estree.CallExpression
+  | estree.ChainExpression
+  | estree.ImportExpression
+  | estree.MemberExpression {
   return (
-    node.type.endsWith("Expression") ||
-    node.type === "Identifier" ||
-    node.type === "Literal" ||
-    node.type === "TemplateLiteral"
+    node.type === "NewExpression" ||
+    node.type === "CallExpression" ||
+    node.type === "ChainExpression" ||
+    node.type === "ImportExpression" ||
+    node.type === "MemberExpression"
   );
 }
 
