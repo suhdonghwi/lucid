@@ -17,7 +17,10 @@ function instrumentRepo(repo: Repository) {
   }[] = [];
 
   for (const file of repo.files()) {
-    const ast = acorn.parse(file.content, { ecmaVersion: "latest" });
+    const ast = acorn.parse(file.content, {
+      ecmaVersion: "latest",
+      sourceType: "module",
+    });
 
     const { result: instrumentedAST, indexedAST } = instrument(ast, {
       sourceIndex: indexedRepo.length,
