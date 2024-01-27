@@ -7,9 +7,7 @@ import { Repository, RepositoryFile } from "@/repository";
 import { execute } from "./execute";
 import { EventCallbacks, instrument } from "../instrument";
 
-const EVENT_CALLBACKS_IDENTIFIER = "evc";
-
-function instrumentRepo(repo: Repository) {
+function instrumentRepo(repo: Repository, eventCallbacksIdentifier: string) {
   const instrumentedRepo = new Repository();
   const indexedRepo: {
     file: RepositoryFile;
@@ -24,7 +22,7 @@ function instrumentRepo(repo: Repository) {
 
     const { result: instrumentedAST, indexedAST } = instrument(ast, {
       sourceIndex: indexedRepo.length,
-      eventCallbacksIdentifier: EVENT_CALLBACKS_IDENTIFIER,
+      eventCallbacksIdentifier,
     });
 
     const instrumentedCode = generate(instrumentedAST);
@@ -43,10 +41,12 @@ function instrumentRepo(repo: Repository) {
 }
 
 export async function generateTrace(repo: Repository) {
+  const eventCallbacksIdentifier = "evc";
+
   const expressionStack: acorn.Node[] = [];
   const traceManager = new TraceManager();
 
-  const { result: instrumentedRepo, indexedRepo } = instrumentRepo(repo);
+  const { result: instrumentedRepo, indexedRepo } = instrumentRepo(repo, eventCallbacksIdentifier);
 
   const eventCallbacks: EventCallbacks = {
     onFunctionEnter: (sourceIndex, nodeIndex) => {
@@ -96,7 +96,7 @@ export async function generateTrace(repo: Repository) {
     },
   };
 
-  await execute(instrumentedRepo, eventCallbacks, EVENT_CALLBACKS_IDENTIFIER);
+  await execute(instrumentedRepo, eventCallbacks, eventCallbacksIdentifier);
 
   return 1;
   // return traceManager.getCurrentTrace();
