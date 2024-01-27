@@ -13,7 +13,7 @@ const INITIAL_CODE = `function foo() {
 
 foo();`;
 
-export function ExecutionController() {
+export function RepositoryEditor() {
   const [code, setCode] = createSignal(INITIAL_CODE);
 
   async function handleRun() {

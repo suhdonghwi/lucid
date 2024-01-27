@@ -1,7 +1,7 @@
-import { ExecutionController } from "./components/ExecutionController";
+import { RepositoryEditor } from "./components/RepositoryEditor";
 
 function App() {
-  return <ExecutionController />;
+  return <RepositoryEditor />;
 }
 
 export default App;
