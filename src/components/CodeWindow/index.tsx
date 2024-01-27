@@ -4,13 +4,13 @@ import { basicExtensions } from "./extensions";
 import * as styles from "./index.css";
 
 type CodeWindowProps = {
-  initialValue: string;
+  value: string;
   onValueChange: (value: string) => void;
 };
 
 export function CodeWindow(props: CodeWindowProps) {
   const { ref: editorRef } = createCodeMirror({
-    initialValue: props.initialValue,
+    value: props.value,
     onValueChange: props.onValueChange,
     extensions: basicExtensions,
   });

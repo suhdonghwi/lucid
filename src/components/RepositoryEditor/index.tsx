@@ -29,7 +29,7 @@ export function RepositoryEditor(props: RepositoryEditorProps) {
 
       <div class={styles.windowContainer}>
         <CodeWindow
-          initialValue={props.repository.getContent("index.js") ?? ""}
+          value={props.repository.getContent("index.js") ?? ""}
           onValueChange={(value) => props.onChange("index.js", value)}
         />
       </div>
