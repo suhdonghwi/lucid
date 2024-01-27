@@ -98,6 +98,5 @@ export async function generateTrace(repo: Repository) {
 
   await execute(instrumentedRepo, eventCallbacks, eventCallbacksIdentifier);
 
-  return 1;
-  // return traceManager.getCurrentTrace();
+  return traceManager.getCurrentTrace();
 }
