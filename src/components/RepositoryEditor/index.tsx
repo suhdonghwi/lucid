@@ -10,12 +10,9 @@ type RepositoryEditorProps = {
   onChange: (path: string, content: string) => void;
 };
 
-export function RepositoryEditor({
-  repository,
-  onChange,
-}: RepositoryEditorProps) {
+export function RepositoryEditor(props: RepositoryEditorProps) {
   async function handleRun() {
-    const result = await generateTrace(repository);
+    const result = await generateTrace(props.repository);
     console.log(result);
   }
 
@@ -32,8 +29,8 @@ export function RepositoryEditor({
 
       <div class={styles.windowContainer}>
         <CodeWindow
-          initialValue={repository.getContent("index.js") ?? ""}
-          onValueChange={(value) => onChange("index.js", value)}
+          initialValue={props.repository.getContent("index.js") ?? ""}
+          onValueChange={(value) => props.onChange("index.js", value)}
         />
       </div>
     </div>
