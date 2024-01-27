@@ -55,7 +55,7 @@ export function instrument(
         });
       }
 
-      if (isNonTrivialExpression(node)) {
+      if (isPotentiallyCallingExpression(node)) {
         this.replace(
           wrapExpressionWithEnterLeaveCall({
             eventCallbacksIdentifier: options.eventCallbacksIdentifier,
@@ -92,8 +92,9 @@ function isFunction(
   );
 }
 
-// Non-trivial expressions are expressions that can (either directly or indirectly) call functions.
-function isNonTrivialExpression(
+// Potentially calling expressions are expressions that can 
+// (either directly or indirectly) call functions.
+function isPotentiallyCallingExpression(
   node: estree.Node,
 ): node is
   | estree.NewExpression
