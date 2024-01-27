@@ -1,5 +1,3 @@
-import { createSignal } from "solid-js";
-
 import { generateTrace, terminateWorker } from "@/backend/js";
 
 import { CodeWindow } from "@/components/CodeWindow";
@@ -7,20 +5,17 @@ import { Repository } from "@/repository";
 
 import * as styles from "./index.css";
 
-const INITIAL_CODE = `function foo() {
-  console.log("hi");
-}
+type RepositoryEditorProps = {
+  repository: Repository;
+  onChange: (path: string, content: string) => void;
+};
 
-foo();`;
-
-export function RepositoryEditor() {
-  const [code, setCode] = createSignal(INITIAL_CODE);
-
+export function RepositoryEditor({
+  repository,
+  onChange,
+}: RepositoryEditorProps) {
   async function handleRun() {
-    const repo: Repository = new Repository();
-    repo.addFile({ path: "index.js", content: code() });
-
-    const result = await generateTrace(repo);
+    const result = await generateTrace(repository);
     console.log(result);
   }
 
@@ -37,8 +32,8 @@ export function RepositoryEditor() {
 
       <div class={styles.windowContainer}>
         <CodeWindow
-          initialValue={code()}
-          onValueChange={(value) => setCode(value)}
+          initialValue={repository.getContent("index.js") ?? ""}
+          onValueChange={(value) => onChange("index.js", value)}
         />
       </div>
     </div>
