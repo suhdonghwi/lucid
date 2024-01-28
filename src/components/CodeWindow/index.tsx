@@ -4,7 +4,7 @@ import { basicExtensions } from "./extensions";
 import * as styles from "./index.css";
 
 type CodeWindowProps = {
-  value: string;
+  value: () => string;
   onValueChange: (value: string) => void;
 };
 

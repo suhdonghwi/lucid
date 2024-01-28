@@ -20,6 +20,8 @@ export function RepositoryEditor(props: RepositoryEditorProps) {
     terminateWorker();
   }
 
+  const code = () => props.repository.getContent("index.js") ?? "";
+
   return (
     <div class={styles.rootContainer}>
       <div class={styles.buttonContainer}>
@@ -29,7 +31,7 @@ export function RepositoryEditor(props: RepositoryEditorProps) {
 
       <div class={styles.windowContainer}>
         <CodeWindow
-          value={props.repository.getContent("index.js") ?? ""}
+          value={code}
           onValueChange={(value) => props.onChange("index.js", value)}
         />
       </div>

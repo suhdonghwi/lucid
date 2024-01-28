@@ -7,7 +7,7 @@ import { EditorView } from "@codemirror/view";
 import { EditorState, Extension } from "@codemirror/state";
 
 type CreateCodeMirrorProps = {
-  value: string;
+  value: () => string;
   onValueChange?: (value: string) => void;
   extensions?: Extension[];
 };
@@ -19,7 +19,7 @@ export function createCodeMirror(props: CreateCodeMirrorProps) {
   createEffect(
     on(ref, (ref) => {
       const state = EditorState.create({
-        doc: props.value,
+        doc: props.value(),
         extensions: props.extensions,
       });
       const currentView = new EditorView({
@@ -46,22 +46,22 @@ export function createCodeMirror(props: CreateCodeMirrorProps) {
   );
 
   createEffect(
-    on(
-      editorView,
-      (editorView) => {
-        const internalValue = editorView?.state.doc.toString();
-        if (internalValue !== props.value && editorView !== undefined) {
-          editorView.dispatch({
-            changes: {
-              from: 0,
-              to: internalValue?.length,
-              insert: props.value,
-            },
-          });
-        }
-      },
-      { defer: true },
-    ),
+    () => {
+      const view = editorView();
+      const value = props.value();
+
+      const internalValue = view?.state.doc.toString();
+      if (internalValue !== value && view !== undefined) {
+        view.dispatch({
+          changes: {
+            from: 0,
+            to: internalValue?.length,
+            insert: value,
+          },
+        });
+      }
+    },
+    { defer: true },
   );
 
   return {
