@@ -15,7 +15,7 @@ export class Repository {
     this.map = new Map();
   }
 
-  public addFile(file: RepositoryFile) {
+  public setFile(file: RepositoryFile) {
     this.map.set(file.path, file.content);
   }
 
