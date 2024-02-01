@@ -1,4 +1,4 @@
-import { createCodeMirror } from "./createCodeMirror";
+import { CodeMirror } from "./CodeMirror";
 import { basicExtensions } from "./extensions";
 
 import * as styles from "./index.css";
@@ -9,13 +9,12 @@ type CodeWindowProps = {
 };
 
 export function CodeWindow(props: CodeWindowProps) {
-  const { ref: editorRef } = createCodeMirror({
-    get value() {
-      return props.value;
-    },
-    onValueChange: props.onValueChange,
-    extensions: basicExtensions,
-  });
-
-  return <div class={styles.rootContainer} ref={editorRef} />;
+  return (
+    <CodeMirror
+      class={styles.rootContainer}
+      extensions={basicExtensions}
+      value={props.value}
+      onValueChange={props.onValueChange}
+    />
+  );
 }
