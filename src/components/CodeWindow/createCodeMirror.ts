@@ -48,8 +48,8 @@ export function createCodeMirror(props: CreateCodeMirrorProps) {
   createEffect(
     () => {
       const view = editorView();
-
       const internalValue = view?.state.doc.toString();
+
       if (internalValue !== props.value && view !== undefined) {
         view.dispatch({
           changes: {
