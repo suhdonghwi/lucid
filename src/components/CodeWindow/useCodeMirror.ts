@@ -17,18 +17,12 @@ export interface UseCodeMirror {
   extensions: Extension[];
 
   onChange?: (value: string, viewUpdate: ViewUpdate) => void;
-  onCreateEditor?: (view: EditorView, state: EditorState) => void;
 }
 
-export function useCodeMirror({
-  value,
-  extensions,
-  onChange,
-  onCreateEditor,
-}: UseCodeMirror) {
-  const [container, setContainer] = useState<HTMLDivElement>();
-  const [view, setView] = useState<EditorView | null>(null);
-  const [state, setState] = useState<EditorState | null>(null);
+export function useCodeMirror({ value, extensions, onChange }: UseCodeMirror) {
+  const [container, setContainer] = useState<HTMLDivElement | null>(null);
+  const [editorView, setEditorView] = useState<EditorView | null>(null);
+  const [editorState, setEditorState] = useState<EditorState | null>(null);
 
   const updateListener = useMemo(
     () =>
@@ -49,54 +43,58 @@ export function useCodeMirror({
   );
 
   useEffect(() => {
-    if (container && state === null) {
+    if (container !== null && editorState === null) {
       const stateCurrent = EditorState.create();
-      setState(stateCurrent);
+      setEditorState(stateCurrent);
 
-      if (!view) {
+      if (editorView === null) {
         const viewCurrent = new EditorView({
           state: stateCurrent,
           parent: container,
         });
 
-        setView(viewCurrent);
-        onCreateEditor?.(viewCurrent, stateCurrent);
+        setEditorView(viewCurrent);
       }
     }
 
     return () => {
-      if (view) {
-        setState(null);
-        setView(null);
-      }
+      if (editorView === null) return;
+
+      setEditorState(null);
+      setEditorView(null);
     };
-  }, [container, state, view, onCreateEditor]);
+  }, [container, editorState, editorView]);
 
   useEffect(() => {
     return () => {
-      if (view) {
-        view.destroy();
-        setView(null);
-      }
+      if (editorView === null) return;
+
+      editorView.destroy();
+      setEditorView(null);
     };
-  }, [view]);
+  }, [editorView]);
 
   useEffect(() => {
-    if (view) {
-      const finalExtensions = extensions.concat([updateListener]);
-      view.dispatch({ effects: StateEffect.reconfigure.of(finalExtensions) });
-    }
-  }, [view, updateListener, extensions]);
+    if (editorView === null) return;
+
+    const finalExtensions = extensions.concat([updateListener]);
+    editorView.dispatch({
+      effects: StateEffect.reconfigure.of(finalExtensions),
+    });
+  }, [editorView, updateListener, extensions]);
 
   useEffect(() => {
-    const currentValue = view ? view.state.doc.toString() : "";
-    if (view && value !== currentValue) {
-      view.dispatch({
-        changes: { from: 0, to: currentValue.length, insert: value || "" },
+    if (editorView === null) return;
+
+    const currentValue = editorView?.state.doc.toString() ?? "";
+
+    if (value !== currentValue) {
+      editorView.dispatch({
+        changes: { from: 0, to: currentValue.length, insert: value },
         annotations: [External.of(true)],
       });
     }
-  }, [view, value]);
+  }, [editorView, value]);
 
-  return { view, container, setContainer };
+  return { editorView, container, setContainer };
 }
