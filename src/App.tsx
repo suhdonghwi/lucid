@@ -1,4 +1,4 @@
-import { createSignal } from "solid-js";
+import { useState } from "react";
 
 import { Repository } from "./repository";
 
@@ -11,21 +11,18 @@ const INITIAL_CODE = `function add(a, b) {
 console.log(add(1, 2));`;
 
 function App() {
-  const [repository, setRepository] = createSignal(new Repository(), {
-    equals: false,
-  });
-
-  repository().setFile({
-    path: "index.js",
-    content: INITIAL_CODE,
-  });
+  const [repository, setRepository] = useState(
+    new Repository().setFile({
+      path: "index.js",
+      content: INITIAL_CODE,
+    }),
+  );
 
   return (
     <RepositoryEditor
-      repository={repository()}
+      repository={repository}
       onChange={(path, code) => {
-        repository().setFile({ path, content: code });
-        setRepository(repository());
+        setRepository(repository.setFile({ path, content: code }));
       }}
     />
   );

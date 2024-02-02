@@ -1,21 +1,43 @@
-import { createCodeMirror } from "./createCodeMirror";
-import { basicExtensions } from "./extensions";
+import { useRef, useEffect } from "react";
 
-import * as styles from "./index.css";
+import { githubLightInit } from "@uiw/codemirror-theme-github";
+
+import { useCodeMirror } from "./useCodeMirror";
+import { basicExtensions } from "./extensions";
+import * as cls from "./index.css";
+
+const theme = githubLightInit({
+  theme: "light",
+  settings: {
+    background: "white",
+    gutterBackground: "transparent",
+    fontFamily: "JetBrains Mono, monospace",
+  },
+});
 
 type CodeWindowProps = {
-  value: string;
-  onValueChange: (value: string) => void;
+  code: string;
+  onCodeChange?: (code: string) => void;
 };
 
-export function CodeWindow(props: CodeWindowProps) {
-  const { ref: editorRef } = createCodeMirror({
-    get value() {
-      return props.value;
-    },
-    onValueChange: props.onValueChange,
+export function CodeWindow({ code, onCodeChange }: CodeWindowProps) {
+  const editorDiv = useRef<HTMLDivElement | null>(null);
+
+  const { setContainer } = useCodeMirror({
+    // NOTE: View dispatch does not occur if the value is same with view's internal state
+    // (Refer "./useCodeMirror.ts")
+    value: code,
+
+    theme,
     extensions: basicExtensions,
+    readOnly: onCodeChange === undefined,
+
+    onChange: onCodeChange,
   });
 
-  return <div class={styles.rootContainer} ref={editorRef} />;
+  useEffect(() => {
+    if (editorDiv.current) setContainer(editorDiv.current);
+  }, [setContainer]);
+
+  return <div className={cls.rootContainer} ref={editorDiv} />;
 }

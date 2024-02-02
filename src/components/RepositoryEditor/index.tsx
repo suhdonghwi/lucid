@@ -20,19 +20,19 @@ export function RepositoryEditor(props: RepositoryEditorProps) {
     terminateWorker();
   }
 
-  const code = () => props.repository.getContent("index.js") ?? "";
+  const code = props.repository.getContent("index.js") ?? "";
 
   return (
-    <div class={styles.rootContainer}>
-      <div class={styles.buttonContainer}>
+    <div className={styles.rootContainer}>
+      <div className={styles.buttonContainer}>
         <button onClick={handleRun}>Run</button>
         <button onClick={handleTerminate}>Terminate</button>
       </div>
 
-      <div class={styles.windowContainer}>
+      <div className={styles.windowContainer}>
         <CodeWindow
-          value={code()}
-          onValueChange={(value) => props.onChange("index.js", value)}
+          code={code}
+          onCodeChange={(value) => props.onChange("index.js", value)}
         />
       </div>
     </div>
