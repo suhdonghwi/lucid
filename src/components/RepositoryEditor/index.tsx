@@ -28,8 +28,12 @@ export function RepositoryEditor({
 	return (
 		<div className={styles.rootContainer}>
 			<div className={styles.buttonContainer}>
-				<button onClick={handleRun}>Run</button>
-				<button onClick={handleTerminate}>Terminate</button>
+				<button type="button" onClick={handleRun}>
+					Run
+				</button>
+				<button type="button" onClick={handleTerminate}>
+					Terminate
+				</button>
 			</div>
 
 			<div className={styles.windowContainer}>

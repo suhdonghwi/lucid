@@ -60,7 +60,7 @@ export function useCodeMirror({
 				});
 
 				setView(viewCurrent);
-				onCreateEditor && onCreateEditor(viewCurrent, stateCurrent);
+				onCreateEditor?.(viewCurrent, stateCurrent);
 			}
 		}
 
