@@ -7,13 +7,12 @@ import { EditorView } from "@codemirror/view";
 import { EditorState, Extension } from "@codemirror/state";
 
 type CreateCodeMirrorProps = {
-  class: string;
   value: string;
   onValueChange?: (value: string) => void;
   extensions?: Extension[];
 };
 
-export function CodeMirror(props: CreateCodeMirrorProps) {
+export function createCodeMirror(props: CreateCodeMirrorProps) {
   const [ref, setRef] = createSignal<HTMLElement>();
   const [editorView, setEditorView] = createSignal<EditorView>();
 
@@ -64,5 +63,8 @@ export function CodeMirror(props: CreateCodeMirrorProps) {
     { defer: true },
   );
 
-  return <div class={props.class} ref={setRef} />;
+  return {
+    editorView,
+    ref: setRef,
+  } as const;
 }

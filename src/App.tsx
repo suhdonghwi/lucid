@@ -15,7 +15,7 @@ function App() {
     equals: false,
   });
 
-  repository().setFile({
+  repository().addFile({
     path: "index.js",
     content: INITIAL_CODE,
   });
@@ -24,7 +24,7 @@ function App() {
     <RepositoryEditor
       repository={repository()}
       onChange={(path, code) => {
-        repository().setFile({ path, content: code });
+        repository().addFile({ path, content: code });
         setRepository(repository());
       }}
     />
