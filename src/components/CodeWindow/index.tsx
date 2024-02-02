@@ -13,10 +13,10 @@ export function CodeWindow({ code, onCodeChange }: CodeWindowProps) {
   const editorDiv = useRef<HTMLDivElement | null>(null);
 
   const { setContainer } = useCodeMirror({
-    // NOTE: View dispatch does not occur if the value is same with view's internal state
     value: code,
-    extensions: basicExtensions,
     onChange: onCodeChange,
+
+    extensions: basicExtensions,
   });
 
   useEffect(() => {
