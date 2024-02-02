@@ -1,19 +1,8 @@
 import { useRef, useEffect } from "react";
 
-import { githubLightInit } from "@uiw/codemirror-theme-github";
-
 import { useCodeMirror } from "./useCodeMirror";
 import { basicExtensions } from "./extensions";
 import * as cls from "./index.css";
-
-const theme = githubLightInit({
-  theme: "light",
-  settings: {
-    background: "white",
-    gutterBackground: "transparent",
-    fontFamily: "JetBrains Mono, monospace",
-  },
-});
 
 type CodeWindowProps = {
   code: string;
@@ -26,7 +15,7 @@ export function CodeWindow({ code, onCodeChange }: CodeWindowProps) {
   const { setContainer } = useCodeMirror({
     // NOTE: View dispatch does not occur if the value is same with view's internal state
     value: code,
-    extensions: [...basicExtensions, theme],
+    extensions: basicExtensions,
     onChange: onCodeChange,
   });
 

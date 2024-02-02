@@ -14,9 +14,9 @@ const External = Annotation.define<boolean>();
 
 export interface UseCodeMirror {
   value: string;
-  extensions: Extension[];
-
   onChange?: (value: string, viewUpdate: ViewUpdate) => void;
+
+  extensions: Extension[];
 }
 
 export function useCodeMirror({ value, extensions, onChange }: UseCodeMirror) {
