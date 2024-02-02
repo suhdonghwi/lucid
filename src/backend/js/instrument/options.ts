@@ -1,4 +1,4 @@
 export type InstrumentOptions = {
-	sourceIndex: number;
-	eventCallbacksIdentifier: string;
+  sourceIndex: number;
+  eventCallbacksIdentifier: string;
 };

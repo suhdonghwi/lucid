@@ -6,41 +6,41 @@ import { javascript } from "@codemirror/lang-javascript";
 import { githubLightInit } from "@uiw/codemirror-theme-github";
 
 const cssTheme = View.EditorView.theme({
-	"&.cm-focused": {
-		outline: "none",
-	},
+  "&.cm-focused": {
+    outline: "none",
+  },
 
-	"& .cm-gutters": {
-		border: "none",
+  "& .cm-gutters": {
+    border: "none",
 
-		"& .cm-gutterElement": {
-			minWidth: "30px",
-			padding: "0 7px",
-		},
-	},
+    "& .cm-gutterElement": {
+      minWidth: "30px",
+      padding: "0 7px",
+    },
+  },
 
-	"&": {
-		height: "100%",
-	},
+  "&": {
+    height: "100%",
+  },
 });
 
 const githubLightTheme = githubLightInit({
-	theme: "light",
-	settings: {
-		background: "white",
-		fontFamily: "JetBrains Mono, monospace",
-	},
+  theme: "light",
+  settings: {
+    background: "white",
+    fontFamily: "JetBrains Mono, monospace",
+  },
 });
 
 export const basicExtensions = [
-	View.keymap.of(Commands.defaultKeymap),
-	View.lineNumbers(),
-	View.drawSelection(),
-	View.dropCursor(),
-	Commands.history(),
-	Language.indentOnInput(),
-	Autocomplete.closeBrackets(),
-	javascript(),
-	cssTheme,
-	githubLightTheme,
+  View.keymap.of(Commands.defaultKeymap),
+  View.lineNumbers(),
+  View.drawSelection(),
+  View.dropCursor(),
+  Commands.history(),
+  Language.indentOnInput(),
+  Autocomplete.closeBrackets(),
+  javascript(),
+  cssTheme,
+  githubLightTheme,
 ];

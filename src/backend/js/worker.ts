@@ -5,9 +5,9 @@ import { Repository, SerializedRepository } from "@/repository";
 import { generateTrace } from "./generateTrace";
 
 const api = {
-	generateTrace: (serializedRepo: SerializedRepository) => {
-		return generateTrace(Repository.deserialize(serializedRepo));
-	},
+  generateTrace: (serializedRepo: SerializedRepository) => {
+    return generateTrace(Repository.deserialize(serializedRepo));
+  },
 };
 
 export type WorkerAPI = typeof api;
