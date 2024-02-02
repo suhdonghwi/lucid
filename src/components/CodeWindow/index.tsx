@@ -7,37 +7,32 @@ import { basicExtensions } from "./extensions";
 import * as cls from "./index.css";
 
 const theme = githubLightInit({
-  theme: "light",
-  settings: {
-    background: "white",
-    gutterBackground: "transparent",
-    fontFamily: "JetBrains Mono, monospace",
-  },
+	theme: "light",
+	settings: {
+		background: "white",
+		gutterBackground: "transparent",
+		fontFamily: "JetBrains Mono, monospace",
+	},
 });
 
 type CodeWindowProps = {
-  code: string;
-  onCodeChange?: (code: string) => void;
+	code: string;
+	onCodeChange?: (code: string) => void;
 };
 
 export function CodeWindow({ code, onCodeChange }: CodeWindowProps) {
-  const editorDiv = useRef<HTMLDivElement | null>(null);
+	const editorDiv = useRef<HTMLDivElement | null>(null);
 
-  const { setContainer } = useCodeMirror({
-    // NOTE: View dispatch does not occur if the value is same with view's internal state
-    // (Refer "./useCodeMirror.ts")
-    value: code,
+	const { setContainer } = useCodeMirror({
+		// NOTE: View dispatch does not occur if the value is same with view's internal state
+		value: code,
+		extensions: [...basicExtensions, theme],
+		onChange: onCodeChange,
+	});
 
-    theme,
-    extensions: basicExtensions,
-    readOnly: onCodeChange === undefined,
+	useEffect(() => {
+		if (editorDiv.current) setContainer(editorDiv.current);
+	}, [setContainer]);
 
-    onChange: onCodeChange,
-  });
-
-  useEffect(() => {
-    if (editorDiv.current) setContainer(editorDiv.current);
-  }, [setContainer]);
-
-  return <div className={cls.rootContainer} ref={editorDiv} />;
+	return <div className={cls.rootContainer} ref={editorDiv} />;
 }

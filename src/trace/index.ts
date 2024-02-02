@@ -1,18 +1,18 @@
 import { LocRange } from "./LocRange";
 
 export type ModuleTrace = {
-  type: "module";
+	type: "module";
 
-  innerTrace: ExecutionTrace[];
+	innerTrace: ExecutionTrace[];
 };
 
 export type FunctionCallTrace = {
-  type: "function_call";
+	type: "function_call";
 
-  caller: LocRange;
-  callee: LocRange;
+	caller: LocRange;
+	callee: LocRange;
 
-  innerTrace: ExecutionTrace[];
+	innerTrace: ExecutionTrace[];
 };
 
 export type ExecutionTrace = ModuleTrace | FunctionCallTrace;

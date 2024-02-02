@@ -6,8 +6,8 @@ import { RepositoryFile } from "@/repository";
  *  `end` represents the ending byte index of the code, exclusive
  */
 export type LocRange = {
-  file: RepositoryFile;
+	file: RepositoryFile;
 
-  start: number;
-  end: number;
+	start: number;
+	end: number;
 };
