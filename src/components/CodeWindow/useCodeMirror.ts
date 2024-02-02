@@ -21,8 +21,7 @@ export interface UseCodeMirror {
 
 export function useCodeMirror({ value, extensions, onChange }: UseCodeMirror) {
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
-  const [editorView, setEditorView] = useState<EditorView | null>(null);
-  const [editorState, setEditorState] = useState<EditorState | null>(null);
+  const editorView = useEditorView(container);
 
   const updateListener = useMemo(
     () =>
@@ -43,38 +42,6 @@ export function useCodeMirror({ value, extensions, onChange }: UseCodeMirror) {
   );
 
   useEffect(() => {
-    if (container !== null && editorState === null) {
-      const stateCurrent = EditorState.create();
-      setEditorState(stateCurrent);
-
-      if (editorView === null) {
-        const viewCurrent = new EditorView({
-          state: stateCurrent,
-          parent: container,
-        });
-
-        setEditorView(viewCurrent);
-      }
-    }
-
-    return () => {
-      if (editorView === null) return;
-
-      setEditorState(null);
-      setEditorView(null);
-    };
-  }, [container, editorState, editorView]);
-
-  useEffect(() => {
-    return () => {
-      if (editorView === null) return;
-
-      editorView.destroy();
-      setEditorView(null);
-    };
-  }, [editorView]);
-
-  useEffect(() => {
     if (editorView === null) return;
 
     const finalExtensions = extensions.concat([updateListener]);
@@ -86,7 +53,7 @@ export function useCodeMirror({ value, extensions, onChange }: UseCodeMirror) {
   useEffect(() => {
     if (editorView === null) return;
 
-    const currentValue = editorView?.state.doc.toString() ?? "";
+    const currentValue = editorView.state.doc.toString();
 
     if (value !== currentValue) {
       editorView.dispatch({
@@ -97,4 +64,28 @@ export function useCodeMirror({ value, extensions, onChange }: UseCodeMirror) {
   }, [editorView, value]);
 
   return { editorView, container, setContainer };
+}
+
+function useEditorView(container: HTMLDivElement | null) {
+  const [editorView, setEditorView] = useState<EditorView | null>(null);
+
+  useEffect(() => {
+    if (container !== null && editorView === null) {
+      const initialView = new EditorView({
+        state: EditorState.create(),
+        parent: container,
+      });
+
+      setEditorView(initialView);
+    }
+
+    return () => {
+      if (editorView !== null) {
+        editorView.destroy();
+        setEditorView(null);
+      }
+    };
+  }, [container, editorView]);
+
+  return editorView;
 }
