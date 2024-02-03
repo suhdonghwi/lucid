@@ -1,4 +1,4 @@
-import { LocRange } from "./LocRange";
+import { LocRange } from "@/data/locRange";
 
 export type ModuleTrace = {
   type: "module";

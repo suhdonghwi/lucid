@@ -1,8 +1,8 @@
 import * as acorn from "acorn";
 import { generate } from "astring";
 
-import { TraceManager } from "@/trace";
-import { Repository, RepositoryFile } from "@/repository";
+import { TraceManager } from "@/data/trace";
+import { Repository, RepositoryFile } from "@/data/repository";
 
 import { execute } from "./execute";
 import { EventCallbacks, instrument } from "../instrument";

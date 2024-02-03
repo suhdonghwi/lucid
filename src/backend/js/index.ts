@@ -1,6 +1,6 @@
 import * as Comlink from "comlink";
 
-import { Repository } from "@/repository";
+import { Repository } from "@/data/repository";
 
 import Worker from "./worker?worker";
 import { WorkerAPI } from "./worker";

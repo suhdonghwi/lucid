@@ -1,4 +1,4 @@
-import { RepositoryFile } from "@/repository";
+import { RepositoryFile } from "@/data/repository";
 
 /*
  * Location Range of a code

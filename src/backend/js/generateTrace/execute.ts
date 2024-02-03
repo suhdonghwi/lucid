@@ -1,4 +1,4 @@
-import { Repository } from "@/repository";
+import { Repository } from "@/data/repository";
 
 import { EventCallbacks } from "../instrument";
 

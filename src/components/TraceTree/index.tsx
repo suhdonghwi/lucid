@@ -1,7 +1,7 @@
-import { Repository } from "@/repository";
+import { Repository } from "@/data/repository";
+import { LocRange } from "@/data/locRange";
 
 import { CodeWindow } from "@/components/CodeWindow";
-import { LocRange } from "@/trace/LocRange";
 
 type TraceTreeProps = {
   repository: Repository;

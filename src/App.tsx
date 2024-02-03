@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Repository } from "./repository";
+import { Repository } from "@/data/repository";
 
 import { RepositoryEditor } from "./components/RepositoryEditor";
 

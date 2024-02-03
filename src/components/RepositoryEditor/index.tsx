@@ -1,6 +1,6 @@
 import { generateTrace, terminateWorker } from "@/backend/js";
 
-import { Repository } from "@/repository";
+import { Repository } from "@/data/repository";
 
 import * as styles from "./index.css";
 import { TraceTree } from "../TraceTree";

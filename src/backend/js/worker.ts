@@ -1,6 +1,6 @@
 import * as Comlink from "comlink";
 
-import { Repository, SerializedRepository } from "@/repository";
+import { Repository, SerializedRepository } from "@/data/repository";
 
 import { generateTrace } from "./generateTrace";
 
