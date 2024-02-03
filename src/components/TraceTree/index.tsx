@@ -8,7 +8,6 @@ type TraceTreeProps = {
   locRange: LocRange;
 
   onChange: (path: string, content: string) => void;
-
 };
 
 export function TraceTree({

@@ -26,7 +26,7 @@ function instrumentRepo(repo: Repository, eventCallbacksIdentifier: string) {
     });
 
     const instrumentedCode = generate(instrumentedAST);
-    instrumentedRepo.setFile({ path: file.path, content: instrumentedCode });
+    instrumentedRepo.setContent(file.path, instrumentedCode);
 
     indexedRepo.push({
       file,

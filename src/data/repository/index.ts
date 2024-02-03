@@ -15,8 +15,8 @@ export class Repository {
     this.map = new Map();
   }
 
-  public setFile(file: RepositoryFile) {
-    return Repository.deserialize(this.map.set(file.path, file.content));
+  public setContent(path: Path, content: Content) {
+    return Repository.deserialize(this.map.set(path, content));
   }
 
   public getContent(path: Path) {
