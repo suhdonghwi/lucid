@@ -42,7 +42,7 @@ export function RepositoryEditor({
             start: 0,
             end: 0,
           }}
-          onChange={(value) => onChange("index.js", value)}
+          onChange={onChange}
         />
       </div>
     </div>
