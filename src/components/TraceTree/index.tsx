@@ -18,8 +18,8 @@ export function TraceTree({
 }: TraceTreeProps) {
   return (
     <CodeWindow
-      code={repository.getContent(locRange.file.path) ?? ""}
-      onCodeChange={(value) => onChange(locRange.file.path, value)}
+      code={repository.getContent(locRange.path) ?? ""}
+      onCodeChange={(value) => onChange(locRange.path, value)}
     />
   );
 }

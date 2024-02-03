@@ -38,10 +38,7 @@ export function RepositoryEditor({
         <TraceTree
           repository={repository}
           locRange={{
-            file: {
-              path: "index.js",
-              content: repository.getContent("index.js") ?? "",
-            },
+            path: "index.js",
             start: 0,
             end: 0,
           }}

@@ -62,12 +62,12 @@ export async function generateTrace(repo: Repository) {
       traceManager.newDepth({
         type: "function_call",
         caller: {
-          file,
+          path: file.path,
           start: callerNode.start,
           end: callerNode.end,
         },
         callee: {
-          file,
+          path: file.path,
           start: calleeNode.start,
           end: calleeNode.end,
         },
