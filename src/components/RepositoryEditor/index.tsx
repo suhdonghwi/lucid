@@ -1,9 +1,9 @@
 import { generateTrace, terminateWorker } from "@/backend/js";
 
-import { CodeWindow } from "@/components/CodeWindow";
 import { Repository } from "@/repository";
 
 import * as styles from "./index.css";
+import { TraceTree } from "../TraceTree";
 
 type RepositoryEditorProps = {
   repository: Repository;
@@ -23,8 +23,6 @@ export function RepositoryEditor({
     terminateWorker();
   }
 
-  const code = repository.getContent("index.js") ?? "";
-
   return (
     <div className={styles.rootContainer}>
       <div className={styles.buttonContainer}>
@@ -37,9 +35,17 @@ export function RepositoryEditor({
       </div>
 
       <div className={styles.windowContainer}>
-        <CodeWindow
-          code={code}
-          onCodeChange={(value) => onChange("index.js", value)}
+        <TraceTree
+          repository={repository}
+          locRange={{
+            file: {
+              path: "index.js",
+              content: repository.getContent("index.js") ?? "",
+            },
+            start: 0,
+            end: 0,
+          }}
+          onChange={(value) => onChange("index.js", value)}
         />
       </div>
     </div>
