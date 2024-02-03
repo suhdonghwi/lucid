@@ -1,5 +1,5 @@
-type Path = string;
-type Content = string;
+export type Path = string;
+export type Content = string;
 
 export type RepositoryFile = {
   path: Path;
