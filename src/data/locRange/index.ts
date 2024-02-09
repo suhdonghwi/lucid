@@ -5,7 +5,7 @@ import { Path } from "@/data/repository";
  *  `start` represents the starting byte index of the code
  *  `end` represents the ending byte index of the code, exclusive
  */
-export type LocRange = {
+export type LocationRange = {
   path: Path;
 
   start: number;
