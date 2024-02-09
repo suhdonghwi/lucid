@@ -1,4 +1,4 @@
-import { LocRange } from "@/data/locRange";
+import { LocationRange } from "@/data/locRange";
 
 export type ModuleTrace = {
   type: "module";
@@ -9,8 +9,8 @@ export type ModuleTrace = {
 export type FunctionCallTrace = {
   type: "function_call";
 
-  caller: LocRange;
-  callee: LocRange;
+  caller: LocationRange;
+  callee: LocationRange;
 
   innerTrace: ExecutionTrace[];
 };

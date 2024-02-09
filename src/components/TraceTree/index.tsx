@@ -1,11 +1,11 @@
 import { Repository } from "@/data/repository";
-import { LocRange } from "@/data/locRange";
+import { LocationRange } from "@/data/locRange";
 
 import { CodeWindow } from "@/components/CodeWindow";
 
 type TraceTreeProps = {
   repository: Repository;
-  locRange: LocRange;
+  locRange: LocationRange;
 
   onChange: (path: string, content: string) => void;
 };
