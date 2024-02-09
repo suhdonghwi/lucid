@@ -37,11 +37,13 @@ export function RepositoryEditor({
       <div className={styles.windowContainer}>
         <TraceTree
           repository={repository}
+
+          path="/index.js"
           locRange={{
-            path: "index.js",
             start: 0,
             end: 0,
           }}
+
           onChange={onChange}
         />
       </div>

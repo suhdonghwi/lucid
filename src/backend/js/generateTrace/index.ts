@@ -44,7 +44,7 @@ export async function generateTrace(repo: Repository) {
   const eventCallbacksIdentifier = "evc";
 
   const expressionStack: acorn.Node[] = [];
-  const traceManager = new TraceManager();
+  const traceManager = new TraceManager("/index.js");
 
   const { result: instrumentedRepo, indexedRepo } = instrumentRepo(
     repo,
@@ -60,18 +60,18 @@ export async function generateTrace(repo: Repository) {
       const calleeNode = node;
 
       traceManager.newDepth({
-        type: "function_call",
-        caller: {
-          path: file.path,
+        source: {
           start: callerNode.start,
-          end: callerNode.end,
-        },
-        callee: {
-          path: file.path,
-          start: calleeNode.start,
           end: calleeNode.end,
         },
-        innerTrace: [],
+        trace: {
+          path: file.path,
+          locationRange: {
+            start: calleeNode.start,
+            end: calleeNode.end,
+          },
+          innerTraces: [],
+        },
       });
     },
 

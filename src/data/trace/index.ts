@@ -1,20 +1,11 @@
 import { LocationRange } from "@/data/locRange";
+import { Path } from "@/data/repository";
 
-export type ModuleTrace = {
-  type: "module";
+export type ExecutionTrace = {
+  path: Path;
+  locationRange: LocationRange;
 
-  innerTrace: ExecutionTrace[];
+  innerTraces: Array<{ source: LocationRange; trace: ExecutionTrace }>;
 };
-
-export type FunctionCallTrace = {
-  type: "function_call";
-
-  caller: LocationRange;
-  callee: LocationRange;
-
-  innerTrace: ExecutionTrace[];
-};
-
-export type ExecutionTrace = ModuleTrace | FunctionCallTrace;
 
 export { TraceManager } from "./TraceManager";

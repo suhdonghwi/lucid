@@ -12,7 +12,7 @@ console.log(add(1, 2));`;
 
 function App() {
   const [repository, setRepository] = useState(
-    new Repository().setContent("index.js", INITIAL_CODE),
+    new Repository().setContent("/index.js", INITIAL_CODE),
   );
 
   return (

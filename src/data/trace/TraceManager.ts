@@ -1,27 +1,37 @@
+import { Path } from "@/data/repository";
+import { LocationRange } from "@/data/locRange";
+
 import { ExecutionTrace } from ".";
 
 export class TraceManager {
-  private readonly traceStack: ExecutionTrace[] = [
-    {
-      type: "module",
-      innerTrace: [],
-    },
-  ];
+  private readonly traceStack: ExecutionTrace[];
+
+  constructor(entryPoint: Path) {
+    this.traceStack = [
+      {
+        path: entryPoint,
+        locationRange: {
+          start: 0,
+          end: 0,
+        },
+        innerTraces: [],
+      },
+    ];
+  }
 
   getCurrentTrace() {
     return this.traceStack[this.traceStack.length - 1];
   }
 
-  newDepth(trace: ExecutionTrace) {
+  newDepth({
+    source,
+    trace,
+  }: { source: LocationRange; trace: ExecutionTrace }) {
+    this.getCurrentTrace().innerTraces.push({ source, trace });
     this.traceStack.push(trace);
   }
 
   finishDepth() {
-    const trace = this.traceStack.pop();
-    if (trace === undefined) {
-      throw new Error("No trace depth to finish");
-    }
-
-    this.getCurrentTrace().innerTrace.push(trace);
+    this.traceStack.pop();
   }
 }

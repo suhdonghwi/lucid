@@ -11,7 +11,7 @@ export async function execute(
   eventCallbacks: EventCallbacks,
   eventCallbacksIdentifier: string,
 ) {
-  const entryCode = repo.getContent("index.js");
+  const entryCode = repo.getContent("/index.js");
   if (entryCode === undefined) {
     throw new Error("Entry file not found");
   }

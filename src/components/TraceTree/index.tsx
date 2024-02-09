@@ -1,10 +1,12 @@
-import { Repository } from "@/data/repository";
+import { Path, Repository } from "@/data/repository";
 import { LocationRange } from "@/data/locRange";
 
 import { CodeWindow } from "@/components/CodeWindow";
 
 type TraceTreeProps = {
   repository: Repository;
+
+  path: Path;
   locRange: LocationRange;
 
   onChange: (path: string, content: string) => void;
@@ -12,13 +14,16 @@ type TraceTreeProps = {
 
 export function TraceTree({
   repository,
+
+  path,
   locRange,
+
   onChange,
 }: TraceTreeProps) {
   return (
     <CodeWindow
-      code={repository.getContent(locRange.path) ?? ""}
-      onCodeChange={(value) => onChange(locRange.path, value)}
+      code={repository.getContent(path) ?? ""}
+      onCodeChange={(value) => onChange(path, value)}
     />
   );
 }
