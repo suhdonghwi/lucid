@@ -1,4 +1,3 @@
-import { Path } from "@/data/repository";
 import { LocationRange } from "@/data/locRange";
 
 import { ExecutionTrace } from ".";
@@ -6,16 +5,9 @@ import { ExecutionTrace } from ".";
 export class TraceManager {
   private readonly traceStack: ExecutionTrace[];
 
-  constructor(entryPoint: Path) {
+  constructor(initialTrace: ExecutionTrace) {
     this.traceStack = [
-      {
-        path: entryPoint,
-        locationRange: {
-          start: 0,
-          end: 0,
-        },
-        innerTraces: [],
-      },
+      initialTrace,
     ];
   }
 

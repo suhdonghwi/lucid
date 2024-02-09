@@ -44,7 +44,14 @@ export async function generateTrace(repo: Repository) {
   const eventCallbacksIdentifier = "evc";
 
   const expressionStack: acorn.Node[] = [];
-  const traceManager = new TraceManager("/index.js");
+  const traceManager = new TraceManager({
+    path: "/index.js",
+    locationRange: {
+      start: 0,
+      end: 0,
+    },
+    innerTraces: [],
+  });
 
   const { result: instrumentedRepo, indexedRepo } = instrumentRepo(
     repo,
