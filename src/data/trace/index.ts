@@ -4,12 +4,10 @@ import { Path } from "@/data/repository";
 type Child =
   | {
       type: "trace";
-      source: LocationRange;
       trace: ExecutionTrace;
     }
   | {
       type: "log";
-      source: LocationRange;
       content: string;
     };
 
@@ -17,7 +15,7 @@ export type ExecutionTrace = {
   path: Path;
   locationRange: LocationRange;
 
-  children: Child[];
+  children: Array<Child & { source: LocationRange }>;
 };
 
 export { TraceManager } from "./TraceManager";
