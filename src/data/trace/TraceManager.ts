@@ -6,9 +6,7 @@ export class TraceManager {
   private readonly traceStack: ExecutionTrace[];
 
   constructor(initialTrace: ExecutionTrace) {
-    this.traceStack = [
-      initialTrace,
-    ];
+    this.traceStack = [initialTrace];
   }
 
   getCurrentTrace() {
@@ -19,7 +17,7 @@ export class TraceManager {
     source,
     trace,
   }: { source: LocationRange; trace: ExecutionTrace }) {
-    this.getCurrentTrace().innerTraces.push({ source, trace });
+    this.getCurrentTrace().children.push({ type: "trace", source, trace });
     this.traceStack.push(trace);
   }
 

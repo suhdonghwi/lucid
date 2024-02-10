@@ -50,7 +50,7 @@ export async function generateTrace(repo: Repository) {
       start: 0,
       end: 0,
     },
-    innerTraces: [],
+    children: [],
   });
 
   const { result: instrumentedRepo, indexedRepo } = instrumentRepo(
@@ -77,7 +77,7 @@ export async function generateTrace(repo: Repository) {
             start: calleeNode.start,
             end: calleeNode.end,
           },
-          innerTraces: [],
+          children: [],
         },
       });
     },
