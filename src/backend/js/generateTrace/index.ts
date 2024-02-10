@@ -113,7 +113,7 @@ export async function generateTrace(repo: Repository) {
           start: consoleLogNode.start,
           end: consoleLogNode.end,
         },
-        content: message,
+        message,
       });
     },
   };

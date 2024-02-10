@@ -8,7 +8,7 @@ type Child =
     }
   | {
       type: "log";
-      content: string;
+      message: unknown;
     };
 
 export type ExecutionTrace = {

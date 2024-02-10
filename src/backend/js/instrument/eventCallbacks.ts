@@ -9,5 +9,5 @@ export type EventCallbacks = {
     expression: T,
   ) => T;
 
-  onConsoleLog: (message: any) => void;
+  onConsoleLog: (message: unknown) => void;
 };

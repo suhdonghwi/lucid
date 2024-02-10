@@ -21,8 +21,8 @@ export class TraceManager {
     this.traceStack.push(trace);
   }
 
-  addChildLog({ source, content }: { source: LocationRange; content: string }) {
-    this.getCurrentTrace().children.push({ type: "log", source, content });
+  addChildLog({ source, message}: { source: LocationRange; message: unknown }) {
+    this.getCurrentTrace().children.push({ type: "log", source, message });
   }
 
   finishCurrentTrace() {
