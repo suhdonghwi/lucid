@@ -83,23 +83,16 @@ export async function generateTrace(repo: Repository) {
     },
 
     onFunctionLeave: (sourceIndex, nodeIndex) => {
-      // const node = indexedRepo[sourceIndex].indexedAST[nodeIndex];
-      // console.log("function leave", node);
-
       traceManager.finishCurrentTrace();
     },
 
     onExpressionEnter: (sourceIndex, nodeIndex) => {
       const node = indexedRepo[sourceIndex].indexedAST[nodeIndex];
-      // console.log("expression enter", node);
 
       expressionStack.push(node);
     },
 
     onExpressionLeave: (sourceIndex, nodeIndex, value) => {
-      // const node = indexedRepo[sourceIndex].indexedAST[nodeIndex];
-      // console.log("expression leave", node);
-
       expressionStack.pop();
 
       return value;
