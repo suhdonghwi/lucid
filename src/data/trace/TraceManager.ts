@@ -13,19 +13,47 @@ export class TraceManager {
     return this.traceStack[this.traceStack.length - 1];
   }
 
+  getParentTrace() {
+    if (this.traceStack.length === 1) {
+      return null;
+    }
+
+    return this.traceStack[this.traceStack.length - 2];
+  }
+
+  addChildLog({
+    source,
+    message,
+  }: { source: LocationRange; message: unknown }) {
+    const currentTrace = this.getCurrentTrace();
+
+    currentTrace.children.push({
+      type: "log",
+      source,
+      message,
+    });
+    currentTrace.flattenedLogs.push(message);
+  }
+
   startChildTrace({
     source,
     trace,
   }: { source: LocationRange; trace: ExecutionTrace }) {
-    this.getCurrentTrace().children.push({ type: "trace", source, trace });
+    this.getCurrentTrace().children.push({
+      type: "trace",
+      source,
+      trace,
+    });
     this.traceStack.push(trace);
   }
 
-  addChildLog({ source, message}: { source: LocationRange; message: unknown }) {
-    this.getCurrentTrace().children.push({ type: "log", source, message });
-  }
-
   finishCurrentTrace() {
-    this.traceStack.pop();
+    const poppedTrace = this.traceStack.pop();
+
+    if (poppedTrace === undefined) {
+      throw new Error("Tried to finish a trace when there was none");
+    }
+
+    this.getCurrentTrace().flattenedLogs.push(...poppedTrace.flattenedLogs);
   }
 }

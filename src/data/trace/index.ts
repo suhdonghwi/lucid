@@ -1,6 +1,8 @@
 import { LocationRange } from "@/data/locRange";
 import { Path } from "@/data/repository";
 
+type Message = unknown;
+
 type Child =
   | {
       type: "trace";
@@ -8,7 +10,7 @@ type Child =
     }
   | {
       type: "log";
-      message: unknown;
+      message: Message;
     };
 
 export type ExecutionTrace = {
@@ -16,6 +18,7 @@ export type ExecutionTrace = {
   locationRange: LocationRange;
 
   children: Array<Child & { source: LocationRange }>;
+  flattenedLogs: Message[];
 };
 
 export { TraceManager } from "./TraceManager";
