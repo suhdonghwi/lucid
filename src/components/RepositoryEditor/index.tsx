@@ -2,8 +2,9 @@ import { generateTrace, terminateWorker } from "@/backend/js";
 
 import { Repository } from "@/data/repository";
 
+import { TraceTree } from "@/components/TraceTree";
+
 import * as styles from "./index.css";
-import { TraceTree } from "../TraceTree";
 
 type RepositoryEditorProps = {
   repository: Repository;

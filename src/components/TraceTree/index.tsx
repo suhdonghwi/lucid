@@ -3,6 +3,8 @@ import { LocationRange } from "@/data/locRange";
 
 import { CodeWindow } from "@/components/CodeWindow";
 
+import * as styles from "./index.css";
+
 type TraceTreeProps = {
   repository: Repository;
 
@@ -21,9 +23,11 @@ export function TraceTree({
   onChange,
 }: TraceTreeProps) {
   return (
-    <CodeWindow
-      code={repository.getContent(path) ?? ""}
-      onCodeChange={(value) => onChange(path, value)}
-    />
+    <div className={styles.rootContainer}>
+      <CodeWindow
+        code={repository.getContent(path) ?? ""}
+        onCodeChange={(value) => onChange(path, value)}
+      />
+    </div>
   );
 }
