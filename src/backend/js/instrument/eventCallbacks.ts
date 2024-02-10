@@ -8,4 +8,6 @@ export type EventCallbacks = {
     nodeIndex: number,
     expression: T,
   ) => T;
+
+  onConsoleLog: (message: any) => void;
 };

@@ -13,7 +13,7 @@ export class TraceManager {
     return this.traceStack[this.traceStack.length - 1];
   }
 
-  newDepth({
+  startChildTrace({
     source,
     trace,
   }: { source: LocationRange; trace: ExecutionTrace }) {
@@ -21,7 +21,11 @@ export class TraceManager {
     this.traceStack.push(trace);
   }
 
-  finishDepth() {
+  addChildLog({ source, content }: { source: LocationRange; content: string }) {
+    this.getCurrentTrace().children.push({ type: "log", source, content });
+  }
+
+  finishCurrentTrace() {
     this.traceStack.pop();
   }
 }

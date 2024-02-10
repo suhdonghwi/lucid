@@ -66,7 +66,7 @@ export async function generateTrace(repo: Repository) {
       const callerNode = expressionStack[expressionStack.length - 1];
       const calleeNode = node;
 
-      traceManager.newDepth({
+      traceManager.startChildTrace({
         source: {
           start: callerNode.start,
           end: calleeNode.end,
@@ -86,7 +86,7 @@ export async function generateTrace(repo: Repository) {
       // const node = indexedRepo[sourceIndex].indexedAST[nodeIndex];
       // console.log("function leave", node);
 
-      traceManager.finishDepth();
+      traceManager.finishCurrentTrace();
     },
 
     onExpressionEnter: (sourceIndex, nodeIndex) => {
@@ -103,6 +103,18 @@ export async function generateTrace(repo: Repository) {
       expressionStack.pop();
 
       return value;
+    },
+
+    onConsoleLog: (message) => {
+      const consoleLogNode = expressionStack[expressionStack.length - 1];
+
+      traceManager.addChildLog({
+        source: {
+          start: consoleLogNode.start,
+          end: consoleLogNode.end,
+        },
+        content: message,
+      });
     },
   };
 

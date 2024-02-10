@@ -21,6 +21,12 @@ export async function execute(
   // @ts-expect-error eventCallbacksIdentifier is not a valid property on globalThis
   globalThis[eventCallbacksIdentifier] = eventCallbacks;
 
+  const originalConsoleLog = console.log;
+  globalThis["console"].log = (message: any) => {
+    eventCallbacks.onConsoleLog(message);
+    originalConsoleLog(message);
+  };
+
   const codeBlob = createCodeBlob(entryCode);
   const objectURL = URL.createObjectURL(codeBlob);
   await import(
@@ -31,4 +37,5 @@ export async function execute(
 
   // @ts-expect-error eventCallbacksIdentifier is not a valid property on globalThis
   delete globalThis[eventCallbacksIdentifier];
+  globalThis["console"].log = originalConsoleLog;
 }
