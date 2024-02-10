@@ -40,6 +40,7 @@ export function TraceTree({
 
       <ul>
         {messages.map((message, index) => (
+          // biome-ignore lint/suspicious/noArrayIndexKey: temporary
           <li key={index}>{message}</li>
         ))}
       </ul>

@@ -22,7 +22,7 @@ export async function execute(
   globalThis[eventCallbacksIdentifier] = eventCallbacks;
 
   const originalConsoleLog = console.log;
-  globalThis["console"].log = (message: any) => {
+  globalThis.console.log = (message: unknown) => {
     eventCallbacks.onConsoleLog(message);
     originalConsoleLog(message);
   };
@@ -37,5 +37,5 @@ export async function execute(
 
   // @ts-expect-error eventCallbacksIdentifier is not a valid property on globalThis
   delete globalThis[eventCallbacksIdentifier];
-  globalThis["console"].log = originalConsoleLog;
+  globalThis.console.log = originalConsoleLog;
 }
