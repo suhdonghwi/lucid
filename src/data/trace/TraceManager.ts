@@ -13,14 +13,6 @@ export class TraceManager {
     return this.traceStack[this.traceStack.length - 1];
   }
 
-  getParentTrace() {
-    if (this.traceStack.length === 1) {
-      return null;
-    }
-
-    return this.traceStack[this.traceStack.length - 2];
-  }
-
   addChildLog({
     source,
     message,
